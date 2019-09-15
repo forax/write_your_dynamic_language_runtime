@@ -12,7 +12,7 @@
   </target>
 
 	<target name="jar" depends="compile">
-		  <jar destfile="minijs.jar">
+		  <jar destfile="smalljs.jar">
 		  	<fileset dir="${classes}"/>
 		    <archives>
 		  	  <zips >
@@ -29,11 +29,12 @@
 	<target name="compile">
 		<mkdir dir="${classes}"/>
 		<javac srcdir="${lab1-src}:${src}:${gen-src}"
-           destdir="${classes}"
+		   destdir="${classes}"
            classpath="${tatoo-runtime.jar}"
 		   includeantruntime="false"
-           debug="on"
-	  />
+           debug="on">
+			<exclude name="**/*Tests.java"/>
+		</javac>
 	</target>
 
 	<target name="clean">
