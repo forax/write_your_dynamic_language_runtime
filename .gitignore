@@ -19,7 +19,8 @@
 *.rar
 
 !lib/*
-!build-lib/*
+!grammar/build-lib/*
+!grammar/build-lib/motocity/*
 
 .idea/
 
