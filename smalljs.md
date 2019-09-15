@@ -1,13 +1,13 @@
-minijs
+smalljs
 ---
 
-the minijs programming language is mostly a subset of JavaScript.
+the smalljs programming language is mostly a subset of JavaScript.
 
 
 semantics
 ---
 
-minijs has 3 kinds of values, 2 primitive types and one reference type
+smalljs has 3 kinds of values, 2 primitive types and one reference type
 - int, a primitive 32 bits signed integers
 - String, a character string (with 31 bits max size)
 - JSObject, any objects
