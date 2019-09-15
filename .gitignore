@@ -19,7 +19,7 @@
 *.rar
 
 !lib/*
-
+!build-lib/*
 
 .idea/
 
