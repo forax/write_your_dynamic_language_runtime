@@ -143,7 +143,7 @@ public class ASTBuilder implements GrammarEvaluator {
   @Override
   public Expr expr_new(List<Expr[]> init_star) {
     return new New(
-        Collections.unmodifiableMap(init_star.stream().collect(Collectors.toMap(v -> v[0].toString(), v -> v[1], (_1, _2) -> null, LinkedHashMap::new))),
+        Collections.unmodifiableMap(init_star.stream().collect(Collectors.toMap((Expr[] v) -> v[0].toString(), (Expr[] v) -> v[1], (_1, _2) -> null, LinkedHashMap::new))),
         init_star.stream().mapToInt(x -> x[0].getLineNumber()).findFirst().orElse(1 + tracker.getLineNumber()));
   }
   @Override
