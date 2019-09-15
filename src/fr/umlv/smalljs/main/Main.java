@@ -3,6 +3,7 @@ package fr.umlv.smalljs.main;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import fr.umlv.smalljs.astinterp.main.ASTInterpreterMain;
@@ -12,19 +13,19 @@ public class Main {
 		void run(String[] args) throws IOException;
 	}
 	
-	interface Finder {
-		Optional<Runner> find(String[] args);
+	interface Finder<T> {
+		Optional<Runner> find(T value);
 		
-		default Finder or(Finder finder) {
+		default <R> Finder<R> invmap(Function<? super R, ? extends Optional<T>> mapper) {
+			return value -> mapper.apply(value).flatMap(this::find);
+		}
+		
+		default Finder<T> or(Finder<? super T> finder) {
 			return args -> find(args).or(() -> finder.find(args));
 		}
 		
-		static Finder of(String interpreterName, Supplier<Runner> interpreter) {
-			return args -> Optional.of(args)
-					.filter(_args -> _args.length >= 1)
-					.map(_args -> _args[0])
-					.filter(interpreterName::equals)
-					.map(__ -> interpreter.get());
+		static Finder<String> of(String interpreterName, Supplier<Runner> interpreter) {
+			return name -> Optional.of(name).filter(interpreterName::equals).map(__ -> interpreter.get());
 		}
 	}
 	
@@ -33,10 +34,11 @@ public class Main {
 	}
 	
   public static void main(String[] args) throws IOException {
-		var finder = Finder.of("ast", () -> ASTInterpreterMain::main).
-		    //or(Finder.of("stack", () -> () -> StackInterpreterMain.main(args))).
-				//or(Finder.of("jvm", () -> () -> JVMInterpreterMain.main(args))).
-		    or(_args -> Optional.of(__ -> {
+		var finder = Finder.of("ast", () -> ASTInterpreterMain::main)
+		    //.or(Finder.of("stack", () -> StackInterpreterMain::main)
+				//.or(Finder.of("jvm", () -> JVMInterpreterMain::main)
+				.invmap((String[] _args) -> Optional.of(_args).filter(__args -> __args.length >= 1).map(__args -> __args[0]))
+		    .or(_args -> Optional.of(__ -> {
 		  	  System.out.println("java fr.umlv.minijs.main.Main ast|stack|jvm [script.js]");
 		  	  System.out.println();
 		  	  System.out.println("  invalid arguments " + String.join(", ", _args));
