@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<project name="minijs" default="all" basedir=".">
+  <property name="lib.dir" location="lib"/>
+  <property name="tatoo-runtime.jar" location="${lib.dir}/tatoo-runtime.jar"/>
+
+  <property name="src" value="src"/>
+  <property name="lab1-src" value="lab1/src"/>
+  <property name="classes" value="classes"/>
+  <property name="gen-src" value="grammar/gen-src"/>
+
+  <target name="all" depends="jar">
+  </target>
+
+	<target name="jar" depends="compile">
+		  <jar destfile="minijs.jar">
+		  	<fileset dir="${classes}"/>
+		    <archives>
+		  	  <zips >
+		        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+		      </zips>
+		  	</archives>
+		  	<manifest>
+		  	    <!--<attribute name="Main-Class" value="fr.umlv.smalljs.main.ASTInterpreterMain"/>-->
+				<attribute name="Main-Class" value="fr.umlv.smalljs.main.Main"/>
+		  	</manifest>
+		  </jar>	
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes}"/>
+		<javac srcdir="${lab1-src}:${src}:${gen-src}"
+           destdir="${classes}"
+           classpath="${tatoo-runtime.jar}"
+		   includeantruntime="false"
+           debug="on"
+	  />
+	</target>
+
+	<target name="clean">
+		<delete dir="${classes}"/>
+	</target>
+
+</project>

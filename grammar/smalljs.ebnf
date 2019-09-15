@@ -1,0 +1,118 @@
+directives:
+  autoalias
+
+imports:
+ fr.umlv.smalljs.ast.Literal
+ fr.umlv.smalljs.ast.Expr
+ fr.umlv.smalljs.ast.Block
+  
+priorities:
+  parens = 6 left
+  access = 5 left
+  dot = 4 left
+  mult = 3 left
+  plus = 2 left
+  test = 1 left
+  op = 0 left
+
+tokens:
+  assign = '='                 
+  dot = '\.'                [dot]
+  colon= ':'
+  comma =  ','
+  semicolon = ';'
+  eol = '\n'
+  lpar = '\('               [parens]           
+  rpar = '\)'
+  lcurl = '\{'
+  rcurl = '\}'
+  add = '\+'                [plus]
+  sub = '-'                 [plus]
+  mul = '\*'                [mult]
+  div = '\/'                [mult]
+  rem = '%'                 [mult]
+  eq = '=='                 [test]
+  ne = '!='                 [test]
+  lt = '<'                  [test]
+  le = '<='                 [test]
+  gt = '>'                  [test]
+  ge = '>='                 [test]
+  var = 'var'
+  function = 'function'
+  _if = 'if'
+  _else = 'else'
+  _return = 'return'
+  
+  
+  text = "'[^']*'|\u0022[^\u0022]*\u0022"
+  integer = "[0-9]+"
+  id = "[^ \t\r\n=.:,();]+"   [op]
+ 
+blanks:
+ space = "( |\t|\r|\n)"
+
+comments:
+ comment = "\/\/([^\r\n])*(\r)?\n"
+ 
+types:
+ 'id': Literal<String>
+ 'integer': Literal<Integer>
+ 'text': Literal<String>
+ block: Block
+ instr: Expr
+ args: java.util.List<Expr>
+ init: Expr[]
+ expr: Expr
+ 
+
+starts:
+ script
+
+productions:
+ script = instr*  { script }
+        ; 
+ 
+ block = '{' instr* '}'   { block }
+       ;   
+       
+eoi = 'eol'
+    | ';'
+    ;       
+       
+instr = expr eoi                                   { instr_expr }
+      | 'var' 'id' '=' expr eoi                    { instr_var_decl }
+      | 'id' '=' expr eoi                          { instr_var_assign }
+      | expr '.' 'id' '=' expr eoi   [access]      { instr_field_assign }
+      | 'if' expr block 'else' block               { instr_if }
+      | 'return' expr eoi                          { instr_return }
+      ;       
+       
+ args = expr/'comma'*  { args }    
+      ;  
+  
+ init = 'id' ':' expr  'eol'? { init }
+       ; 
+       
+ expr = 'integer'                                      { expr_numeric }
+      | 'text'                                         { expr_text }
+      | '(' expr ')'                                   { expr_parens }
+      | 'id'                                           { expr_id }
+      | 'function' 'id'? '(' 'id'/'comma'* ')' block   { expr_function_creation }
+      | expr '(' args ')'                              { expr_apply }
+      | '{' init/'comma'* '}'                          { expr_new }
+      | expr '.' 'id'                        [access]  { expr_field_access }
+      | expr '.' 'id' '(' args ')'                     { expr_method_call }
+      
+      | expr '*' expr                        [mult]    { expr_mul }
+      | expr '/' expr                        [mult]    { expr_div }
+      | expr 'rem' expr                      [mult]    { expr_rem }
+      | expr '+' expr                        [plus]    { expr_add }
+      | expr '-' expr                        [plus]    { expr_sub }
+      | expr '==' expr                       [test]    { expr_eq }
+      | expr '!=' expr                       [test]    { expr_ne }
+      | expr '<' expr                        [test]    { expr_lt }
+      | expr '<=' expr                       [test]    { expr_le }
+      | expr '>' expr                        [test]    { expr_gt }
+      | expr '>=' expr                       [test]    { expr_ge }
+      ;
+  
