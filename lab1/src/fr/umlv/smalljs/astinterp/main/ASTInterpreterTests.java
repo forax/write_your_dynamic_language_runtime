@@ -3,6 +3,7 @@ package fr.umlv.smalljs.astinterp.main;
 import static fr.umlv.smalljs.ast.ASTBuilder.createScript;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import fr.umlv.smalljs.astinterp.ASTInterpreter;
+import fr.umlv.smalljs.rt.Failure;
 
 @SuppressWarnings("static-method")
 public class ASTInterpreterTests {
@@ -88,6 +90,10 @@ public class ASTInterpreterTests {
   }
   
   @Tag("Q9") @Test
+  public void doubleDefinitionOfAVariable() {
+    assertThrows(Failure.class, () -> execute("var a = 3;\nvar a = 2;\n"));
+  }
+  @Tag("Q9") @Test
   public void printAVariableDefinedAfter() {
     assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
   }
@@ -97,6 +103,14 @@ public class ASTInterpreterTests {
     assertEquals("3\n", execute(
         "function foo(x) {\n" +
         "  return x + 1;\n"   +
+        "}\n"                 +
+        "print(foo(2));\n"));
+  }
+  @Tag("Q10") @Test
+  public void callAUserDefinedFunctionWithTheWrongNumberOfArguments() {
+    assertThrows(Failure.class, () -> execute(
+        "function foo(a, b) {\n" +
+        "  return a + b;\n"   +
         "}\n"                 +
         "print(foo(2));\n"));
   }
@@ -181,18 +195,6 @@ public class ASTInterpreterTests {
     		"print(b);"));
   }
   @Tag("Q11") @Test
-  public void callRecursiveFunction() {
-    assertEquals("24\n", execute(
-        "function fact(n) {\n"           +
-        "  if (n < 1) {\n"               +
-        "    return 1;\n"                +		
-        "  } else {\n"                   +
-        "    return n * fact(n - 1);\n"  +
-        "  }\n"                          +
-        "}\n"                            +
-        "print(fact(4));\n"));
-  }
-  @Tag("Q11") @Test
   public void callAUserDefinedFunctionWithAnIf() {
     assertEquals("0\n7\n", execute(
         "function f(x) {\n"  + 
@@ -232,6 +234,18 @@ public class ASTInterpreterTests {
         "  }\n"                                    + 
         "\n"                                       + 
         "print(fibo(7))\n"));
+  }
+  @Tag("Q12") @Test
+  public void callRecursiveFunction() {
+    assertEquals("24\n", execute(
+        "function fact(n) {\n"           +
+        "  if (n < 1) {\n"               +
+        "    return 1;\n"                +		
+        "  } else {\n"                   +
+        "    return n * fact(n - 1);\n"  +
+        "  }\n"                          +
+        "}\n"                            +
+        "print(fact(4));\n"));
   }
   
   @Tag("Q13") @Test
