@@ -32,6 +32,8 @@ and for the subtraction
 
   (2a + 1) - (2b + 1) <=> 2 (a - b) + 1 - 1 <=> (x - y) - 1
 
+We will not use this optimization but feel free to implement them.
+
 
 opcodes
 ---
