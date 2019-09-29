@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public class JSObject {
   private final JSObject proto;
-  public final String name;
+  private final String name;
   private final MethodHandle mh;
   private final LinkedHashMap<String, Object> valueMap = new LinkedHashMap<>();
   
@@ -65,9 +65,13 @@ public class JSObject {
     return function;
   }
   
+  public String getName() {
+		return name;
+	}
   public MethodHandle getMethodHandle() {
     return mh;
   }
+  
   public Object invoke(Object receiver, Object[] args) {
     //System.err.println("invoke " + this + " " + receiver + " " + java.util.Arrays.toString(args));
     //System.err.println("invoke mh " + mh);
