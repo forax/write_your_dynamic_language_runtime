@@ -165,8 +165,9 @@ when `print(j)` is called the stack is (from the bottom to the top)
 main: slot var 0    : undef
 ``` 
 
-Note that to be able to construct the stack that way, the maximum number of slot variable need to be computed
+Note that to be able to construct the stack that way, the maximum number of slot variables need to be computed
 doing a static analysis on the code.
+
 Moreover, if we want to detect a stack overflow when calling a method before adding a new stack frame,
 we need to be able to compute the size of the stack frame, for that we need the maximum size of the stack
 of a stack frame which can also be computed using a static analysis on the code.
