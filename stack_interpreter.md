@@ -81,20 +81,21 @@ the second optional value is a value that depend on the kind of opcodes.
  
  `print(2 + 10)` is translated to
  ```
- 0: CONST 5
- 2: CONST 21
- 4: LOOKUP 10     // "add"
- 6: FUNCALL 2
- 8: PRINT
+ 0: LOOKUP 10     // JSObject of "+" 
+ 2: CONST 6       // undefined
+ 4: CONST 5
+ 6: CONST 21
+ 8: FUNCALL 2
+10: PRINT
  ```
  
  `a = 2; b = a; print(b)`
 ```
  0: CONST 5
- 2: STORE 0
- 4: LOAD 0
- 6: STORE 1
- 8: LOAD 1
+ 2: STORE 1
+ 4: LOAD 1
+ 6: STORE 2
+ 8: LOAD 2
 10: PRINT
 ```
 
