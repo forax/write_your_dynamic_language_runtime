@@ -166,6 +166,18 @@ public class StackInterpreterTests {
     		"}\n"));
   }
   @Tag("Q11") @Test
+  public void callAUserDefinedFunctionVarsInitialized() {
+    assertEquals("undefined\n", execute(
+        "function foo(x) {\n" +
+        "  if (x == 3) {\n"   +
+        "    var a = 42;\n"   +
+        "  } else {\n"        +
+        "  }\n"               +
+        "  return a;\n"       +
+        "}\n"                 +
+        "print(foo(2));\n"));
+  }
+  @Tag("Q11") @Test
   public void printVariableWeirdScope() {
     assertEquals("false\nundefined\n", execute(
     		"var a = 2;\n"          + 
@@ -242,7 +254,7 @@ public class StackInterpreterTests {
         "}\n"                            +
         "print(fact(4));\n"));
   }
-  /*
+  
   @Tag("Q13") @Test
   public void createAnObject() {
     assertEquals(
@@ -304,7 +316,7 @@ public class StackInterpreterTests {
   }
   
   @Tag("Q16") @Test
-  public void objectSetAFieldValue() {
+  public void objectSetAFieldValue() {  // patch visit variable
     assertEquals(
         "Jane\n",
         execute(
@@ -313,7 +325,7 @@ public class StackInterpreterTests {
         "print(john.name);\n"));
   }
   
-  @Tag("Q17") @Test   // not implemented
+  @Tag("Q17") @Test
   public void objectCallAMethod() {
   	assertEquals(
         "hello 42\n",
@@ -326,13 +338,4 @@ public class StackInterpreterTests {
         "};\n"                           + 
         "object.foo(42);\n"));
   }
-  @Tag("Q17") @Test
-  public void objectCallFunctionApply() {
-    assertEquals(
-        "14\n",
-        execute(
-        "function foo(n) { return n * 2; }\n"  + 
-        "print(foo.apply(7));\n"));
-  }
-  */
 }

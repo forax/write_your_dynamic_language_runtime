@@ -1,7 +1,7 @@
 package fr.umlv.smalljs.stackinterp.main;
 
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
-import static fr.umlv.smalljs.stackinterp.Instructions.CONST;
+import static fr.umlv.smalljs.stackinterp.Instructions.*;
 import static fr.umlv.smalljs.stackinterp.Instructions.DUP;
 import static fr.umlv.smalljs.stackinterp.Instructions.FUNCALL;
 import static fr.umlv.smalljs.stackinterp.Instructions.GOTO;
@@ -821,5 +821,209 @@ public class StackInterpreterInstrTests {
      		RET
     };
     assertEquals("24\n", execute(new Code(main, 1, 1), dict));
+  }
+  
+  @Tag("Q13") @Test
+  public void createAnObject() {
+    // var o = {
+    //   x: 1
+    //   y: 2
+    // };
+    // print(o);
+    var dict = new Dictionary();
+    var clazz = JSObject.newObject(null);
+    clazz.register("x", 0);
+    clazz.register("y", 1);
+  	int[] instrs = {
+  			CONST, encodeSmallInt(1),
+  			CONST, encodeSmallInt(2),
+  			NEW, encodeDictObject(clazz, dict),
+  			STORE, 1,
+  			LOAD, 1,
+    		PRINT,
+    		RET
+  	};
+  	assertEquals(
+  			"{ // object\n"   +
+        "  x: 1\n"        +
+        "  y: 2\n"        +
+        "  proto: null\n" +
+        "}\n",
+        execute(new Code(instrs, 1, 2), dict));
+  }
+  
+  @Tag("Q14") @Test
+  // var a = 1; 
+  // var o = {
+  //   x: a,
+  //   y: a + 1
+  // }
+  // print(o);
+  public void createAnObjectFromAVariableValue() {
+  	var dict = new Dictionary();
+    var clazz = JSObject.newObject(null);
+    clazz.register("x", 0);
+    clazz.register("y", 1);
+  	int[] instrs = {
+  			CONST, encodeSmallInt(1),
+  			STORE, 1,
+  			LOAD, 1,
+  			LOOKUP, encodeDictObject("+", dict),
+  			CONST, encodeDictObject(UNDEFINED, dict),
+  			LOAD, 1,
+  			CONST, encodeSmallInt(1),
+  			FUNCALL, 2,
+  			NEW, encodeDictObject(clazz, dict),
+  			STORE, 2,
+  			LOAD, 2,
+    		PRINT,
+    		RET
+  	};
+    assertEquals(
+        "{ // object\n"   +
+        "  x: 1\n"        + 
+        "  y: 2\n"        + 
+        "  proto: null\n" +
+        "}\n",
+        execute(new Code(instrs, 1, 3), dict));
+        
+  }
+  @Tag("Q14") @Test
+  public void createAnObjectEvaluationOrder() {
+  	// var foo = {
+    //   a: print('a'),
+    //   b: print('b')
+    // };
+  	var dict = new Dictionary();
+    var clazz = JSObject.newObject(null);
+    clazz.register("a", 0);
+    clazz.register("b", 1);
+  	int[] instrs = {
+  			CONST, encodeDictObject("a", dict),
+  			PRINT,
+  			CONST, encodeDictObject("b", dict),
+  			PRINT,
+  			NEW, encodeDictObject(clazz, dict),
+  			STORE, 1,
+  			CONST, encodeDictObject(UNDEFINED, dict),
+    		RET
+  	};
+    assertEquals(
+        "a\nb\n",
+        execute(new Code(instrs, 1, 2), dict));
+  }
+  
+  @Tag("Q15") @Test
+  public void objectGetAFieldValue() {
+  	// var john = { name: \"John\" };
+    // print(john.name);
+  	var dict = new Dictionary();
+    var clazz = JSObject.newObject(null);
+    clazz.register("name", 0);
+  	int[] instrs = {
+  			CONST, encodeDictObject("John", dict),
+  			NEW, encodeDictObject(clazz, dict),
+  			STORE, 1,
+  			LOAD, 1,
+  			GET, encodeDictObject("name", dict),
+  			PRINT,
+  			POP,
+  			CONST, encodeDictObject(UNDEFINED, dict),
+    		RET
+  	};
+    assertEquals("John\n",
+        execute(new Code(instrs, 1, 2), dict));
+  }
+  @Tag("Q15") @Test
+  public void objectGetAFieldNoValue() {
+  	// var john = { name: \"John\" };
+    // print(john.foo);
+  	var dict = new Dictionary();
+    var clazz = JSObject.newObject(null);
+    clazz.register("name", 0);
+  	int[] instrs = {
+  			CONST, encodeDictObject("John", dict),
+  			NEW, encodeDictObject(clazz, dict),
+  			STORE, 1,
+  			LOAD, 1,
+  			GET, encodeDictObject("foo", dict),
+  			PRINT,
+  			POP,
+  			CONST, encodeDictObject(UNDEFINED, dict),
+    		RET
+  	};
+  	assertEquals("undefined\n",
+        execute(new Code(instrs, 1, 2), dict));
+        
+  }
+  
+  @Tag("Q16") @Test
+  public void objectSetAFieldValue() {
+    // var john = { name: \"John\" };
+    // john.name = \"Jane\";
+    // print(john.name);
+  	var dict = new Dictionary();
+    var clazz = JSObject.newObject(null);
+    clazz.register("name", 0);
+  	int[] instrs = {
+  			CONST, encodeDictObject("John", dict),
+  			NEW, encodeDictObject(clazz, dict),
+  			STORE, 1,
+  			LOAD, 1,
+  			CONST, encodeDictObject("Jane", dict),
+  			PUT, encodeDictObject("name", dict),
+  			LOAD, 1,
+  			GET, encodeDictObject("name", dict),
+  			PRINT,
+  			POP,
+  			CONST, encodeDictObject(UNDEFINED, dict),
+    		RET
+  	};
+    assertEquals("Jane\n",
+        execute(new Code(instrs, 1, 2), dict));
+        
+  }
+  
+  @Tag("Q17") @Test
+  public void objectCallAMethod() {
+  	// var object = {
+    //   bar: \"hello\",
+    //   foo: function(x) {
+    //          print(this.bar, x);
+    //        }
+    //};
+    //object.foo(42);
+  	var dict = new Dictionary();
+  	int[] foo = {
+    		LOOKUP, encodeDictObject("print", dict),
+    		CONST, encodeDictObject(UNDEFINED, dict),
+    		LOAD, 0,
+    		GET, encodeDictObject("bar", dict),
+    		LOAD, 1,
+    		FUNCALL, 2,
+    		CONST, encodeDictObject(UNDEFINED, dict),
+    		RET
+  	};
+    var fooFunction = newFunction("lambda", new Code(foo, 2, 2));
+    var clazz = JSObject.newObject(null);
+    clazz.register("bar", 0);
+    clazz.register("foo", 1);
+  	int[] instrs = {
+  			CONST, encodeDictObject("hello", dict),
+  			CONST, encodeDictObject(fooFunction, dict),
+  			NEW, encodeDictObject(clazz, dict),
+  			STORE, 1,
+  			LOAD, 1,
+  			DUP,
+  			GET, encodeDictObject("foo", dict),
+  			SWAP,
+  			CONST, encodeSmallInt(42),
+  			FUNCALL, 1,
+  			POP,
+  			CONST, encodeDictObject(UNDEFINED, dict),
+    		RET
+  	};
+  	assertEquals("hello 42\n",
+        execute(new Code(instrs, 1, 2), dict));
   }
 }
