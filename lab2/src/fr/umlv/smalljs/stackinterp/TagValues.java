@@ -45,7 +45,7 @@ public interface TagValues {
     if (TagValues.isReference(tagValue)) {
       var ref = TagValues.decodeReference(tagValue);
       var clazz = (JSObject) decodeDictObject(heap[ref], dict);
-      return clazz.mirror(offset -> decodeAnyValue(heap[ref - OBJECT_HEADER_SIZE - (int)offset], dict, heap));
+      return clazz.mirror(offset -> decodeAnyValue(heap[ref + OBJECT_HEADER_SIZE + (int)offset], dict, heap));
     }
     return TagValues.decodeDictObject(tagValue, dict);
   }
