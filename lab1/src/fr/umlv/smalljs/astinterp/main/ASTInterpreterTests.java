@@ -22,7 +22,7 @@ public class ASTInterpreterTests {
     var script = createScript(new StringReader(code));
     var outStream = new ByteArrayOutputStream(8192);
     ASTInterpreter.interpret(script, new PrintStream(outStream));
-    return outStream.toString(StandardCharsets.UTF_8);
+    return outStream.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
   }
 
   
@@ -90,10 +90,6 @@ public class ASTInterpreterTests {
   }
   
   @Tag("Q9") @Test
-  public void doubleDefinitionOfAVariable() {
-    assertThrows(Failure.class, () -> execute("var a = 3;\nvar a = 2;\n"));
-  }
-  @Tag("Q9") @Test
   public void printAVariableDefinedAfter() {
     assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
   }
@@ -108,9 +104,8 @@ public class ASTInterpreterTests {
   }
   @Tag("Q10") @Test
   public void callAUserDefinedFunctionWithTheWrongNumberOfArguments() {
-    assertThrows(Failure.class, () -> execute(
+  	assertThrows(Failure.class, () -> execute(
         "function foo(a, b) {\n" +
-        "  return a + b;\n"   +
         "}\n"                 +
         "print(foo(2));\n"));
   }
@@ -331,13 +326,5 @@ public class ASTInterpreterTests {
         "       }\n"                     +
         "};\n"                           + 
         "object.foo(42);\n"));
-  }
-  @Tag("Q17") @Test
-  public void objectCallFunctionApply() {
-    assertEquals(
-        "14\n",
-        execute(
-        "function foo(n) { return n * 2; }\n"  + 
-        "print(foo.apply(7));\n"));
   }
 }
