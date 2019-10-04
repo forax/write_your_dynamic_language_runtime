@@ -3,16 +3,20 @@ package fr.umlv.smalljs.stackinterp.main;
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
 import static fr.umlv.smalljs.stackinterp.Instructions.CONST;
 import static fr.umlv.smalljs.stackinterp.Instructions.FUNCALL;
+import static fr.umlv.smalljs.stackinterp.Instructions.GET;
 import static fr.umlv.smalljs.stackinterp.Instructions.GOTO;
 import static fr.umlv.smalljs.stackinterp.Instructions.JUMP_IF_FALSE;
 import static fr.umlv.smalljs.stackinterp.Instructions.LOAD;
 import static fr.umlv.smalljs.stackinterp.Instructions.LOOKUP;
 import static fr.umlv.smalljs.stackinterp.Instructions.NEW;
 import static fr.umlv.smalljs.stackinterp.Instructions.POP;
+import static fr.umlv.smalljs.stackinterp.Instructions.PRINT;
+import static fr.umlv.smalljs.stackinterp.Instructions.PUT;
 import static fr.umlv.smalljs.stackinterp.Instructions.RET;
 import static fr.umlv.smalljs.stackinterp.Instructions.STORE;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeDictObject;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeSmallInt;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -81,6 +85,55 @@ public class StackInterpreterGCTests {
   }
   
   @Tag("Q3") @Test
+  public void gcTestRewriteField() {
+  	var dict = new Dictionary();
+  	var clazz = JSObject.newObject(null);
+  	clazz.register("field", 0);
+  	int[] instrs = {
+  		/* 0:*/ CONST, encodeSmallInt(21),
+    	/* 2:*/ NEW, encodeDictObject(clazz, dict), 
+    	/* 4:*/ POP,  // should be GCed
+    	
+    	/* 5:*/ CONST, encodeSmallInt(42),
+    	/* 7:*/ NEW, encodeDictObject(clazz, dict), 
+    	/* 9:*/ STORE, 2, // should not be GCed
+    	
+    	/*11:*/ LOAD, 2,
+    	/*13:*/ CONST, encodeSmallInt(84),
+    	/*15:*/ NEW, encodeDictObject(clazz, dict), 
+    	/*17:*/ PUT, encodeDictObject("field", dict), // modification after creation
+  			
+  		/*19:*/ CONST, encodeSmallInt(100),
+  	  /*21:*/ STORE, 1,
+  	  
+  	  /*23:*/ LOAD, 1,
+  	  /*25:*/ JUMP_IF_FALSE, 46,
+  	  
+  	  /*27:*/ LOAD, 2,
+  	  /*29:*/ NEW, encodeDictObject(clazz, dict), 
+  	  /*31:*/ POP,  // should be GCed
+  	  
+  	  /*32:*/ LOOKUP, encodeDictObject("-", dict), 
+  	  /*34:*/ CONST, encodeDictObject(UNDEFINED, dict),
+  	  /*36:*/ LOAD, 1,
+  	  /*38:*/ CONST, encodeSmallInt(1),
+  	  /*40:*/ FUNCALL, 2,
+  	  /*42:*/ STORE, 1,
+  	  
+  	  /*44:*/ GOTO, 23,
+  	  
+  	  /*46:*/ LOAD, 2,
+  	  /*48:*/ GET, encodeDictObject("field", dict), 
+  	  /*50:*/ GET, encodeDictObject("field", dict), 
+  	  /*52:*/ PRINT,
+  	  
+  	  /*53:*/ CONST, encodeDictObject(UNDEFINED, dict),
+  	  /*31:*/ RET
+  	};
+    assertEquals("84\n", execute(new Code(instrs, 1, 3), dict));
+  }
+  
+  @Tag("Q4") @Test
   public void gcTestWithFields() {
   	var dict = new Dictionary();
   	var pointClass = JSObject.newObject(null);
@@ -115,7 +168,7 @@ public class StackInterpreterGCTests {
     execute(new Code(instrs, 1, 2), dict);
   }
   
-  @Tag("Q4") @Test
+  @Tag("Q5") @Test
   public void gcTestLikedList() {
   	var dict = new Dictionary();
   	var linkClass = JSObject.newObject(null);
