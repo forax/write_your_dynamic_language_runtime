@@ -68,6 +68,7 @@ the second optional value is a value that depend on the kind of opcodes.
   - `STORE` store the top of the stack to the local array of the current function at index `slot_index`
   - `DUP` duplicate the top of the stack
   - `POP` remove the top of the stack
+  - `SWAP` permute the two values on top of the stack
   - `FUNCALL` call a function with a qualifier value and the arguments all on top of the stack
   - `RET` stop the current function, remove the current stack frame and insert the top of the stack as the return value
   - `GOTO` jump unconditionally to a specific instruction index
