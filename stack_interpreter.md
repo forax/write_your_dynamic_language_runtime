@@ -48,14 +48,15 @@ the second optional value is a value that depend on the kind of opcodes.
   int LOAD = 4;             // LOAD  slot_index
   int STORE = 5;            // STORE slot_index
   int DUP = 6;              
-  int POP = 7;              
-  int FUNCALL = 8;          // FUNCALL argument_count
-  int RET = 9;
-  int GOTO = 10;            // GOTO  instr_index
-  int JUMP_IF_FALSE = 11;   // JUMP_IF_FALSE instr_index
-  int NEW = 12;             // NEW dictionary_index (JSObject object)
-  int GET = 13;             // GET dictionary_index (String field_name)
-  int PUT = 14;             // PUT dictionary_index (String field_name)
+  int POP = 7;
+  int SWAP = 8;              
+  int FUNCALL = 9;          // FUNCALL argument_count
+  int RET = 10;
+  int GOTO = 11;            // GOTO  instr_index
+  int JUMP_IF_FALSE = 12;   // JUMP_IF_FALSE instr_index
+  int NEW = 13;             // NEW dictionary_index (JSObject object)
+  int GET = 14;             // GET dictionary_index (String field_name)
+  int PUT = 15;             // PUT dictionary_index (String field_name)
   
   int PRINT = 20;           // print for debugging
 ```
@@ -81,17 +82,17 @@ the second optional value is a value that depend on the kind of opcodes.
  
  `print(2 + 10)` is translated to
  ```
- 0: LOOKUP 10     // JSObject of "+" 
- 2: CONST 6       // undefined
- 4: CONST 5
- 6: CONST 21
+ 0: LOOKUP encodeDictObject("+", dict) 
+ 2: CONST encodeDictObject(UNDEFINED, dict)
+ 4: CONST encodeSmallInt(2)
+ 6: CONST encodeSmallInt(10)
  8: FUNCALL 2
 10: PRINT
  ```
  
  `a = 2; b = a; print(b)`
 ```
- 0: CONST 5
+ 0: CONST encodeSmallInt(2)
  2: STORE 1
  4: LOAD 1
  6: STORE 2
@@ -117,7 +118,7 @@ reference the same part of the stack (that's why the activation zone is in the m
 
 By example, if we have the following code
 ```
-  function f(i, j) {  // (this, i,  j)
+  function f(i, j) {  // (this=0, i=1,  j=2)
     print(j);
   }
   var a = 2;
@@ -129,18 +130,18 @@ is transformed to the following opcodes.
  0: LOAD 2
  2: PRINT
  3: POP
- 4: CONST 6   // undefined
+ 4: CONST encodeDictObject(UNDEFINED, dict)
  6: RET
  
 // code of function main
- 0: CONST 30     // JSObject
- 2: REGISTER 34  // "f"
- 4: CONST 5
+ 0: CONST encodeDictObject(function_f, dict)
+ 2: REGISTER encodeDictObject("f", dict)
+ 4: CONST encodeSmallInt(2)
  6: STORE 1
- 8: LOOKUP 34    // "f"
-10: CONST 6      // undefined = this
+ 8: LOOKUP encodeDictObject("f", dict)
+10: CONST encodeDictObject(UNDEFINED, dict)
 12: LOAD 1
-14: CONST 21
+14: CONST encodeSmallInt(10)
 16: FUNCALL 2
 18: RET
 ```
@@ -179,4 +180,70 @@ When interpreting the code of a method, we need:
  - `bp` the base pointer, the index of the first local variable of the current stack frame
  - `pc` the program counter, the index of the current instruction in the array of instruction
  - `sp` the stack pointer, the pointer on the top the stack of the current stack frame
+
+
+heap
+---
+
+Objects on the heap are stored contiguously.
+Each object is described by
+  - a header that contains
+    - a class reference (a JSObject inside the dictionary)
+    - an empty slot used by the GC (see later)
+  - some field slots
+  
+The JSObject representing a class stores for each field name the corresponding slot index.
+
+By example, 
+```
+  var object = {
+    x: 1,
+    y: 2
+  };
+```
+correspond to a JSObject that associates 'x' to 0 (the first slot) and 'y' to 1 (the second slot).
+
+Instance allocation is like an ad-hoc function call (like PRINT), it takes all the values of the field on the stack
+and populate all fields with the value.
+
+The corresponding instructions are
+```
+  CONST, encodeSmallInt(1),
+  CONST, encodeSmallInt(2),
+  NEW, encodeDictObject(clazz, dict),
+  STORE, 1,
+```
+with `clazz` the JObject containing the field descriptions.
+
+In the heap, we get
+         ----------
+  header  12        // the class encoded as a dictionary index
+          GC_EMPTY  // a slot used during the GC
+         ----------
+         2          // 1 encoded as a small int
+         5          // 2 encoded as a small int
+         
+Note: the heap is 'parseable' i.e. decoding the first field indicate how many fields follow the header
+      so we can find all objects in the heap.
+
+
+In place GC
+---
+
+This algorithm first mark all objects
+then use a place in the header to calculate the new address of all live objects
+then move all objects to their new adresses.
+ 
+
+The garbage collector algorithm
+ 1. scan the stack and recursively mark all reachable objects in the heap
+ 2. scan the heap to find the new addresses of all live objects
+    and store them in the corresponding object GC slot
+ 3. check if memory can be freed
+ 4. scan the heap to rewrite all field references to point to the new addresses
+ 5. scan the stack to rewrite the references to point to the new addresses
+ 6. scan the heap and move the objects to their new addresses
+         
+[https://shipilev.net/jvm/diy-gc/#_implementing_gc_core](Do It Yourself (OpenJDK) Garbage Collector) for more info.
+  
 
