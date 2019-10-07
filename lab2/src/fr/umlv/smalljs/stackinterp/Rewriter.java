@@ -4,14 +4,18 @@ import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
 import static fr.umlv.smalljs.stackinterp.Instructions.CONST;
 import static fr.umlv.smalljs.stackinterp.Instructions.DUP;
 import static fr.umlv.smalljs.stackinterp.Instructions.FUNCALL;
+import static fr.umlv.smalljs.stackinterp.Instructions.GET;
 import static fr.umlv.smalljs.stackinterp.Instructions.GOTO;
 import static fr.umlv.smalljs.stackinterp.Instructions.JUMP_IF_FALSE;
 import static fr.umlv.smalljs.stackinterp.Instructions.LOAD;
 import static fr.umlv.smalljs.stackinterp.Instructions.LOOKUP;
+import static fr.umlv.smalljs.stackinterp.Instructions.NEW;
 import static fr.umlv.smalljs.stackinterp.Instructions.POP;
+import static fr.umlv.smalljs.stackinterp.Instructions.PUT;
 import static fr.umlv.smalljs.stackinterp.Instructions.REGISTER;
 import static fr.umlv.smalljs.stackinterp.Instructions.RET;
 import static fr.umlv.smalljs.stackinterp.Instructions.STORE;
+import static fr.umlv.smalljs.stackinterp.Instructions.SWAP;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeDictObject;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeSmallInt;
 
@@ -21,6 +25,8 @@ import java.util.Optional;
 
 import fr.umlv.smalljs.ast.Block;
 import fr.umlv.smalljs.ast.Expr;
+import fr.umlv.smalljs.ast.FieldAccess;
+import fr.umlv.smalljs.ast.FieldAssignment;
 import fr.umlv.smalljs.ast.Fun;
 import fr.umlv.smalljs.ast.FunCall;
 import fr.umlv.smalljs.ast.If;
@@ -28,6 +34,8 @@ import fr.umlv.smalljs.ast.Instr;
 import fr.umlv.smalljs.ast.Literal;
 import fr.umlv.smalljs.ast.LocalVarAccess;
 import fr.umlv.smalljs.ast.LocalVarAssignment;
+import fr.umlv.smalljs.ast.MethodCall;
+import fr.umlv.smalljs.ast.New;
 import fr.umlv.smalljs.ast.Return;
 import fr.umlv.smalljs.ast.VoidVisitor;
 import fr.umlv.smalljs.rt.Failure;
@@ -207,6 +215,14 @@ public class Rewriter {
 		  // TODO
 			// patch the second place holder
 		  // TODO
+		}).when(New.class, (_new, env) -> {
+		  // TODO
+		}).when(FieldAccess.class, (fieldAccess, env) -> {
+			// TODO
+		}).when(FieldAssignment.class, (fieldAssignment, env) -> {
+			// TODO
+		}).when(MethodCall.class, (methodCall, env) -> {
+		  /// TODO
 		});
 		return visitor;
 	}
