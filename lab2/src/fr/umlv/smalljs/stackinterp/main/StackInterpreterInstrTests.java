@@ -822,6 +822,67 @@ public class StackInterpreterInstrTests {
     };
     assertEquals("24\n", execute(new Code(main, 1, 1), dict));
   }
+  @Tag("Q12") @Test
+  public void callSeveralOperations() {
+  	// function calc(f, a, b) {
+    //   return f(a, b);
+    // }
+    // print(calc(+, 2, 3));
+    // print(calc(-, 2, 3));
+    // print(calc(*, 2, 3));
+    // print(calc(/, 2, 3));
+  	var dict = new Dictionary();
+    int[] calc = {
+    		LOAD, 1,
+    		CONST, encodeDictObject(UNDEFINED, dict),
+    		LOAD, 2,
+    		LOAD, 3,
+    		FUNCALL, 2,
+    		RET
+  	};
+    var calcFunction = newFunction("calc", new Code(calc, 4, 4));
+    int[] main = {
+     		CONST, encodeDictObject(calcFunction, dict),
+     		DUP,
+     		REGISTER, encodeDictObject("calc", dict),
+     		POP,
+     		LOOKUP, encodeDictObject("calc", dict),
+     		CONST, encodeDictObject(UNDEFINED, dict),
+     		LOOKUP, encodeDictObject("+", dict),
+     		CONST, encodeSmallInt(2),
+     		CONST, encodeSmallInt(3),
+     		FUNCALL, 3,
+     		PRINT,
+     		POP,
+     		LOOKUP, encodeDictObject("calc", dict),
+     		CONST, encodeDictObject(UNDEFINED, dict),
+     		LOOKUP, encodeDictObject("-", dict),
+     		CONST, encodeSmallInt(2),
+     		CONST, encodeSmallInt(3),
+     		FUNCALL, 3,
+     		PRINT,
+     		POP,
+     		LOOKUP, encodeDictObject("calc", dict),
+     		CONST, encodeDictObject(UNDEFINED, dict),
+     		LOOKUP, encodeDictObject("*", dict),
+     		CONST, encodeSmallInt(2),
+     		CONST, encodeSmallInt(3),
+     		FUNCALL, 3,
+     		PRINT,
+     		POP,
+     		LOOKUP, encodeDictObject("calc", dict),
+     		CONST, encodeDictObject(UNDEFINED, dict),
+     		LOOKUP, encodeDictObject("/", dict),
+     		CONST, encodeSmallInt(2),
+     		CONST, encodeSmallInt(3),
+     		FUNCALL, 3,
+     		PRINT,
+     		POP,
+     		CONST, encodeDictObject(UNDEFINED, dict),
+     		RET
+    };
+    assertEquals("5\n-1\n6\n0\n", execute(new Code(main, 1, 1), dict));
+  }
   
   @Tag("Q13") @Test
   public void createAnObject() {

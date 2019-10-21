@@ -242,6 +242,17 @@ public class ASTInterpreterTests {
         "}\n"                            +
         "print(fact(4));\n"));
   }
+  @Tag("Q12") @Test
+  public void callSeveralOperations() {
+    assertEquals("5\n-1\n6\n0\n", execute(
+        "function calc(f, a, b) {\n"  +
+        " return f(a, b);\n"          +
+        "}\n"                         +
+        "print(calc(+, 2, 3));\n"      +
+        "print(calc(-, 2, 3));\n"      +
+        "print(calc(*, 2, 3));\n"      +
+        "print(calc(/, 2, 3));\n"));
+  }
   
   @Tag("Q13") @Test
   public void createAnObject() {
