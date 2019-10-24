@@ -883,6 +883,59 @@ public class StackInterpreterInstrTests {
     };
     assertEquals("5\n-1\n6\n0\n", execute(new Code(main, 1, 1), dict));
   }
+  @Tag("Q12") @Test
+  public void callAndRewrite() {
+    // function f() { return op(); }
+    // function op() { return 2; }
+    // print(f());
+    // function op() { return 9; }
+    // print(f());
+    var dict = new Dictionary();
+    int[] f = {
+        LOOKUP, encodeDictObject("op", dict),
+        CONST, encodeDictObject(UNDEFINED, dict),
+        FUNCALL, 0,
+        RET
+    };
+    var fFunction = newFunction("f", new Code(f, 1, 1));
+    int[] op1 = {
+        CONST, encodeSmallInt(2),
+        RET
+    };
+    var op1Function = newFunction("op", new Code(op1, 1, 1));
+    int[] op2 = {
+        CONST, encodeSmallInt(9),
+        RET
+    };
+    var op2Function = newFunction("op", new Code(op2, 1, 1));
+    int[] main = {
+        CONST, encodeDictObject(fFunction, dict),
+        DUP,
+        REGISTER, encodeDictObject("f", dict),
+        POP,
+        CONST, encodeDictObject(op1Function, dict),
+        DUP,
+        REGISTER, encodeDictObject("op", dict),
+        POP,
+        LOOKUP, encodeDictObject("f", dict),
+        CONST, encodeDictObject(UNDEFINED, dict),
+        FUNCALL, 0,
+        PRINT,
+        POP,
+        CONST, encodeDictObject(op2Function, dict),
+        DUP,
+        REGISTER, encodeDictObject("op", dict),
+        POP,
+        LOOKUP, encodeDictObject("f", dict),
+        CONST, encodeDictObject(UNDEFINED, dict),
+        FUNCALL, 0,
+        PRINT,
+        POP,
+        CONST, encodeDictObject(UNDEFINED, dict),
+        RET
+    };
+    assertEquals("2\n9\n", execute(new Code(main, 1, 1), dict));
+  }
   
   @Tag("Q13") @Test
   public void createAnObject() {

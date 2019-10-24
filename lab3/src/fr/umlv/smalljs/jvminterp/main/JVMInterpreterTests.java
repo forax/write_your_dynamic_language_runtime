@@ -22,7 +22,7 @@ public class JVMInterpreterTests {
     var script = createScript(new StringReader(code));
     var outStream = new ByteArrayOutputStream(8192);
     JVMInterpreter.interpret(script, new PrintStream(outStream));
-    return outStream.toString(StandardCharsets.UTF_8);
+    return outStream.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
   }
 
   
@@ -252,6 +252,15 @@ public class JVMInterpreterTests {
         "print(calc(-, 2, 3));\n"      +
         "print(calc(*, 2, 3));\n"      +
         "print(calc(/, 2, 3));\n"));
+  }
+  @Tag("Q12") @Test
+  public void callAndRewrite() {
+    assertEquals("2\n9\n", execute(
+        "function f() { return op(); }\n" +
+        "function op() { return 2; }\n"   +
+        "print(f());\n"                   +
+        "function op() { return 9; }\n"   +
+        "print(f());\n"));
   }
   
   @Tag("Q13") @Test
