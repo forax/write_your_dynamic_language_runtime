@@ -1094,8 +1094,52 @@ public class StackInterpreterInstrTests {
     		RET
   	};
     assertEquals("Jane\n",
-        execute(new Code(instrs, 1, 2), dict));
-        
+        execute(new Code(instrs, 1, 2), dict));     
+  }
+  @Tag("Q16") @Test
+  public void objectGetAndSetAField() {
+    // function f(o) { return o.field; }   
+    // var obj = { field: 2 };
+    // print(f(obj));
+    // obj.field = 9;
+    // print(f(obj));
+    var dict = new Dictionary();
+    int[] f = {
+        LOAD, 1,
+        GET, encodeDictObject("field", dict),
+        RET
+    };
+    var fFunction = newFunction("f", new Code(f, 2, 2));
+    var clazz = JSObject.newObject(null);
+    clazz.register("field", 0);
+    int[] instrs = {
+        CONST, encodeDictObject(fFunction, dict),
+        DUP,
+        REGISTER, encodeDictObject("f", dict),
+        POP,
+        CONST, encodeSmallInt(2),
+        NEW, encodeDictObject(clazz, dict),
+        STORE, 1,
+        LOOKUP, encodeDictObject("f", dict),
+        CONST, encodeDictObject(UNDEFINED, dict),
+        LOAD, 1,
+        FUNCALL, 1,
+        PRINT,
+        POP,
+        LOAD, 1,
+        CONST, encodeSmallInt(9),
+        PUT, encodeDictObject("field", dict),
+        LOOKUP, encodeDictObject("f", dict),
+        CONST, encodeDictObject(UNDEFINED, dict),
+        LOAD, 1,
+        FUNCALL, 1,
+        PRINT,
+        POP,
+        CONST, encodeDictObject(UNDEFINED, dict),
+        RET
+    };
+    assertEquals("2\n9\n",
+        execute(new Code(instrs, 1, 2), dict));    
   }
   
   @Tag("Q17") @Test
@@ -1106,6 +1150,7 @@ public class StackInterpreterInstrTests {
     //          print(this.bar, x);
     //        }
     //};
+    //object.foo(42);
     //object.foo(42);
   	var dict = new Dictionary();
   	int[] foo = {
@@ -1134,10 +1179,17 @@ public class StackInterpreterInstrTests {
   			CONST, encodeSmallInt(42),
   			FUNCALL, 1,
   			POP,
+  			LOAD, 1,
+        DUP,
+        GET, encodeDictObject("foo", dict),
+        SWAP,
+        CONST, encodeSmallInt(42),
+        FUNCALL, 1,
+        POP,
   			CONST, encodeDictObject(UNDEFINED, dict),
     		RET
   	};
-  	assertEquals("hello 42\n",
+  	assertEquals("hello 42\nhello 42\n",
         execute(new Code(instrs, 1, 2), dict));
   }
 }

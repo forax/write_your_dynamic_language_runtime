@@ -333,11 +333,22 @@ public class ASTInterpreterTests {
         "john.name = \"Jane\";\n"          + 
         "print(john.name);\n"));
   }
+  @Tag("Q16") @Test
+  public void objectGetAndSetAField() {
+    assertEquals(
+        "2\n9\n",
+        execute(
+        "function f(o) { return o.field; }\n" +    
+        "var obj = { field: 2 };\n"           + 
+        "print(f(obj));\n"                    +
+        "obj.field = 9;\n"                    +
+        "print(f(obj));\n"));
+  }
   
   @Tag("Q17") @Test
   public void objectCallAMethod() {
     assertEquals(
-        "hello 42\n",
+        "hello 42\nhello 42\n",
         execute(
         "var object = {\n"               + 
         "  bar: \"hello\",\n"            +
@@ -345,6 +356,7 @@ public class ASTInterpreterTests {
         "         print(this.bar, x);\n" +
         "       }\n"                     +
         "};\n"                           + 
+        "object.foo(42);\n"              +
         "object.foo(42);\n"));
   }
 }
