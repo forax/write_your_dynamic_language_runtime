@@ -6,7 +6,7 @@ This repository provide the basis to implement your own
 - Stack based Interpreter
 - Java Virtual Machine based Interpreter
 
-of a dynamically typed language named [smalljs.md](smalljs) which is a almost subset of JavaScript.
+of a dynamically typed language named [smalljs](smalljs.md) which is a almost subset of JavaScript.
 
 How to compile and create a jar
 ---
