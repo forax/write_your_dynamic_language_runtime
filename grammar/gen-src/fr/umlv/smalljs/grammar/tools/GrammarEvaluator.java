@@ -1,8 +1,8 @@
 package fr.umlv.smalljs.grammar.tools;
 
-import fr.umlv.smalljs.ast.Block;
 import fr.umlv.smalljs.ast.Expr;
-import fr.umlv.smalljs.ast.Literal;
+import fr.umlv.smalljs.ast.Expr.Block;
+import fr.umlv.smalljs.ast.Expr.Literal;
 import java.util.List;
 
 /** 

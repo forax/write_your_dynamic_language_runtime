@@ -1,8 +1,8 @@
 package fr.umlv.smalljs.grammar.tools;
 
-  import fr.umlv.smalljs.ast.Block;
-    import fr.umlv.smalljs.ast.Expr;
-    import fr.umlv.smalljs.ast.Literal;
+  import fr.umlv.smalljs.ast.Expr;
+    import fr.umlv.smalljs.ast.Expr.Block;
+    import fr.umlv.smalljs.ast.Expr.Literal;
     import java.util.List;
   
 import fr.umlv.smalljs.grammar.lexer.RuleEnum;
@@ -153,19 +153,19 @@ public class AnalyzerProcessor<B extends LexerBuffer,D>
            }
                  case text: {
          data=dataViewer.view(buffer);
-                                  fr.umlv.smalljs.ast.Literal<String> text=terminalEvaluator.text(data);
+                                  fr.umlv.smalljs.ast.Expr.Literal<String> text=terminalEvaluator.text(data);
                                       stack.push_Object(text);
                                  return;
            }
                  case integer: {
          data=dataViewer.view(buffer);
-                                  fr.umlv.smalljs.ast.Literal<Integer> integer=terminalEvaluator.integer(data);
+                                  fr.umlv.smalljs.ast.Expr.Literal<Integer> integer=terminalEvaluator.integer(data);
                                       stack.push_Object(integer);
                                  return;
            }
                  case id: {
          data=dataViewer.view(buffer);
-                                  fr.umlv.smalljs.ast.Literal<String> id=terminalEvaluator.id(data);
+                                  fr.umlv.smalljs.ast.Expr.Literal<String> id=terminalEvaluator.id(data);
                                       stack.push_Object(id);
                                  return;
            }

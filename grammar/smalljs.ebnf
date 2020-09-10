@@ -2,9 +2,9 @@ directives:
   autoalias
 
 imports:
- fr.umlv.smalljs.ast.Literal
  fr.umlv.smalljs.ast.Expr
- fr.umlv.smalljs.ast.Block
+ fr.umlv.smalljs.ast.Expr.Block
+ fr.umlv.smalljs.ast.Expr.Literal
   
 priorities:
   parens = 6 left

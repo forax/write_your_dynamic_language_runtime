@@ -105,7 +105,7 @@ public class LexerDataTable {
     RuleData var = new RuleData(varMain, null, 21, false);
     initfunctionMainAccepts();
     initfunctionMainTransitions();
-    CharRegexTable functionMain = new CharRegexTable(5, functionMainTransitions, functionMainAccepts);
+    CharRegexTable functionMain = new CharRegexTable(6, functionMainTransitions, functionMainAccepts);
     RuleData function = new RuleData(functionMain, null, 22, false);
     init_ifMainAccepts();
     init_ifMainTransitions();
@@ -403,7 +403,7 @@ public class LexerDataTable {
     
   private int[][] functionMainTransitions;
   private void initfunctionMainTransitions() {
-    functionMainTransitions = new int[][] {{0,-1},{0,-1,117,6,118,-1},{0,-1,99,8,100,-1},{0,-1,111,7,112,-1},{0,-1,105,3,106,-1},{0,-1,102,1,103,-1},{0,-1,110,2,111,-1},{0,-1,110,0,111,-1},{0,-1,116,4,117,-1}};
+    functionMainTransitions = new int[][] {{0,-1},{0,-1,111,7,112,-1},{0,-1,99,8,100,-1},{0,-1,105,1,106,-1},{0,-1,117,5,118,-1},{0,-1,110,2,111,-1},{0,-1,102,4,103,-1},{0,-1,110,0,111,-1},{0,-1,116,3,117,-1}};
   }
   
   private boolean[] _ifMainAccepts;

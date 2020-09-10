@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="lab1/src"/>
-	<classpathentry kind="src" path="lab2/src"/>
-	<classpathentry kind="src" path="lab3/src"/>
-	<classpathentry kind="src" path="grammar/gen-src">
-        <attributes>
-            <attribute name="ignore_optional_problems" value="true"/>
-        </attributes>
-    </classpathentry>
+	<classpathentry kind="src" output="bin/classes" path="grammar/gen-src">
+		<attributes>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="bin/classes" path="src/main/java"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/java">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="grammar/build-lib/motocity/motocity-tatoo.jar"/>
 	<classpathentry kind="lib" path="lib/tatoo-runtime.jar"/>
-	<classpathentry kind="lib" path="lib/asm-7.1.jar" sourcepath="lib/asm-7.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/asm-util-7.1.jar" sourcepath="lib/asm-util-7.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/asm-tree-7.1.jar" sourcepath="lib/asm-tree-7.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/asm-analysis-7.1.jar" sourcepath="lib/asm-analysis-7.1-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
-        <attributes>
-            <attribute name="module" value="true"/>
-        </attributes>
-    </classpathentry>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-15">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin/empty"/>
 </classpath>
