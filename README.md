@@ -1,26 +1,28 @@
 # write_your_dynamic_language_runtime
-How to write interpreters or dynamic compilers for dynamically typed languages on top of the JVM
+
+This repository is used for the course "How to implement a dynamic language on the JVM" at University Gustave Eiffel (Paris France)
 
 This repository provide the basis to implement your own
 - Abstract Syntax Tree Interpreter
 - Stack based Interpreter
 - Java Virtual Machine based Interpreter
 
-of a dynamically typed language named [smalljs](smalljs.md) which is a almost subset of JavaScript.
+of a dynamically typed language named [smalljs](smalljs.md) which is almost a subset of JavaScript.
 
 How to compile and create a jar
 ---
-run ant with a recent JDK (at least Java 11)
+run Maven with a Java 15
 ```
-  ant
+  mvn package
 ```
-a jar named smalljs.jar is generated
+a jar named smalljs-1.0.jar in the folder `target` is generated
 
 How to run it
 ---
+Still with Java 15
 ```
-  java -jar smalljs.jar ast samples/hello.js
-  java -jar smalljs.jar stack samples/hello.js
-  java -jar smalljs.jar jvm samples/hello.js
+  java --enable-preview --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main ast samples/hello.js
+  java --enable-preview --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main stack samples/hello.js
+  java --enable-preview --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main jvm samples/hello.js
 ```
 with 'ast' being the AST interpreter, 'stack' being the Stack based interpreter and 'jvm' being the JVM based interpreter.
