@@ -81,7 +81,7 @@ public class ASTInterpreter {
     @SuppressWarnings("unchecked")
     public static void interpret(Script script, PrintStream outStream) {
         JSObject globalEnv = JSObject.newEnv(null);
-        Block body = script.getBody();
+        Block body = script.body();
         globalEnv.register("global", globalEnv);
         globalEnv.register("print", JSObject.newFunction("print", (self, receiver, args) -> {
             System.err.println("print called with " + Arrays.toString(args));

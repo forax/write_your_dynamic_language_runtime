@@ -8,8 +8,4 @@ public record Script(Block body) {
   public Script {
     requireNonNull(body);
   }
-
-  public Block getBody() {
-    return body;
-  }
 }

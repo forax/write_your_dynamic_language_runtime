@@ -1,14 +1,8 @@
 package fr.umlv.smalljs.stackinterp;
 
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
-import static fr.umlv.smalljs.stackinterp.TagValues.OBJECT_HEADER_SIZE;
 import static fr.umlv.smalljs.stackinterp.TagValues.decodeAnyValue;
-import static fr.umlv.smalljs.stackinterp.TagValues.decodeDictObject;
-import static fr.umlv.smalljs.stackinterp.TagValues.decodeReference;
-import static fr.umlv.smalljs.stackinterp.TagValues.encodeAnyValue;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeDictObject;
-import static fr.umlv.smalljs.stackinterp.TagValues.encodeReference;
-import static fr.umlv.smalljs.stackinterp.TagValues.isReference;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -17,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import fr.umlv.smalljs.ast.Script;
-import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
 public class StackInterpreter {
@@ -416,7 +409,7 @@ public class StackInterpreter {
 
 	public static void interpret(Script script, PrintStream outStream) {
 		JSObject globalEnv = createGlobalEnv(outStream);
-		var body = script.getBody();
+		var body = script.body();
 		var function = InstrRewriter.createFunction(Optional.of("main"), Collections.emptyList(), body, new Dictionary(),
 				globalEnv);
 		function.invoke(UNDEFINED, new Object[0]);
