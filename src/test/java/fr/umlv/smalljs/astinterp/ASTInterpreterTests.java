@@ -1,6 +1,7 @@
 package fr.umlv.smalljs.astinterp;
 
 import static fr.umlv.smalljs.ast.ASTBuilder.createScript;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,33 +21,34 @@ public class ASTInterpreterTests {
   private static String execute(String code) {
     var script = createScript(new StringReader(code));
     var outStream = new ByteArrayOutputStream(8192);
-    ASTInterpreter.interpret(script, new PrintStream(outStream));
-    return outStream.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
+    ASTInterpreter.interpret(script, new PrintStream(outStream, false, UTF_8));
+    return outStream.toString(UTF_8).replace("\r\n", "\n");
   }
 
-  /*
+
   @Tag("Q2") @Test
   public void helloString() {
     assertEquals("", execute("\"hello\"\n"));
   }
 
+  /*
   @Tag("Q3") @Test
   public void integer3() {
     assertEquals("", execute("3\n"));
   }
-  
+
   @Tag("Q4") @Test
   public void print() {
     assertEquals("hello\n", execute("print(\"hello\")\n"));
     assertEquals("foobar\n", execute("print('foobar')\n"));
     assertEquals("3\n", execute("print(3)\n"));
   }
-  
+
   @Tag("Q5") @Test
   public void printPrint() {
     assertFalse(execute("print(print)\n").isEmpty());
   }
-  
+
   @Tag("Q6") @Test
   public void printOperations() {
     assertEquals("5\n", execute("print(3 + 2)\n"));
@@ -54,12 +56,12 @@ public class ASTInterpreterTests {
     assertEquals("6\n", execute("print(3 * 2)\n"));
     assertEquals("1\n", execute("print(3 / 2)\n"));
   }
-  
+
   @Tag("Q7") @Test
   public void printPrint3() {
     assertEquals("3\nundefined\n", execute("print(print(3))\n"));
   }
-  
+
   @Tag("Q8") @Test
   public void printAVariable() {
     assertEquals("3\n", execute("""
@@ -96,7 +98,7 @@ public class ASTInterpreterTests {
   public void printAVariableDefinedAfter() {
     assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
   }
-  
+
   @Tag("Q10") @Test
   public void callAUserDefinedFunctionAndPrint() {
     assertEquals("3\n", execute("""

@@ -139,7 +139,7 @@ public class ASTBuilder implements GrammarEvaluator {
     Optional<Literal<String>> optionalName = Optional.ofNullable(id_optional);
     return new Fun(
         optionalName.map(Literal::value),
-        parameters.stream().map(Literal::value).collect(Collectors.toUnmodifiableList()),
+        parameters.stream().map(Literal::value).toList(),
         block,
         optionalName.map(Literal::lineNumber).orElseGet(() -> parameters.stream().mapToInt(Literal::lineNumber).findFirst().orElse(block.lineNumber()))
         );

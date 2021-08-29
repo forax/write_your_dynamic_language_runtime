@@ -1,6 +1,9 @@
 package fr.umlv.smalljs.rt;
 
+import java.io.Serial;
+
 public class Failure extends RuntimeException {
+  @Serial
   private static final long serialVersionUID = -962639976506078628L;
 
   public Failure(String message, Throwable cause) {

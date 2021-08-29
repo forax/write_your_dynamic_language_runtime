@@ -25,6 +25,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.List;
 
+import fr.umlv.smalljs.rt.Failure;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ConstantDynamic;
@@ -47,16 +48,9 @@ import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
 import fr.umlv.smalljs.ast.Expr.MethodCall;
 import fr.umlv.smalljs.ast.Expr.New;
 import fr.umlv.smalljs.ast.Expr.Return;
-import fr.umlv.smalljs.ast.VoidVisitor;
 import fr.umlv.smalljs.rt.JSObject;
 
 public class ByteCodeRewriter {
-    private final VoidVisitor<JSObject> visitor;
-
-    private ByteCodeRewriter(MethodVisitor mv, FunDictionary dictionary) {
-        this.visitor = createVisitor(mv, dictionary);
-    }
-
     public static JSObject createFunction(String name, List<String> parameters, Block body, JSObject global) {
         var env = JSObject.newEnv(null);
 
@@ -84,8 +78,7 @@ public class ByteCodeRewriter {
         }
 
         var dictionary = new FunDictionary();
-        var rewriter = new ByteCodeRewriter(mv, dictionary);
-        rewriter.visitor.visit(body, env);
+        visit(body, env, mv, dictionary);
 
         mv.visitLdcInsn(new ConstantDynamic("undefined", "Ljava/lang/Object;", BSM_UNDEFINED));
         mv.visitInsn(ARETURN);
@@ -114,53 +107,51 @@ public class ByteCodeRewriter {
     }
 
     private static void visitVariable(Expr expr, JSObject env) {
-        VARIABLE_VISITOR.visit(expr, env);
+      switch (expr) {
+        case Block block -> {
+          for (Expr instr : block.instrs()) {
+            visitVariable(instr, env);
+          }
+        }
+        case Literal literal -> {
+          // do nothing
+        }
+        case FunCall funCall -> {
+          // do nothing
+        }
+        case LocalVarAssignment localVarAssignment -> {
+          if (localVarAssignment.declaration()) {
+            env.register(localVarAssignment.name(), env.length());
+          }
+        }
+        case LocalVarAccess localVarAccess -> {
+          // do nothing
+        }
+        case Fun fun -> {
+          // do nothing
+        }
+        case Return _return -> {
+          // do nothing
+        }
+        case If _if -> {
+          visitVariable(_if.trueBlock(), env);
+          visitVariable(_if.falseBlock(), env);
+        }
+        case New _new -> {
+          // do nothing
+        }
+        case FieldAccess fieldAccess -> {
+          // do nothing
+        }
+        case FieldAssignment fieldAssignment -> {
+          // do nothing
+        }
+        case MethodCall methodCall -> {
+          // do nothing
+        }
+        default -> throw new AssertionError("unknown case " + expr.getClass());
+      };
     }
-
-    private static final VoidVisitor<JSObject> VARIABLE_VISITOR =
-            new VoidVisitor<JSObject>()
-                    .when(Block.class, (block, env) -> {
-                        for (Expr instr : block.instrs()) {
-                            visitVariable(instr, env);
-                        }
-                    })
-                    .when(Literal.class, (literal, env) -> {
-                        // do nothing
-                    })
-                    .when(FunCall.class, (funCall, env) -> {
-                        // do nothing
-                    })
-                    .when(LocalVarAssignment.class, (localVarAssignment, env) -> {
-                        if (localVarAssignment.declaration()) {
-                            env.register(localVarAssignment.name(), env.length());
-                        }
-                    })
-                    .when(LocalVarAccess.class, (localVarAccess, env) -> {
-                        // do nothing
-                    })
-                    .when(Fun.class, (fun, env) -> {
-                        // do nothing
-                    })
-                    .when(Return.class, (_return, env) -> {
-                        // do nothing
-                    })
-                    .when(If.class, (_if, env) -> {
-                        visitVariable(_if.trueBlock(), env);
-                        visitVariable(_if.falseBlock(), env);
-                    })
-                    .when(New.class, (_new, env) -> {
-                        // do nothing
-                    })
-                    .when(FieldAccess.class, (fieldAccess, env) -> {
-                        // do nothing
-                    })
-                    .when(FieldAssignment.class, (fieldAssignment, env) -> {
-                        // do nothing
-                    })
-                    .when(MethodCall.class, (methodCall, env) -> {
-                        // do nothing
-                    });
-
 
     private static Handle bsm(String name, Class<?> returnType, Class<?>... parameterTypes) {
         return new Handle(H_INVOKESTATIC,
@@ -181,108 +172,91 @@ public class ByteCodeRewriter {
     private static final Handle BSM_SET = bsm("bsm_set", CallSite.class, Lookup.class, String.class, MethodType.class, String.class);
     private static final Handle BSM_METHODCALL = bsm("bsm_methodcall", CallSite.class, Lookup.class, String.class, MethodType.class);
 
-    private static VoidVisitor<JSObject> createVisitor(MethodVisitor mv, FunDictionary dictionary) {
-    	  var visitor= new VoidVisitor<JSObject>();
-        visitor
-                .when(Block.class, (block, env) -> {
-                  throw new UnsupportedOperationException("TODO Block");
-                  // for each expression, visit them and POP it's not an instruction
-                })
-                .when(Literal.class, (literal, env) -> {
-                  throw new UnsupportedOperationException("TODO Literal");
-                  // get the literal value, and use visitLDCInsn
-                  // if it's an Integer, wrap it into a ConstantDynamic because the JVM doesn't have a primitive for boxed integer
-                })
-                .when(FunCall.class, (funCall, env) -> {
-                  throw new UnsupportedOperationException("TODO FunCall");
-                  // visit the qualifier
-                  // load "this"
-                  // for each arguments, visit it
-                  // the name of the invokedynamic is either "builtincall" or "funcall"
-                  //var name = (funCall.qualifier() instanceof LocalVarAccess &&
-                  //    env.lookup(((LocalVarAccess)funCall.qualifier()).name()) == JSObject.UNDEFINED)? "builtincall": "funcall";
-                  // generate an invokedynamic with the right name
-                })
-                .when(LocalVarAssignment.class, (localVarAssignment, env) -> {
-                  throw new UnsupportedOperationException("TODO LocalVarAssignment");
-                  // visit expression
-                  // store at the local var slot using a lookup from the name
-                })
-                .when(LocalVarAccess.class, (localVarAccess, env) -> {
-                  throw new UnsupportedOperationException("TODO LocalVarAccess");
-                  // get the name
-                  // lookup to find if its a local var access or a lookup access
-                  //if (objectOrSlot == JSObject.UNDEFINED)
-                  //  generate an invokedynamic doing a lookup
-                  // } else {
-                  //  load the local variable at the slot
-                  //}
-                })
-                .when(Fun.class, (fun, env) -> {
-                  throw new UnsupportedOperationException("TODO Fun");
-                  // register the fun inside the fun directory and get the corresponding id
-                  //var funId = ...
-                  // emit a LDC to load the function corresponding to the if at runtime
-                  //fun.name().ifPresent(funName -> {
-                    //mv.visitInsn(DUP);
-                    // generate an invokedynamic doing a register with the function name
-                  //});
-                })
-                .when(Return.class, (_return, env) -> {
-                    throw new UnsupportedOperationException("TODO RETURN");
-                    // visit the return expression
-                    // generate a RETURN
-                })
-                .when(If.class, (_if, env) -> {
-                    throw new UnsupportedOperationException("TODO If");
-                    //var falseLabel = new Label();
-                    //var endLabel = new Label();
-                    // visit the condition
-                    // generate an invokedynamic to transform an Object to a boolean using BSM_TRUTH
-                    // mv.visitJumpInsn(IFEQ, falseLabel);
-                    // visit the true block
-                    //mv.visitJumpInsn(GOTO, endLabel);
-                    //mv.visitLabel(falseLabel);
-                    // visit the false block
-                    // mv.visitLabel(endLabel);
-                })
-                .when(New.class, (_new, env) -> {
-                    throw new UnsupportedOperationException("TODO New");
-                    // call newObject
-                    //mv.visitInsn(ACONST_NULL);
-                    //mv.visitMethodInsn(INVOKESTATIC, JSOBJECT, "newObject", "(L" + JSOBJECT + ";)L" + JSOBJECT + ';', false);
-                    // for each initialization expression
-                    //_new.initMap().forEach((key, init) -> {
-                      //mv.visitInsn(DUP);
-                      // generate a string with the key
-                      // visit the initialization expression
-                      // call register on the JSObject
-                      //mv.visitMethodInsn(INVOKEVIRTUAL, JSOBJECT, "register", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
-                    //});
-                })
-                .when(FieldAccess.class, (fieldAccess, env) -> {
-                    throw new UnsupportedOperationException("TODO FieldAccess");
-                    // visit the receiver
-                    // generate an invokedynamic that goes a get through BSM_GET
-                })
-                .when(FieldAssignment.class, (fieldAssignment, env) -> {
-                    throw new UnsupportedOperationException("TODO FieldAssignment");
-                    // visit the receiver
-                    // visit the expression
-                    // generate an invokedynamic that goes a set through BSM_SET
-                })
-                .when(MethodCall.class, (methodCall, env) -> {
-                    throw new UnsupportedOperationException("TODO MethodCall");
-                    // visit the receiver
-                    // get all arguments
-                    //var args = methodCall.args();
-                    // for each argument
-                    //for (var expr : args) {
-                      // visit it
-                    //}
-                    // generate an invokedynamic that call BSM_METHODCALL
-                })
-        ;
-        return visitor;
+    private static void visit(Expr expr, JSObject env, MethodVisitor mv, FunDictionary dictionary) {
+      switch(expr) {
+        case Block block -> {
+          throw new UnsupportedOperationException("TODO Block");
+          // for each expression
+          // visit it
+          // if not an instruction and generate a POP
+        }
+        case Literal literal -> {
+          throw new UnsupportedOperationException("TODO Literal");
+          // get the literal value
+          // switch on it
+          // if it's an Integer, wrap it into a ConstantDynamic because the JVM doesn't have a primitive for boxed integer
+          // if it's a String, use visitLDCInstr
+        }
+        case FunCall funCall -> {
+          throw new UnsupportedOperationException("TODO FunCall");
+          // visit the qualifier
+          // load "this"
+          // for each arguments, visit it
+          // the name of the invokedynamic is either "builtincall" or "funcall"
+          // generate an invokedynamic with the right name
+        }
+        case LocalVarAssignment localVarAssignment -> {
+          throw new UnsupportedOperationException("TODO LocalVarAssignment");
+          // visit the expression
+          // get the name of the local variable
+          // lookup that name in the environment
+          // if it does not exist throw a Failure
+          // otherwise STORE the top of the stack at the local variable slot
+        }
+        case LocalVarAccess localVarAccess -> {
+          throw new UnsupportedOperationException("TODO LocalVarAccess");
+          // get the name of the local variable
+          // lookup to find if its a local var access or a lookup access
+          // if undefined
+            //  generate an invokedynamic doing a lookup
+          // otherwise
+            //  LOAD the local variable at the slot
+        }
+        case Fun fun -> {
+          throw new UnsupportedOperationException("TODO Fun");
+          // register the fun inside the fun directory and get the corresponding id
+          // emit a LDC to load the function corresponding to the id at runtime
+          // generate an invokedynamic doing a register with the function name
+        }
+        case Return _return -> {
+          //throw new UnsupportedOperationException("TODO RETURN");
+          // visit the return expression
+          // generate a RETURN
+        }
+        case If _if -> {
+          throw new UnsupportedOperationException("TODO If");
+          // visit the condition
+          // generate an invokedynamic to transform an Object to a boolean using BSM_TRUTH
+          // visit the true block
+          // visit the false block
+        }
+        case New _new -> {
+          //throw new UnsupportedOperationException("TODO New");
+          // call newObject with an INVOKESTATIC
+          // for each initialization expression
+            // generate a string with the key
+            // call register on the JSObject
+        }
+        case FieldAccess fieldAccess -> {
+          throw new UnsupportedOperationException("TODO FieldAccess");
+          // visit the receiver
+          // generate an invokedynamic that goes a get through BSM_GET
+        }
+        case FieldAssignment fieldAssignment -> {
+          throw new UnsupportedOperationException("TODO FieldAssignment");
+          // visit the receiver
+          // visit the expression
+          // generate an invokedynamic that goes a set through BSM_SET
+        }
+        case MethodCall methodCall -> {
+          throw new UnsupportedOperationException("TODO MethodCall");
+          // visit the receiver
+          // get all arguments
+          // for each argument
+           // visit it
+          // generate an invokedynamic that call BSM_METHODCALL
+        }
+        default -> throw new AssertionError("unknown expr " + expr.getClass());
+      }
     }
 }

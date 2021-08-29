@@ -3,7 +3,7 @@ package fr.umlv.smalljs.astinterp;
 import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("serial")
-class ReturnError extends Error {
+final class ReturnError extends Error {
   private final Object value;
 
   ReturnError(Object value) {

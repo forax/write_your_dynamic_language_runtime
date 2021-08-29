@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import static fr.umlv.smalljs.ast.ASTBuilder.createScript;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,8 +20,8 @@ public class StackInterpreterTests {
   private static String execute(String code) {
     var script = createScript(new StringReader(code));
     var outStream = new ByteArrayOutputStream(8192);
-    StackInterpreter.interpret(script, new PrintStream(outStream));
-    return outStream.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
+    StackInterpreter.interpret(script, new PrintStream(outStream, false, UTF_8));
+    return outStream.toString(UTF_8).replace("\r\n", "\n");
   }
 
   /*

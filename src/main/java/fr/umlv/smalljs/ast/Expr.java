@@ -1,5 +1,6 @@
 package fr.umlv.smalljs.ast;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -90,7 +91,10 @@ public sealed interface Expr {
   }
 
   record New(Map<String, Expr> initMap, int lineNumber) implements Expr {
-    // don't use Map.copyOf here because the order is not guaranteed
+    public New {
+      // don't use Map.copyOf here because the order is not guaranteed
+      requireNonNull(initMap);
+    }
   }
 
   record Return(Expr expr, int lineNumber) implements Expr, Instr {

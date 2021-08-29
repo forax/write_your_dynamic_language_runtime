@@ -93,7 +93,7 @@ instr = expr eoi                                   { instr_expr }
  init = 'id' ':' expr  'eol'? { init }
        ; 
        
- expr = 'integer'                                      { expr_numeric }
+ expr = 'intege     r'                                      { expr_numeric }
       | 'text'                                         { expr_text }
       | '(' expr ')'                                   { expr_parens }
       | 'id'                                           { expr_id }

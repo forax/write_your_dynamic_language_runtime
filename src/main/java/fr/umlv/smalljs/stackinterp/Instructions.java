@@ -26,46 +26,30 @@ public interface Instructions {
 			System.err.print(pc + " ");
 			var instr = instrs[pc++];
 			switch (instr) {
-			case DUP: // no-arg instr
-			case POP:
-			case SWAP:
-			case RET:
-			case PRINT:
-				System.err.println(strings[instr]);
-				continue;
-
-			case LOAD: // int arg instr
-			case STORE:
-			case GOTO:
-			case JUMP_IF_FALSE:
-			case FUNCALL: {
-				var operand = instrs[pc++];
-				System.err.println(strings[instr] + " " + operand);
-				continue;
-			}
-
-			case LOOKUP: // dictionary constant arg instr
-			case REGISTER:
-			case NEW:
-			case GET:
-			case PUT: {
-				var operand = instrs[pc++];
-				System.err.println(strings[instr] + " " + TagValues.decodeDictObject(operand, dict));
-				continue;
-			}
-
-			case CONST: { // int or dictionary arg instr
-				var operand = instrs[pc++];
-				if (TagValues.isSmallInt(operand)) {
-					System.err.println(strings[instr] + " " + TagValues.decodeSmallInt(operand));
-				} else {
+				// no-arg instr
+				case DUP, POP, SWAP, RET, PRINT -> {
+					System.err.println(strings[instr]);
+				}
+				// int arg instr
+				case LOAD, STORE, GOTO, JUMP_IF_FALSE, FUNCALL -> {
+					var operand = instrs[pc++];
+					System.err.println(strings[instr] + " " + operand);
+				}
+				// dictionary constant arg instr
+				case LOOKUP, REGISTER, NEW, GET, PUT -> {
+					var operand = instrs[pc++];
 					System.err.println(strings[instr] + " " + TagValues.decodeDictObject(operand, dict));
 				}
-				continue;
-			}
-
-			default:
-				throw new Error("unknown instr " + instr);
+				// int or dictionary arg instr
+				case CONST -> {
+					var operand = instrs[pc++];
+					if (TagValues.isSmallInt(operand)) {
+						System.err.println(strings[instr] + " " + TagValues.decodeSmallInt(operand));
+					} else {
+						System.err.println(strings[instr] + " " + TagValues.decodeDictObject(operand, dict));
+					}
+				}
+				default -> throw new AssertionError("unknown instr " + instr);
 			}
 		}
 		System.err.println();

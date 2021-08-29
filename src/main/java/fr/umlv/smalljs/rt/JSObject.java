@@ -32,6 +32,7 @@ public class JSObject {
     }
   }
 
+  @FunctionalInterface
   public interface Invoker {
     Object invoke(JSObject self, Object receiver, Object... args);
   }
@@ -93,9 +94,9 @@ public class JSObject {
     System.arraycopy(args, 0, array, 1, args.length);
     try {
       return mh.invokeWithArguments(array);
+    } catch(RuntimeException | Error e) {
+      throw e;
     } catch (Throwable e) {
-      if (e instanceof RuntimeException) { throw (RuntimeException)e; }
-      if (e instanceof Error) { throw (Error)e; }
       throw new Failure(e.getMessage(), e);
     }
   }
@@ -128,9 +129,7 @@ public class JSObject {
   
   public JSObject mirror(Function<Object, Object> valueMapper) {
     var mirror = newObject(null);
-    valueMap.forEach((key, value) -> {
-      mirror.register(key, valueMapper.apply(value));  
-    });
+    valueMap.forEach((key, value) -> mirror.register(key, valueMapper.apply(value)));
     return mirror;
   }
   
@@ -153,11 +152,10 @@ public class JSObject {
       }
       return;
     }
-    if (!(object instanceof JSObject)) {
+    if (!(object instanceof JSObject jsObject)) {
       builder.append(object);
       return;
     }
-    var jsObject = (JSObject)object;
     builder.append("{ // ").append(jsObject.name).append('\n');
     jsObject.valueMap.forEach((key, value) -> {
       builder.append("  ").append(key).append(": ");

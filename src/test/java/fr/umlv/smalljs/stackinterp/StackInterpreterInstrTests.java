@@ -28,6 +28,7 @@ import static fr.umlv.smalljs.stackinterp.Instructions.STORE;
 import static fr.umlv.smalljs.stackinterp.Instructions.SWAP;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeDictObject;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeSmallInt;
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -43,25 +44,25 @@ public class StackInterpreterInstrTests {
   }
   private static String execute(Code mainCode, Dictionary dict) {
     var outStream = new ByteArrayOutputStream(8192);
-    var globalEnv = StackInterpreter.createGlobalEnv(new PrintStream(outStream));
+    var globalEnv = StackInterpreter.createGlobalEnv(new PrintStream(outStream, false, UTF_8));
     var mainFun = newFunction("main", mainCode);
     globalEnv.register("main", mainFun);
     StackInterpreter.execute(mainFun, dict, globalEnv);
-    return outStream.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
+    return outStream.toString(UTF_8).replace("\r\n", "\n");
   }
 
 
-//  @Tag("Q2") @Test
-//  public void helloString() {
-//  	// "hello"
-//  	var dict = new Dictionary();
-//  	int[] instrs = {
-//  		CONST, encodeDictObject("hello", dict),
-//  		RET
-//  	};
-//    assertEquals("", execute(new Code(instrs, 1, 1), dict));
-//  }
-//
+ @Tag("Q2") @Test
+  public void helloString() {
+  	// "hello"
+  	var dict = new Dictionary();
+  	int[] instrs = {
+  		CONST, encodeDictObject("hello", dict),
+  		RET
+  	};
+    assertEquals("", execute(new Code(instrs, 1, 1), dict));
+  }
+
 //  @Tag("Q3") @Test
 //  public void integer3() {
 //  	// 3

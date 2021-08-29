@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import fr.umlv.smalljs.ast.Script;
+import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
 public class StackInterpreter {
@@ -72,6 +73,7 @@ public class StackInterpreter {
 
 	private static final int RECEIVER_BASE_ARG_OFFSET = -1;
 	private static final int QUALIFIER_BASE_ARG_OFFSET = -2;
+	private static final int FUNCALL_PREFIX = 2;
 
 	public static Object execute(JSObject function, Dictionary dict, JSObject globalEnv) {
 		var stack = new int[96 /* 4096 */];
@@ -178,27 +180,27 @@ public class StackInterpreter {
 					// check if the function contains a code attribute
 					//var maybeCode = newFunction.lookup("__code__");
 					//if (maybeCode == UNDEFINED) { // native call !
-						// decode receiver
-						//var receiver = decodeAnyValue(...);
+					  // decode receiver
+					  //var receiver = decodeAnyValue(...);
 
-						// decode arguments
-						//var args = new Object[argumentCount];
-						//for (var i = 0; i < argumentCount; i++) {
-						//	args[i] = decodeAnyValue(...);
-						//}
+					  // decode arguments
+					  //var args = new Object[argumentCount];
+					  //for (var i = 0; i < argumentCount; i++) {
+					  //	args[i] = decodeAnyValue(...);
+					  //}
 
-						// System.err.println("call native " + newFunction.getName() + " with " +
-						// receiver + " " + java.util.Arrays.toString(args));
+					  // System.err.println("call native " + newFunction.getName() + " with " +
+					  // receiver + " " + java.util.Arrays.toString(args));
 
-						// call native function
-						//var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
+					  // call native function
+					  //var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
 
-						// fixup sp
-						//sp = ...
+					  // fixup sp
+					  //sp = ...
 
-						// push return value
-						//push(...);
-						//continue;
+					  // push return value
+					  //push(...);
+					  //continue;
 					//}
 
 					// initialize new code
@@ -291,11 +293,11 @@ public class StackInterpreter {
 
 					// out of memory ?
 					//if (hp + OBJECT_HEADER_SIZE + clazz.length() >= heap.length) {
-						//dumpHeap("before GC ", heap, hp, dict);
+					  //dumpHeap("before GC ", heap, hp, dict);
 
-						//throw new UnsupportedOperationException("TODO !!! GC !!!")
+					  //throw new UnsupportedOperationException("TODO !!! GC !!!")
 
-						//dumpHeap("after GC ", heap, hp, dict);
+					  //dumpHeap("after GC ", heap, hp, dict);
 					//}
 
 					//var ref = hp;
