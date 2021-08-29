@@ -6,7 +6,7 @@ import static fr.umlv.smalljs.stackinterp.TagValues.encodeDictObject;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -380,7 +380,7 @@ public class StackInterpreter {
 	}
 
 
-
+	@SuppressWarnings("unchecked")
 	public static JSObject createGlobalEnv(PrintStream outStream) {
 		JSObject globalEnv = JSObject.newEnv(null);
 		globalEnv.register("global", globalEnv);
@@ -412,7 +412,7 @@ public class StackInterpreter {
 	public static void interpret(Script script, PrintStream outStream) {
 		JSObject globalEnv = createGlobalEnv(outStream);
 		var body = script.body();
-		var function = InstrRewriter.createFunction(Optional.of("main"), Collections.emptyList(), body, new Dictionary(),
+		var function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, new Dictionary(),
 				globalEnv);
 		function.invoke(UNDEFINED, new Object[0]);
 	}
