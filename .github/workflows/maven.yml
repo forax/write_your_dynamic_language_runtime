@@ -22,4 +22,4 @@ jobs:
           mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       - name: build
         run: |
-          mvn -B package
+          mvn -DskipTests=true -B package
