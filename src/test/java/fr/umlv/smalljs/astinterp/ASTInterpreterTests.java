@@ -25,13 +25,12 @@ public class ASTInterpreterTests {
     return outStream.toString(UTF_8).replace("\r\n", "\n");
   }
 
-
+  /*
   @Tag("Q2") @Test
   public void helloString() {
     assertEquals("", execute("\"hello\"\n"));
   }
 
-  /*
   @Tag("Q3") @Test
   public void integer3() {
     assertEquals("", execute("3\n"));

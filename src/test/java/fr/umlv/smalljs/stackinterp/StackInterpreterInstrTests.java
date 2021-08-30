@@ -52,17 +52,17 @@ public class StackInterpreterInstrTests {
   }
 
 
- @Tag("Q2") @Test
-  public void helloString() {
-  	// "hello"
-  	var dict = new Dictionary();
-  	int[] instrs = {
-  		CONST, encodeDictObject("hello", dict),
-  		RET
-  	};
-    assertEquals("", execute(new Code(instrs, 1, 1), dict));
-  }
-
+// @Tag("Q2") @Test
+//  public void helloString() {
+//  	// "hello"
+//  	var dict = new Dictionary();
+//  	int[] instrs = {
+//  		CONST, encodeDictObject("hello", dict),
+//  		RET
+//  	};
+//    assertEquals("", execute(new Code(instrs, 1, 1), dict));
+//  }
+//
 //  @Tag("Q3") @Test
 //  public void integer3() {
 //  	// 3
