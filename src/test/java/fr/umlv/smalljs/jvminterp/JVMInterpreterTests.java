@@ -152,7 +152,7 @@ public class JVMInterpreterTests {
             print(undef());
             """));
   }
-  
+
   @Tag("Q11") @Test
   public void printWithAnIf() {
     assertEquals("false\n", execute("""
@@ -214,7 +214,7 @@ public class JVMInterpreterTests {
             """));
   }
   @Tag("Q11") @Test
-  public void callAUserDefinedFunctionWithAnIfAndAVariabe() {
+  public void callAUserDefinedFunctionWithAnIfAndAVariable() {
     assertEquals("0\n7\n", execute("""
             function f(x) {
                 if (x < 3) {
@@ -278,7 +278,7 @@ public class JVMInterpreterTests {
             print(f());
             """));
   }
-  
+
   @Tag("Q13") @Test
   public void createAnObject() {
     assertEquals("""
@@ -389,5 +389,26 @@ public class JVMInterpreterTests {
                 object.foo(42);
                 object.foo(42);
                 """));
-  }*/
+  }
+  @Tag("Q17") @Test
+  public void objectCallAMethodTwice() {
+    assertEquals(
+        "3\n3\n",
+        execute("""
+                function fun(o) {
+                  return o.field;
+                }
+                var object = {
+                  field: 3,
+                  toto: 0
+                };
+                var object2 = {
+                  field: 3,
+                  toto: 4
+                };
+                print(fun(object));
+                print(fun(object2));
+                """));
+  }
+  */
 }
