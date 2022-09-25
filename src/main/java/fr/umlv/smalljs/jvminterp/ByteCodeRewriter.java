@@ -1,6 +1,7 @@
 package fr.umlv.smalljs.jvminterp;
 
 import static java.lang.invoke.MethodType.genericMethodType;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import static org.objectweb.asm.Opcodes.ACC_SUPER;
@@ -24,6 +25,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import fr.umlv.smalljs.rt.Failure;
 import org.objectweb.asm.ClassReader;
@@ -102,54 +105,53 @@ public class ByteCodeRewriter {
     }
 
     private static void dumpBytecode(byte[] array) {
-        ClassReader reader = new ClassReader(array);
-        CheckClassAdapter.verify(reader, true, new PrintWriter(System.err));
+      var reader = new ClassReader(array);
+      CheckClassAdapter.verify(reader, true, new PrintWriter(System.err, false, UTF_8));
     }
 
-    private static void visitVariable(Expr expr, JSObject env) {
-      switch (expr) {
-        case Block block -> {
-          for (Expr instr : block.instrs()) {
+    private static void visitVariable(Expr expression, JSObject env) {
+      switch (expression) {
+        case Block(List<Expr> instrs, int lineNumber) -> {
+          for (Expr instr : instrs) {
             visitVariable(instr, env);
           }
         }
-        case Literal literal -> {
+        case Literal<?>(Object value, int lineNumber) -> {
           // do nothing
         }
-        case FunCall funCall -> {
+        case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
           // do nothing
         }
-        case LocalVarAssignment localVarAssignment -> {
-          if (localVarAssignment.declaration()) {
-            env.register(localVarAssignment.name(), env.length());
+        case LocalVarAccess(String name, int lineNumber) -> {
+          // do nothing
+        }
+        case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
+          if (declaration) {
+            env.register(name, env.length());
           }
         }
-        case LocalVarAccess localVarAccess -> {
+        case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
           // do nothing
         }
-        case Fun fun -> {
+        case Return(Expr expr, int lineNumber) -> {
           // do nothing
         }
-        case Return _return -> {
+        case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
+          visitVariable(trueBlock, env);
+          visitVariable(falseBlock, env);
+        }
+        case New(Map<String, Expr> initMap, int lineNumber) -> {
           // do nothing
         }
-        case If _if -> {
-          visitVariable(_if.trueBlock(), env);
-          visitVariable(_if.falseBlock(), env);
-        }
-        case New _new -> {
+        case FieldAccess(Expr receiver, String name, int lineNumber) -> {
           // do nothing
         }
-        case FieldAccess fieldAccess -> {
+        case FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) -> {
           // do nothing
         }
-        case FieldAssignment fieldAssignment -> {
+        case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
           // do nothing
         }
-        case MethodCall methodCall -> {
-          // do nothing
-        }
-        default -> throw new AssertionError("unknown case " + expr.getClass());
       };
     }
 
@@ -172,91 +174,86 @@ public class ByteCodeRewriter {
     private static final Handle BSM_SET = bsm("bsm_set", CallSite.class, Lookup.class, String.class, MethodType.class, String.class);
     private static final Handle BSM_METHODCALL = bsm("bsm_methodcall", CallSite.class, Lookup.class, String.class, MethodType.class);
 
-    private static void visit(Expr expr, JSObject env, MethodVisitor mv, FunDictionary dictionary) {
-      switch(expr) {
-        case Block block -> {
+    private static void visit(Expr expression, JSObject env, MethodVisitor mv, FunDictionary dictionary) {
+      switch(expression) {
+        case Block(List<Expr> instrs, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO Block");
           // for each expression
-          // visit it
-          // if not an instruction and generate a POP
+            // generate line numbers
+            // visit it
+            // if not an instruction and generate a POP
         }
-        case Literal literal -> {
+        case Literal<?>(Object value, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO Literal");
-          // get the literal value
-          // switch on it
+          // switch on the value
           // if it's an Integer, wrap it into a ConstantDynamic because the JVM doesn't have a primitive for boxed integer
           // if it's a String, use visitLDCInstr
+          // otherwise report an error
         }
-        case FunCall funCall -> {
+        case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO FunCall");
           // visit the qualifier
           // load "this"
-          // for each arguments, visit it
+          // for each argument, visit it
           // the name of the invokedynamic is either "builtincall" or "funcall"
           // generate an invokedynamic with the right name
         }
-        case LocalVarAssignment localVarAssignment -> {
+        case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO LocalVarAssignment");
           // visit the expression
-          // get the name of the local variable
           // lookup that name in the environment
           // if it does not exist throw a Failure
           // otherwise STORE the top of the stack at the local variable slot
         }
-        case LocalVarAccess localVarAccess -> {
+        case LocalVarAccess(String name, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO LocalVarAccess");
-          // get the name of the local variable
-          // lookup to find if its a local var access or a lookup access
+          // lookup to find if it's a local var access or a lookup access
           // if undefined
             //  generate an invokedynamic doing a lookup
           // otherwise
-            //  LOAD the local variable at the slot
+            //  load the local variable at the slot
         }
-        case Fun fun -> {
+        case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) fun -> {
           throw new UnsupportedOperationException("TODO Fun");
           // register the fun inside the fun directory and get the corresponding id
           // emit a LDC to load the function corresponding to the id at runtime
           // generate an invokedynamic doing a register with the function name
         }
-        case Return _return -> {
-          //throw new UnsupportedOperationException("TODO RETURN");
+        case Return(Expr expr, int lineNumber) -> {
           // visit the return expression
-          // generate a RETURN
+          // generate the bytecode
         }
-        case If _if -> {
+        case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO If");
           // visit the condition
           // generate an invokedynamic to transform an Object to a boolean using BSM_TRUTH
           // visit the true block
           // visit the false block
         }
-        case New _new -> {
-          //throw new UnsupportedOperationException("TODO New");
+        case New(Map<String, Expr> initMap, int lineNumber) -> {
+          throw new UnsupportedOperationException("TODO New");
           // call newObject with an INVOKESTATIC
           // for each initialization expression
             // generate a string with the key
             // call register on the JSObject
         }
-        case FieldAccess fieldAccess -> {
+        case FieldAccess(Expr receiver, String name, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO FieldAccess");
           // visit the receiver
           // generate an invokedynamic that goes a get through BSM_GET
         }
-        case FieldAssignment fieldAssignment -> {
+        case FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO FieldAssignment");
           // visit the receiver
           // visit the expression
-          // generate an invokedynamic that goes a set through BSM_SET
         }
-        case MethodCall methodCall -> {
+        case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO MethodCall");
           // visit the receiver
-          // get all arguments
           // for each argument
-           // visit it
+            // visit the argument
           // generate an invokedynamic that call BSM_METHODCALL
         }
-        default -> throw new AssertionError("unknown expr " + expr.getClass());
       }
     }
 }
