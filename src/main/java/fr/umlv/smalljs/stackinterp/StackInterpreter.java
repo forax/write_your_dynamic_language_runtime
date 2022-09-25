@@ -1,8 +1,13 @@
 package fr.umlv.smalljs.stackinterp;
 
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
+import static fr.umlv.smalljs.stackinterp.TagValues.OBJECT_HEADER_SIZE;
 import static fr.umlv.smalljs.stackinterp.TagValues.decodeAnyValue;
+import static fr.umlv.smalljs.stackinterp.TagValues.decodeDictObject;
+import static fr.umlv.smalljs.stackinterp.TagValues.decodeReference;
+import static fr.umlv.smalljs.stackinterp.TagValues.encodeAnyValue;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeDictObject;
+import static fr.umlv.smalljs.stackinterp.TagValues.encodeReference;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -97,15 +102,17 @@ public class StackInterpreter {
 			switch (instrs[pc++]) {
 				case Instructions.CONST -> {
 					throw new UnsupportedOperationException("TODO CONST");
-					// push constant from the instruction to the stack
+					// get the constant from the instruction to the stack
 					// push(...)
 				}
 				case Instructions.LOOKUP -> {
 					throw new UnsupportedOperationException("TODO LOOKUP");
 					// decode the name from the instructions
 					//String name = ...
-					// lookup the name and push as any value
+					// lookup the name and push as any anyValue
 					//push(...);
+
+					//dumpStack("in lookup", stack, sp, bp, dict, heap);
 				}
 				case Instructions.REGISTER -> {
 					throw new UnsupportedOperationException("TODO REGISTER");
@@ -118,6 +125,8 @@ public class StackInterpreter {
 				}
 				case Instructions.LOAD -> {
 					throw new UnsupportedOperationException("TODO LOAD");
+					// get local offset
+					//int offset = ...
 					// load value from the local slots
 					//int value = ...
 					// push it to the top of the stack
@@ -125,6 +134,8 @@ public class StackInterpreter {
 				}
 				case Instructions.STORE -> {
 					throw new UnsupportedOperationException("TODO STORE");
+					// get local offset
+					//int offset = ...
 					// pop value from the stack
 					//var value = ...
 					// store it in the local slots
@@ -155,7 +166,7 @@ public class StackInterpreter {
 				case Instructions.FUNCALL -> {
 					throw new UnsupportedOperationException("TODO FUNCALL");
 					// DEBUG
-					// dumpStack(">start funcall dump", stack, sp, bp, dict, heap);
+					//dumpStack(">start funcall dump", stack, sp, bp, dict, heap);
 
 					// find argument count
 					//var argumentCount = ...
@@ -177,30 +188,30 @@ public class StackInterpreter {
 					//	System.err.println("funcall " + newFunction.getName() + " with " + receiver + " " + Arrays.toString(args));
 					//}
 
-					// check if the function contains a code attribute
+					/// check if the function contains a code attribute
 					//var maybeCode = newFunction.lookup("__code__");
 					//if (maybeCode == UNDEFINED) { // native call !
-					  // decode receiver
-					  //var receiver = decodeAnyValue(...);
+					// decode receiver
+					//var receiver = decodeAnyValue(...);
 
-					  // decode arguments
-					  //var args = new Object[argumentCount];
-					  //for (var i = 0; i < argumentCount; i++) {
-					  //	args[i] = decodeAnyValue(...);
-					  //}
+					// decode arguments
+					//var args = new Object[argumentCount];
+					//for (var i = 0; i < argumentCount; i++) {
+					//	args[i] = decodeAnyValue(...);
+					//}
 
-					  // System.err.println("call native " + newFunction.getName() + " with " +
-					  // receiver + " " + java.util.Arrays.toString(args));
+					// System.err.println("call native " + newFunction.getName() + " with " +
+					// receiver + " " + java.util.Arrays.toString(args));
 
-					  // call native function
-					  //var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
+					// call native function
+					//var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
 
-					  // fixup sp
-					  //sp = ...
+					// fixup sp (receiver and function must be dropped)
+					//sp = ...
 
-					  // push return value
-					  //push(...);
-					  //continue;
+					// push return value
+					//push(...);
+					//continue;
 					//}
 
 					// initialize new code
@@ -250,8 +261,8 @@ public class StackInterpreter {
 					//var activation = ...
 					//pc = ...
 					//if (pc == 0) {
-					//	// end of the interpreter
-					//	return decodeAnyValue(result, dict, heap);
+					  // end of the interpreter
+					  //	return decodeAnyValue(result, dict, heap);
 					//}
 
 					// restore sp, function and bp
@@ -271,8 +282,10 @@ public class StackInterpreter {
 				}
 				case Instructions.GOTO -> {
 					throw new UnsupportedOperationException("TODO GOTO");
+					// get the label
+					//int label = ...
 					// change the program counter to the label
-					//pc = ...
+				 //pc = ...
 				}
 				case Instructions.JUMP_IF_FALSE -> {
 					throw new UnsupportedOperationException("TODO JUMP_IF_FALSE");
@@ -293,11 +306,11 @@ public class StackInterpreter {
 
 					// out of memory ?
 					//if (hp + OBJECT_HEADER_SIZE + clazz.length() >= heap.length) {
-					  //dumpHeap("before GC ", heap, hp, dict);
+					//dumpHeap("before GC ", heap, hp, dict);
 
-					  //throw new UnsupportedOperationException("TODO !!! GC !!!")
+					//throw new UnsupportedOperationException("TODO !!! GC !!!")
 
-					  //dumpHeap("after GC ", heap, hp, dict);
+					//dumpHeap("after GC ", heap, hp, dict);
 					//}
 
 					//var ref = hp;
@@ -332,11 +345,13 @@ public class StackInterpreter {
 					// get field slot from JSObject
 					//var slot = clazz.lookup(fieldName);
 					//if (slot == UNDEFINED) {
-					//	// no slot, push undefined
-					//	push(..);
-					//	continue;
+					  // no slot, push undefined
+					  //	push(..);
+					  //	continue;
 					//}
 
+					// get the field index
+					//var fieldIndex = ...
 					// push field value on top of the stack
 					//push(...);
 				}
@@ -353,11 +368,13 @@ public class StackInterpreter {
 					// get JSObject from class
 					//var clazz = (JSObject) decodeDictObject(vClass, dict);
 					// get field slot from JSObject
-					//var slot = clazz.lookup(fieldName);
-					//if (slot == UNDEFINED) {
+					//var slotOrUndefined = clazz.lookup(fieldName);
+					//if (slotOrUndefined == UNDEFINED) {
 					//	throw new Failure("invalid field " + fieldName);
 					//}
 
+					// get the field index
+					//var fieldIndex = ...
 					// store field value from the top of the stack on heap
 					//heap[...] = ...;
 				}
@@ -393,7 +410,7 @@ public class StackInterpreter {
 		globalEnv.register("-", JSObject.newFunction("-", (self, receiver, args) -> (Integer) args[0] - (Integer) args[1]));
 		globalEnv.register("/", JSObject.newFunction("/", (self, receiver, args) -> (Integer) args[0] / (Integer) args[1]));
 		globalEnv.register("*", JSObject.newFunction("*", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
-		globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
+		globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] % (Integer) args[1]));
 
 		globalEnv.register("==", JSObject.newFunction("==", (self, receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
 		globalEnv.register("!=", JSObject.newFunction("!=", (self, receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
