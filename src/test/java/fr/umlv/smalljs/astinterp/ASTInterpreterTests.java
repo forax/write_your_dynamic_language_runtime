@@ -92,10 +92,14 @@ public class ASTInterpreterTests {
             print('hello', me);
             """));
   }
-  
+
   @Tag("Q9") @Test
   public void printAVariableDefinedAfter() {
     assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
+  }
+  @Tag("Q9") @Test
+  public void defineAVariableTwice() {
+    assertThrows(Failure.class, () -> execute("var a = 3\nvar a = 2;\n"));
   }
 
   @Tag("Q10") @Test
@@ -152,7 +156,7 @@ public class ASTInterpreterTests {
             print(undef());
             """));
   }
-  
+
   @Tag("Q11") @Test
   public void printWithAnIf() {
     assertEquals("false\n", execute("""

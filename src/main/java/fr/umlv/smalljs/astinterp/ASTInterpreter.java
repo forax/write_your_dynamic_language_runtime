@@ -20,56 +20,64 @@ import fr.umlv.smalljs.rt.JSObject.Invoker;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
+import static java.util.stream.Collectors.joining;
 
 public class ASTInterpreter {
-  private static JSObject asJSObject(Object value, Expr failedExpr) {
-		if (!(value instanceof JSObject jsObject)) {
-			throw new Failure("at line " + failedExpr.lineNumber() + ", type error " + value + " is not a JSObject");
-		}
-		return jsObject;
+  private static JSObject asJSObject(Object value, int lineNumber) {
+    if (!(value instanceof JSObject jsObject)) {
+      throw new Failure("at line " + lineNumber + ", type error " + value + " is not a JSObject");
+    }
+    return jsObject;
   }
 
-  static Object visit(Expr expr, JSObject env) {
-    return switch (expr) {
-      case Block block -> {
+  static Object visit(Expr expression, JSObject env) {
+    return switch (expression) {
+      case Block(List<Expr> instrs, int lineNumber) -> {
 				//throw new UnsupportedOperationException("TODO Block");
         // TODO loop over all instructions
         yield UNDEFINED;
       }
-      case Literal literal -> {
+      case Literal<?>(Object value, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Literal");
 			}
-      case FunCall funCall -> {
+      case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO FunCall");
       }
-      case LocalVarAccess localVarAccess -> {
+      case LocalVarAccess(String name, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO LocalVarAccess");
 			}
-      case LocalVarAssignment localVarAssignment -> {
-				throw new UnsupportedOperationException("TODO LocalVarAssignment");
+      case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
+        throw new UnsupportedOperationException("TODO LocalVarAssignment");
       }
-      case Fun fun -> {
+      case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
+        // var functionName = optName.orElse("lambda");
+        // Invoker invoker = new Invoker() {
+        // TODO
+        // };
+        // TODO
       }
-      case Return _return -> {
+      case Return(Expr expr, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Return");
       }
-      case If _if -> {
+      case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO If");
       }
-      case New _new -> {
+      case New(Map<String, Expr> initMap, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO New");
       }
-      case FieldAccess fieldAccess -> {
+      case FieldAccess(Expr receiver, String name, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO FieldAccess");
       }
-      case FieldAssignment fieldAssignment -> {
+      case FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO FieldAssignment");
       }
-      case MethodCall methodCall -> {
+      case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO MethodCall");
       }
     };
@@ -82,14 +90,14 @@ public class ASTInterpreter {
     globalEnv.register("global", globalEnv);
     globalEnv.register("print", JSObject.newFunction("print", (self, receiver, args) -> {
       System.err.println("print called with " + Arrays.toString(args));
-      outStream.println(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(" ")));
+      outStream.println(Arrays.stream(args).map(Object::toString).collect(joining(" ")));
       return UNDEFINED;
     }));
     globalEnv.register("+", JSObject.newFunction("+", (self, receiver, args) -> (Integer) args[0] + (Integer) args[1]));
     globalEnv.register("-", JSObject.newFunction("-", (self, receiver, args) -> (Integer) args[0] - (Integer) args[1]));
     globalEnv.register("/", JSObject.newFunction("/", (self, receiver, args) -> (Integer) args[0] / (Integer) args[1]));
     globalEnv.register("*", JSObject.newFunction("*", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
-    globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
+    globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] % (Integer) args[1]));
 
     globalEnv.register("==", JSObject.newFunction("==", (self, receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
     globalEnv.register("!=", JSObject.newFunction("!=", (self, receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
