@@ -1,11 +1,11 @@
 package fr.umlv.smalljs.jvminterp;
 
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
+import static java.util.stream.Collectors.joining;
 
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import fr.umlv.smalljs.ast.Expr.Block;
 import fr.umlv.smalljs.ast.Script;
@@ -19,14 +19,14 @@ public class JVMInterpreter {
     globalEnv.register("global", globalEnv);
     globalEnv.register("print", JSObject.newFunction("print", (self, receiver, args) -> {
         //System.err.println("print called with " + Arrays.toString(args));
-        outStream.println(Arrays.stream(args).map(String::valueOf).collect(Collectors.joining(" ")));
+        outStream.println(Arrays.stream(args).map(String::valueOf).collect(joining(" ")));
         return UNDEFINED;
     }));
     globalEnv.register("+", JSObject.newFunction("+", (self, receiver, args) -> (Integer) args[0] + (Integer) args[1]));
     globalEnv.register("-", JSObject.newFunction("-", (self, receiver, args) -> (Integer) args[0] - (Integer) args[1]));
     globalEnv.register("/", JSObject.newFunction("/", (self, receiver, args) -> (Integer) args[0] / (Integer) args[1]));
     globalEnv.register("*", JSObject.newFunction("*", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
-    globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
+    globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] % (Integer) args[1]));
 
     globalEnv.register("==", JSObject.newFunction("==", (self, receiver, args) -> args[0].equals(args[1])));
     globalEnv.register("!=", JSObject.newFunction("!=", (self, receiver, args) -> !args[0].equals(args[1])));
