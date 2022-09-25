@@ -17,6 +17,7 @@ import static fr.umlv.smalljs.stackinterp.TagValues.encodeSmallInt;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import fr.umlv.smalljs.ast.Expr;
@@ -98,58 +99,57 @@ public class InstrRewriter {
 		return function;
 	}
 
-	private static void visitVariable(Expr expr, JSObject env) {
-		switch (expr) {
-			case Block block -> {
-				for (Expr instr : block.instrs()) {
+	private static void visitVariable(Expr expression, JSObject env) {
+		switch (expression) {
+			case Block(List<Expr> instrs, int lineNumber) -> {
+				for (Expr instr : instrs) {
 					visitVariable(instr, env);
 				}
 			}
-			case Literal literal -> {
+			case Literal<?>(Object value, int lineNumber) -> {
 				// do nothing
 			}
-			case FunCall funCall -> {
+			case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
 				// do nothing
 			}
-			case LocalVarAssignment localVarAssignment -> {
-				if (localVarAssignment.declaration()) {
-					env.register(localVarAssignment.name(), env.length());
+			case LocalVarAccess(String name, int lineNumber) -> {
+				// do nothing
+			}
+			case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
+				if (declaration) {
+					env.register(name, env.length());
 				}
 			}
-			case LocalVarAccess localVarAccess -> {
+			case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
 				// do nothing
 			}
-			case Fun fun -> {
+			case Return(Expr expr, int lineNumber) -> {
 				// do nothing
 			}
-			case Return _return -> {
+			case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
+				visitVariable(trueBlock, env);
+				visitVariable(falseBlock, env);
+			}
+			case New(Map<String, Expr> initMap, int lineNumber) -> {
 				// do nothing
 			}
-			case If _if -> {
-				visitVariable(_if.trueBlock(), env);
-				visitVariable(_if.falseBlock(), env);
-			}
-			case New _new -> {
+			case FieldAccess(Expr receiver, String name, int lineNumber) -> {
 				// do nothing
 			}
-			case FieldAccess fieldAccess -> {
+			case FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) -> {
 				// do nothing
 			}
-			case FieldAssignment fieldAssignment -> {
+			case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
 				// do nothing
 			}
-			case MethodCall methodCall -> {
-				// do nothing
-			}
-			default -> throw new AssertionError("unknown case " + expr.getClass());
 		};
 	}
 
-	private static void visit(Expr expr, JSObject env, InstrBuffer buffer, Dictionary dict, JSObject globalEnv) {
-		switch (expr) {
-			case Block block -> {
+	private static void visit(Expr expression, JSObject env, InstrBuffer buffer, Dictionary dict, JSObject globalEnv) {
+		switch (expression) {
+			case Block(List<Expr> instrs, int lineNumber) -> {
 				// for each expression of the block
-				for (var instr : block.instrs()) {
+				for (var instr : instrs) {
 					// visit the expression
 					visit(instr, env, buffer, dict, globalEnv);
 					// if the expression is an instruction (i.e. return void)
@@ -159,7 +159,7 @@ public class InstrRewriter {
 					}
 				}
 			}
-			case Literal literal -> {
+			case Literal<?>(Object value, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Literal");
 				// get the literal value
 				//var literalValue = ...
@@ -172,7 +172,7 @@ public class InstrRewriter {
 				//buffer.emit(...).emit(...);
 				//}
 			}
-			case FunCall funCall -> {
+			case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO FunCall");
 				// visit the qualifier
 				//visitor.visit(...);
@@ -185,7 +185,7 @@ public class InstrRewriter {
 				// emit the funcall
 				//buffer.emit(...).emit(...);
 			}
-			case LocalVarAccess localVarAccess -> {
+			case LocalVarAccess(String name, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO LocalVarAccess");
 				// get the local variable name
 				//var name = ...
@@ -199,12 +199,10 @@ public class InstrRewriter {
 				//buffer.emit(...).emit(...);
 				//}
 			}
-			case LocalVarAssignment localVarAssignment -> {
+			case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO LocalVarAssignment");
 				// visit the expression
-				// visitor.visit(...);
-				// get the local variable name
-				//var name = ...
+				// visit(...);
 				// find if there is a local variable in the env from the name
 				//var slotOrUndefined = env.lookup(...);
 				//if (slotOrUndefined == UNDEFINED) {
@@ -216,7 +214,7 @@ public class InstrRewriter {
 			case Fun fun -> {
 				throw new UnsupportedOperationException("TODO Fun");
 				// create a JSObject function
-				///var function = createFunction(fun.name(), fun.parameters(), fun.body(), dict, globalEnv);
+				///var function = createFunction(optName, parameters, body, dict, globalEnv);
 				// emit a const on the function
 				//buffer.emit(...).emit(...);
 				// if the name is present emit a code to register the function in the global environment
@@ -225,76 +223,74 @@ public class InstrRewriter {
 				//buffer.emit(...).emit(...);
 				//});
 			}
-			case Return _return -> {
+			case Return(Expr expr, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Return");
 				// emit a visit of the expression
-				//visitor.visit(...);
+				//visit(...);
 				// emit a RET
-				//buffer.emit(RET);
 			}
-			case If _if -> {
+			case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO If");
 				// visit the condition
-				//visitor.visit(...);
+				//visit(...);
 				// emit a JUMP_IF_FALSE and a placeholder
 				//var falsePlaceHolder = buffer.emit(JUMP_IF_FALSE).placeholder();
 				// visit the true block
-				//visitor.visit(...);
+				//visit(...);
 				// emit a goto with another placeholder
 				//var endPlaceHolder = buffer.emit(GOTO).placeholder();
 				// patch the first placeholder
 				//buffer.patch(..., buffer.label());
 				// visit the false block
-				//visitor.visit(...);
+				//visit(...);
 				// patch the second place holder
 				//buffer.patch(..., buffer.label());
 			}
-			case New _new -> {
+			case New(Map<String, Expr> initMap, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO New");
 				// create a JSObject class
 				//var clazz = JSObject.newObject(null);
 				// loop over all the field initializations
-				//_new.initMap().forEach((fieldName, expr) -> {
-				// register the field name with the right slot
-				//clazz.register(...);
-				// visit the initialization expression
-				//visitor.visit(...);
+				//initMap().forEach((fieldName, expr) -> {
+				  // register the field name with the right slot
+				  //clazz.register(...);
+				  // visit the initialization expression
+				  //visit(...);
 				//});
 				// emit a NEW with the class
 				//buffer.emit(...).emit(...);
 			}
-			case FieldAccess fieldAccess -> {
+			case FieldAccess(Expr receiver, String name, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO FieldAccess");
 				// visit the receiver
-				//visitor.visit(...);
+				//visit(...);
 				// emit a GET with the field name
 				//buffer.emit(...).emit(...);
 			}
-			case FieldAssignment fieldAssignment -> {
+			case FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO FieldAssignment");
 				// visit the receiver
-				//visitor.visit(...);
+				//visit(...);
 				// visit the expression
-				//visitor.visit(...);
+				//visit(...);
 				// emit a PUT with the field name
 				//buffer.emit(...).emit(...);
 			}
-			case MethodCall methodCall -> {
+			case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO MethodCall");
 				// visit the receiver
-				//visitor.visit(...);
+				//visit(...);
 				// emit a DUP, get the field name and emit a SWAP of the qualifier and the receiver
 				//buffer.emit(DUP);
 				//buffer.emit(...).emit(...);
 				//buffer.emit(SWAP);
 				// visit all arguments
-				//for (var arg : methodCall.args()) {
-				//visitor.visit(...);
+				//for (var arg : args) {
+				  //visit(...);
 				//}
 				// emit the funcall
 				//buffer.emit(...).emit(...);
 			}
-			default -> throw new AssertionError("unknown expr " + expr.getClass());
 		}
 	}
 }
