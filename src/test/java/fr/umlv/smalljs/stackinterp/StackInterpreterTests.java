@@ -46,7 +46,7 @@ public class StackInterpreterTests {
   public void printPrint() {
     assertFalse(execute("print(print)\n").isEmpty());
   }
-  
+
   @Tag("Q6") @Test
   public void printOperations() {
     assertEquals("5\n", execute("print(3 + 2)\n"));
@@ -59,7 +59,7 @@ public class StackInterpreterTests {
   public void printPrint3() {
     assertEquals("3\nundefined\n", execute("print(print(3))\n"));
   }
-  
+
   @Tag("Q8") @Test
   public void printAVariable() {
     assertEquals("3\n", execute("""
@@ -91,7 +91,7 @@ public class StackInterpreterTests {
             print('hello', me);
             """));
   }
-  
+
   @Tag("Q9") @Test
   public void printAVariableDefinedAfter() {
     assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
@@ -151,7 +151,7 @@ public class StackInterpreterTests {
             print(undef());
             """));
   }
-  
+
   @Tag("Q11") @Test
   public void printWithAnIf() {
     assertEquals("false\n", execute("""
@@ -240,7 +240,7 @@ public class StackInterpreterTests {
             print(f(7));
             """));
   }
-  
+
   @Tag("Q12") @Test
   public void callFibo() {
     assertEquals("21\n", execute("""
