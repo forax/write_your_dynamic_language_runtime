@@ -17,6 +17,7 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
 
 import fr.umlv.smalljs.rt.ArrayMap;
+import fr.umlv.smalljs.rt.ArrayMap.Layout;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
@@ -85,7 +86,7 @@ public class RT {
     throw new UnsupportedOperationException("TODO bsm_get");
     //TODO
   }
-  
+
   public static CallSite bsm_set(Lookup lookup, String name, MethodType type, String fieldName) {
     throw new UnsupportedOperationException("TODO bsm_set");
     //TODO
@@ -96,7 +97,7 @@ public class RT {
     var function = (JSObject)receiver.lookup(fieldName);
     return function.getMethodHandle();
   }
-  
+
   public static CallSite bsm_methodcall(Lookup lookup, String name, MethodType type) {
     throw new UnsupportedOperationException("TODO bsm_methodcall");
     //var combiner = insertArguments(METH_LOOKUP_MH, 1, name).asType(methodType(MethodHandle.class, Object.class));
