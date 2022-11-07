@@ -220,6 +220,7 @@ public class ByteCodeRewriter {
           // generate an invokedynamic doing a register with the function name
         }
         case Return(Expr expr, int lineNumber) -> {
+          // throw new UnsupportedOperationException("TODO Return");
           // visit the return expression
           // generate the bytecode
         }
