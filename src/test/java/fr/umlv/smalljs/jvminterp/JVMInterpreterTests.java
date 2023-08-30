@@ -46,7 +46,7 @@ public class JVMInterpreterTests {
   public void printPrint() {
     assertFalse(execute("print(print)\n").isEmpty());
   }
-  
+
   @Tag("Q6") @Test
   public void printOperations() {
     assertEquals("5\n", execute("print(3 + 2)\n"));
@@ -228,7 +228,7 @@ public class JVMInterpreterTests {
             print(f(7));
             """));
   }
-  
+
   @Tag("Q12") @Test
   public void callFibo() {
     assertEquals("21\n", execute("""

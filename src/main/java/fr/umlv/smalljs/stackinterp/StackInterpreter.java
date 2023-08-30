@@ -107,7 +107,9 @@ public class StackInterpreter {
 				}
 				case Instructions.LOOKUP -> {
 					throw new UnsupportedOperationException("TODO LOOKUP");
-					// decode the name from the instructions
+					// find the current instruction
+					//int indexTagValue = ...
+					// decode the name from the instruction
 					//String name = ...
 					// lookup the name and push as any anyValue
 					//push(...);
@@ -116,6 +118,8 @@ public class StackInterpreter {
 				}
 				case Instructions.REGISTER -> {
 					throw new UnsupportedOperationException("TODO REGISTER");
+					// find the current instruction
+					//int indexTagValue = ...
 					// decode the name from the instructions
 					//String name = ...
 					// pop the value from the stack and decode it
@@ -174,8 +178,7 @@ public class StackInterpreter {
 					//var baseArg = ...
 					// stack[baseArg] is the first argument
 					// stack[baseArg + RECEIVER_BASE_ARG_OFFSET] is the receiver
-					// stack[baseArg + QUALIFIER_BASE_ARG_OFFSET] is the qualifier (aka the
-					// function)
+					// stack[baseArg + QUALIFIER_BASE_ARG_OFFSET] is the qualifier (aka the function)
 
 					// decode qualifier
 					//var newFunction = (JSObject) ...
@@ -188,31 +191,32 @@ public class StackInterpreter {
 					//	System.err.println("funcall " + newFunction.getName() + " with " + receiver + " " + Arrays.toString(args));
 					//}
 
-					/// check if the function contains a code attribute
+					// check if the function contains a code attribute
 					//var maybeCode = newFunction.lookup("__code__");
 					//if (maybeCode == UNDEFINED) { // native call !
 					// decode receiver
 					//var receiver = decodeAnyValue(...);
 
-					// decode arguments
-					//var args = new Object[argumentCount];
-					//for (var i = 0; i < argumentCount; i++) {
-					//	args[i] = decodeAnyValue(...);
+					  // decode arguments
+					  //var args = new Object[argumentCount];
+					  //for (var i = 0; i < argumentCount; i++) {
+					  //	args[i] = decodeAnyValue(...);
+					  //}
+
+					  // System.err.println("call native " + newFunction.getName() + " with " +
+					  // receiver + " " + java.util.Arrays.toString(args));
+
+					  // call native function
+					  //var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
+
+					  // fixup sp (receiver and function must be dropped)
+					  //sp = ...
+
+					  // push return value
+					  //push(...);
+					  //continue;
 					//}
-
-					// System.err.println("call native " + newFunction.getName() + " with " +
-					// receiver + " " + java.util.Arrays.toString(args));
-
-					// call native function
-					//var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
-
-					// fixup sp (receiver and function must be dropped)
-					//sp = ...
-
-					// push return value
-					//push(...);
-					//continue;
-					//}
+					//throw new UnsupportedOperationException("TODO FUNCALL");
 
 					// initialize new code
 					//code = (Code) maybeCode;
@@ -228,7 +232,7 @@ public class StackInterpreter {
 					//var activation = ...;
 					//stack[activation + BP_OFFSET] = ...;
 					//stack[activation + PC_OFFSET] = ...;
-					//stack[activation + FUN_OFFSET] = ...
+					//stack[activation + FUN_OFFSET] = ...;
 
 					// initialize pc, bp and sp
 					//pc = ...
@@ -253,16 +257,16 @@ public class StackInterpreter {
 					//dumpStack("> start ret dump", stack, sp, bp, dict, heap);
 
 					// get the return value from the top of the stack
-					//var result = ...
+					//int result = ...
 
 					//System.err.println("ret " + decodeAnyValue(result, dict, heap));
 
 					// find activation and restore pc
-					//var activation = ...
+					//int activation = ...
 					//pc = ...
 					//if (pc == 0) {
-					  // end of the interpreter
-					  //	return decodeAnyValue(result, dict, heap);
+					// end of the interpreter
+					//	return decodeAnyValue(result, dict, heap);
 					//}
 
 					// restore sp, function and bp
@@ -285,7 +289,7 @@ public class StackInterpreter {
 					// get the label
 					//int label = ...
 					// change the program counter to the label
-				 //pc = ...
+					//pc = ...
 				}
 				case Instructions.JUMP_IF_FALSE -> {
 					throw new UnsupportedOperationException("TODO JUMP_IF_FALSE");
@@ -337,21 +341,24 @@ public class StackInterpreter {
 					//var fieldName = (String) ...
 
 					// get reference from the top of the stack
-					//var ref = decodeReference(...);
+					//int value = ...
+					//int ref = ...
 					// get class on heap from the reference
-					//var vClass = ...;
+					//int vClass = ...;
 					// get JSObject from class
 					//var clazz = (JSObject) decodeDictObject(vClass, dict);
 					// get field slot from JSObject
-					//var slot = clazz.lookup(fieldName);
+					//int slot = clazz.lookup(fieldName);
 					//if (slot == UNDEFINED) {
-					  // no slot, push undefined
-					  //	push(..);
-					  //	continue;
+					// no slot, push undefined
+					//	push(..);
+					//	continue;
 					//}
 
 					// get the field index
-					//var fieldIndex = ...
+					//int fieldIndex = ...
+					// get field value
+					//int fieldValue = ...
 					// push field value on top of the stack
 					//push(...);
 				}

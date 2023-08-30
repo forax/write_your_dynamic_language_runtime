@@ -22,8 +22,7 @@ import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
 public class RT {
-  private static final MethodHandle INVOKER, LOOKUP,
-                                    REGISTER, TRUTH, GET_MH, METH_LOOKUP_MH;
+  private static final MethodHandle INVOKER, LOOKUP, REGISTER, TRUTH, GET_MH, METH_LOOKUP_MH;
   static {
     var lookup = MethodHandles.lookup();
     try {
@@ -31,14 +30,14 @@ public class RT {
       LOOKUP = lookup.findVirtual(JSObject.class, "lookup", methodType(Object.class, String.class));
       REGISTER = lookup.findVirtual(JSObject.class, "register", methodType(void.class, String.class, Object.class));
       TRUTH = lookup.findStatic(RT.class, "truth", methodType(boolean.class, Object.class));
-      
+
       GET_MH = lookup.findVirtual(JSObject.class, "getMethodHandle", methodType(MethodHandle.class));
       METH_LOOKUP_MH = lookup.findStatic(RT.class, "lookupMethodHandle", methodType(MethodHandle.class, JSObject.class, String.class));
     } catch (NoSuchMethodException | IllegalAccessException e) {
       throw new AssertionError(e);
     }
   }
-  
+
   public static Object bsm_undefined(Lookup lookup, String name, Class<?> type) {
     return UNDEFINED;
   }

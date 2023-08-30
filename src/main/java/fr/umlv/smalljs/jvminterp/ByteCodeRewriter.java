@@ -179,9 +179,9 @@ public class ByteCodeRewriter {
         case Block(List<Expr> instrs, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO Block");
           // for each expression
-            // generate line numbers
-            // visit it
-            // if not an instruction and generate a POP
+          // generate line numbers
+          // visit it
+          // if not an instruction and generate a POP
         }
         case Literal<?>(Object value, int lineNumber) -> {
           throw new UnsupportedOperationException("TODO Literal");
@@ -209,11 +209,14 @@ public class ByteCodeRewriter {
           throw new UnsupportedOperationException("TODO LocalVarAccess");
           // lookup to find if it's a local var access or a lookup access
           // if undefined
-            //  generate an invokedynamic doing a lookup
+          //  generate an invokedynamic doing a lookup
           // otherwise
-            //  load the local variable at the slot
+          //  load the local variable at the slot
         }
-        case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) fun -> {
+        case Fun fun -> {
+          Optional<String> optName = fun.name();
+          List<String> parameters = fun.parameters();
+          Block body = fun.body();
           throw new UnsupportedOperationException("TODO Fun");
           // register the fun inside the fun directory and get the corresponding id
           // emit a LDC to load the function corresponding to the id at runtime

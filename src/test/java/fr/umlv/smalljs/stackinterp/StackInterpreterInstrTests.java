@@ -35,21 +35,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings("static-method")
 public class StackInterpreterInstrTests {
 	private static JSObject newFunction(String name, Code code) {
-    var fun = JSObject.newFunction(name, (self, receiver, args) -> {
-    	      throw new Failure("native call not supported");
-        }
-    );
-    fun.register("__code__", code);
-    return fun;
-  }
-  private static String execute(Code mainCode, Dictionary dict) {
-    var outStream = new ByteArrayOutputStream(8192);
-    var globalEnv = StackInterpreter.createGlobalEnv(new PrintStream(outStream, false, UTF_8));
-    var mainFun = newFunction("main", mainCode);
-    globalEnv.register("main", mainFun);
-    StackInterpreter.execute(mainFun, dict, globalEnv);
-    return outStream.toString(UTF_8).replace("\r\n", "\n");
-  }
+		var fun = JSObject.newFunction(name, (self, receiver, args) -> {
+					throw new Failure("native call not supported");
+				}
+		);
+		fun.register("__code__", code);
+		return fun;
+	}
+	private static String execute(Code mainCode, Dictionary dict) {
+		var outStream = new ByteArrayOutputStream(8192);
+		var globalEnv = StackInterpreter.createGlobalEnv(new PrintStream(outStream, false, UTF_8));
+		var mainFun = newFunction("main", mainCode);
+		globalEnv.register("main", mainFun);
+		StackInterpreter.execute(mainFun, dict, globalEnv);
+		return outStream.toString(UTF_8).replace("\r\n", "\n");
+	}
 
 
 // @Tag("Q2") @Test

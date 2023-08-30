@@ -43,24 +43,32 @@ public class ASTInterpreter {
         yield UNDEFINED;
       }
       case Literal<?>(Object value, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO Literal");
-			}
+        throw new UnsupportedOperationException("TODO Literal");
+      }
       case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO FunCall");
+        throw new UnsupportedOperationException("TODO FunCall");
       }
       case LocalVarAccess(String name, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO LocalVarAccess");
-			}
+        throw new UnsupportedOperationException("TODO LocalVarAccess");
+      }
       case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO LocalVarAssignment");
       }
       case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
-        // var functionName = optName.orElse("lambda");
-        // Invoker invoker = new Invoker() {
-        // TODO
-        // };
-        // TODO
+        //var functionName = optName.orElse("lambda");
+        //Invoker invoker = new Invoker() {
+        //  @Override
+        //  public Object invoke(JSObject self, Object receiver, Object... args) {
+        //    // check the arguments length
+        //    // create a new environment
+        //    // add this and all the parameters
+        //    // visit the body
+        //  }
+        //};
+        // create the JS function with the invoker
+        // register it if necessary
+        // yield the function
       }
       case Return(Expr expr, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Return");

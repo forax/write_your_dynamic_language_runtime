@@ -159,11 +159,9 @@ public class InstrRewriter {
 					}
 				}
 			}
-			case Literal<?>(Object value, int lineNumber) -> {
+			case Literal<?>(Object literalValue, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Literal");
-				// get the literal value
-				//var literalValue = ...
-				// test if it's a positive integers
+				// test if the literal value is a positive integers
 				//if (literalValue instanceof Integer value && value >= 0) {
 				// emit a small int
 				//buffer.emit(...).emit(...);
@@ -211,7 +209,7 @@ public class InstrRewriter {
 				// emit a store at the variable slot
 				//buffer.emit(...).emit(...);
 			}
-			case Fun fun -> {
+			case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
 				// create a JSObject function
 				///var function = createFunction(optName, parameters, body, dict, globalEnv);
@@ -243,7 +241,7 @@ public class InstrRewriter {
 				//buffer.patch(..., buffer.label());
 				// visit the false block
 				//visit(...);
-				// patch the second place holder
+				// patch the second placeholder
 				//buffer.patch(..., buffer.label());
 			}
 			case New(Map<String, Expr> initMap, int lineNumber) -> {
@@ -252,10 +250,10 @@ public class InstrRewriter {
 				//var clazz = JSObject.newObject(null);
 				// loop over all the field initializations
 				//initMap().forEach((fieldName, expr) -> {
-				  // register the field name with the right slot
-				  //clazz.register(...);
-				  // visit the initialization expression
-				  //visit(...);
+				//  register the field name with the right slot
+				//  clazz.register(...);
+				//   visit the initialization expression
+				//  visit(...);
 				//});
 				// emit a NEW with the class
 				//buffer.emit(...).emit(...);
