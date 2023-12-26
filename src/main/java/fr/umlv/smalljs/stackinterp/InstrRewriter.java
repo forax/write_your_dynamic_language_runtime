@@ -173,12 +173,12 @@ public class InstrRewriter {
 			case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO FunCall");
 				// visit the qualifier
-				//visitor.visit(...);
+				//visit(...);
 				// emit undefined
 				//buffer.emit(...).emit(...)
 				// visit all arguments
 				//for (var arg : funCall.args()) {
-				//	visitor.visit(...);
+				//	visit(...);
 				//}
 				// emit the funcall
 				//buffer.emit(...).emit(...);
