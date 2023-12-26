@@ -5,18 +5,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import static org.objectweb.asm.Opcodes.ACC_SUPER;
-import static org.objectweb.asm.Opcodes.ACONST_NULL;
-import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.ASTORE;
-import static org.objectweb.asm.Opcodes.DUP;
-import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.IFEQ;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.POP;
-import static org.objectweb.asm.Opcodes.V11;
+import static org.objectweb.asm.Opcodes.V21;
 
 import java.io.PrintWriter;
 import java.lang.invoke.CallSite;
@@ -28,12 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import fr.umlv.smalljs.rt.Failure;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.util.CheckClassAdapter;
 
@@ -44,7 +34,6 @@ import fr.umlv.smalljs.ast.Expr.FieldAssignment;
 import fr.umlv.smalljs.ast.Expr.Fun;
 import fr.umlv.smalljs.ast.Expr.FunCall;
 import fr.umlv.smalljs.ast.Expr.If;
-import fr.umlv.smalljs.ast.Expr.Instr;
 import fr.umlv.smalljs.ast.Expr.Literal;
 import fr.umlv.smalljs.ast.Expr.LocalVarAccess;
 import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
@@ -66,7 +55,7 @@ public class ByteCodeRewriter {
         var localVariableCount = env.length();
 
         var cv = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-        cv.visit(V11, ACC_PUBLIC | ACC_SUPER, "script", null, "java/lang/Object", null);
+        cv.visit(V21, ACC_PUBLIC | ACC_SUPER, "script", null, "java/lang/Object", null);
         cv.visitSource("script", null);
 
         var methodType = genericMethodType(1 + parameters.size());
@@ -214,7 +203,7 @@ public class ByteCodeRewriter {
           //  load the local variable at the slot
         }
         case Fun fun -> {
-          Optional<String> optName = fun.name();
+          Optional<String> optName = fun.optName();
           List<String> parameters = fun.parameters();
           Block body = fun.body();
           throw new UnsupportedOperationException("TODO Fun");

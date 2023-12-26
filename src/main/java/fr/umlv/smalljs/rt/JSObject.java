@@ -147,8 +147,8 @@ public class JSObject {
     }
     if (!seen.add(object)) {
       builder.append("...");
-      if (object instanceof JSObject) {
-        builder.append(" // ").append(((JSObject)object).name);
+      if (object instanceof JSObject jsObject) {
+        builder.append(" // ").append(jsObject.name);
       }
       return;
     }

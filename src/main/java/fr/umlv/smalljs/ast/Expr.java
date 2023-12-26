@@ -35,9 +35,9 @@ public sealed interface Expr {
     }
   }
 
-  record Fun(Optional<String> name, List<String> parameters, Block body, int lineNumber) implements Expr {
+  record Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) implements Expr {
     public Fun {
-      requireNonNull(name);
+      requireNonNull(optName);
       requireNonNull(parameters);
       requireNonNull(body);
     }
