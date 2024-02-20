@@ -48,13 +48,21 @@ public class RT {
 
   public static CallSite bsm_funcall(Lookup lookup, String name, MethodType type) {
     throw new UnsupportedOperationException("TODO bsm_funcall");
+    // take GET_MH method handle
+    // make it accept an Object (not a JSObject) as first parameter
+    // create a generic invoker (MethodHandles.invoker()) on the parameter types without the qualifier
+    // drop the qualifier
+    // use MethopdHandles.foldArguments with GET_MH as combiner
+    // create a constant callsite
   }
 
   public static CallSite bsm_lookup(Lookup lookup, String name, MethodType type, String functionName) {
     throw new UnsupportedOperationException("TODO bsm_lookup");
     //var classLoader = (FunClassLoader) lookup.lookupClass().getClassLoader();
     //var globalEnv = classLoader.getGlobal();
-    // TODO
+    // get the LOOKUP method handle
+    // use the global environment as first argument and the functionName as second argument
+    // create a constant callsite
   }
 
   public static Object bsm_fun(Lookup lookup, String name, Class<?> type, int funId) {
@@ -69,7 +77,9 @@ public class RT {
     throw new UnsupportedOperationException("TODO bsm_register");
     //var classLoader = (FunClassLoader) lookup.lookupClass().getClassLoader();
     //var globalEnv = classLoader.getGlobal();
-    //TODO
+    //get the REGISTER method handle
+    // use the global environment as first argument and the functionName as second argument
+    // create a constant callsite
   }
 
   @SuppressWarnings("unused")  // used by a method handle
@@ -78,22 +88,29 @@ public class RT {
   }
   public static CallSite bsm_truth(Lookup lookup, String name, MethodType type) {
     throw new UnsupportedOperationException("TODO bsm_truth");
-    //TODO
+    // get the TRUTH method handle
+    // create a constant callsite
   }
 
   public static CallSite bsm_get(Lookup lookup, String name, MethodType type, String fieldName) {
     throw new UnsupportedOperationException("TODO bsm_get");
-    //TODO
+    // get the LOOKUP method handle
+    // use the fieldName as second argument
+    // make it accept an Object (not a JSObject) as first parameter
+    // create a constant callsite
   }
 
   public static CallSite bsm_set(Lookup lookup, String name, MethodType type, String fieldName) {
     throw new UnsupportedOperationException("TODO bsm_set");
-    //TODO
+    // get the REGISTER method handle
+    // use the fieldName as second argument
+    // make it accept an Object (not a JSObject) as first parameter
+    // create a constant callsite
   }
 
   @SuppressWarnings("unused")  // used by a method handle
   private static MethodHandle lookupMethodHandle(JSObject receiver, String fieldName) {
-    var function = (JSObject)receiver.lookup(fieldName);
+    var function = (JSObject) receiver.lookup(fieldName);
     return function.getMethodHandle();
   }
 
