@@ -38,26 +38,30 @@ public final class JSObject {
   
   private JSObject(JSObject proto, String name, MethodHandle mh) {
     this.proto = proto;
-    this.name = requireNonNull(name);
-    this.mh = requireNonNull(mh);
+    this.name = name;
+    this.mh = mh;
   }
-  
+
   private JSObject(JSObject proto, String name, Invoker invoker) {
-    this(proto, name, INVOKER.bindTo(invoker).asVarargsCollector(Object[].class));
+    this(proto, name, INVOKER.bindTo(invoker).withVarargs(true));
   }
   
   public static JSObject newObject(JSObject proto) {
-    return new JSObject(proto, "object", (_, _) -> { throw new Failure("object can not be applied"); });
+    return new JSObject(proto, "object", (_, _) -> { throw new Failure("object can not be invoked"); });
   }
   public static JSObject newEnv(JSObject parent) {
-    return new JSObject(parent, "env", (_, _) -> { throw new Failure("env can not be applied"); });
+    return new JSObject(parent, "env", (_, _) -> { throw new Failure("env can not be invoked"); });
   }
   public static JSObject newFunction(String name, Invoker invoker) {
+    requireNonNull(name);
+    requireNonNull(invoker);
     var function =  new JSObject(null, "function " + name, invoker);
     function.register("apply", function);
     return function;
   }
   public static JSObject newFunction(String name, MethodHandle mh) {
+    requireNonNull(name);
+    requireNonNull(mh);
     var function = new JSObject(null, "function " + name, mh);
     function.register("apply", function);
     return function;
@@ -125,6 +129,7 @@ public final class JSObject {
   }
   
   public JSObject mirror(Function<Object, Object> valueMapper) {
+    requireNonNull(valueMapper);
     var mirror = newObject(null);
     valueMap.forEach((key, value) -> {
       mirror.register(key, valueMapper.apply(value));  
