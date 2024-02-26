@@ -16,13 +16,13 @@ import fr.umlv.smalljs.ast.Expr.Return;
 import fr.umlv.smalljs.ast.Script;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
-import fr.umlv.smalljs.rt.JSObject.Invoker;
 
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
 import static java.util.stream.Collectors.joining;
@@ -92,27 +92,31 @@ public final class ASTInterpreter {
   }
 
   @SuppressWarnings("unchecked")
-  public static void interpret(Script script, PrintStream outStream) {
+  private static JSObject createGlobalEnv(PrintStream outStream) {
     JSObject globalEnv = JSObject.newEnv(null);
-    Block body = script.body();
     globalEnv.register("global", globalEnv);
-    globalEnv.register("print", JSObject.newFunction("print", (receiver, args) -> {
+    globalEnv.register("print", JSObject.newFunction("print", (_, args) -> {
       System.err.println("print called with " + Arrays.toString(args));
-      outStream.println(Arrays.stream(args).map(Object::toString).collect(joining(" ")));
+      outStream.println(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(" ")));
       return UNDEFINED;
     }));
-    globalEnv.register("+", JSObject.newFunction("+", (receiver, args) -> (Integer) args[0] + (Integer) args[1]));
-    globalEnv.register("-", JSObject.newFunction("-", (receiver, args) -> (Integer) args[0] - (Integer) args[1]));
-    globalEnv.register("/", JSObject.newFunction("/", (receiver, args) -> (Integer) args[0] / (Integer) args[1]));
-    globalEnv.register("*", JSObject.newFunction("*", (receiver, args) -> (Integer) args[0] * (Integer) args[1]));
-    globalEnv.register("%", JSObject.newFunction("%", (receiver, args) -> (Integer) args[0] % (Integer) args[1]));
+    globalEnv.register("+", JSObject.newFunction("+", (_, args) -> (Integer) args[0] + (Integer) args[1]));
+    globalEnv.register("-", JSObject.newFunction("-", (_, args) -> (Integer) args[0] - (Integer) args[1]));
+    globalEnv.register("/", JSObject.newFunction("/", (_, args) -> (Integer) args[0] / (Integer) args[1]));
+    globalEnv.register("*", JSObject.newFunction("*", (_, args) -> (Integer) args[0] * (Integer) args[1]));
+    globalEnv.register("%", JSObject.newFunction("%", (_, args) -> (Integer) args[0] % (Integer) args[1]));
+    globalEnv.register("==", JSObject.newFunction("==", (_, args) -> args[0].equals(args[1]) ? 1 : 0));
+    globalEnv.register("!=", JSObject.newFunction("!=", (_, args) -> !args[0].equals(args[1]) ? 1 : 0));
+    globalEnv.register("<", JSObject.newFunction("<", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
+    globalEnv.register("<=", JSObject.newFunction("<=", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
+    globalEnv.register(">", JSObject.newFunction(">", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
+    globalEnv.register(">=", JSObject.newFunction(">=", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
+    return globalEnv;
+  }
 
-    globalEnv.register("==", JSObject.newFunction("==", (receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
-    globalEnv.register("!=", JSObject.newFunction("!=", (receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
-    globalEnv.register("<", JSObject.newFunction("<", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
-    globalEnv.register("<=", JSObject.newFunction("<=", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
-    globalEnv.register(">", JSObject.newFunction(">", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
-    globalEnv.register(">=", JSObject.newFunction(">=", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
+  public static void interpret(Script script, PrintStream outStream) {
+    JSObject globalEnv =createGlobalEnv(outStream);
+    Block body = script.body();
     visit(body, globalEnv);
   }
 }

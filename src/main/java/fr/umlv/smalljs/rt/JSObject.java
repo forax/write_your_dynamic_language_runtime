@@ -47,10 +47,10 @@ public final class JSObject {
   }
   
   public static JSObject newObject(JSObject proto) {
-    return new JSObject(proto, "object", (_1, _2) -> { throw new Failure("object can not be applied"); });
+    return new JSObject(proto, "object", (_, _) -> { throw new Failure("object can not be applied"); });
   }
   public static JSObject newEnv(JSObject parent) {
-    return new JSObject(parent, "env", (_1, _2) -> { throw new Failure("env can not be applied"); });
+    return new JSObject(parent, "env", (_, _) -> { throw new Failure("env can not be applied"); });
   }
   public static JSObject newFunction(String name, Invoker invoker) {
     var function =  new JSObject(null, "function " + name, invoker);

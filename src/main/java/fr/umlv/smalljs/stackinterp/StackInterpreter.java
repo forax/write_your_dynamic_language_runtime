@@ -1,13 +1,8 @@
 package fr.umlv.smalljs.stackinterp;
 
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
-import static fr.umlv.smalljs.stackinterp.TagValues.OBJECT_HEADER_SIZE;
 import static fr.umlv.smalljs.stackinterp.TagValues.decodeAnyValue;
-import static fr.umlv.smalljs.stackinterp.TagValues.decodeDictObject;
-import static fr.umlv.smalljs.stackinterp.TagValues.decodeReference;
-import static fr.umlv.smalljs.stackinterp.TagValues.encodeAnyValue;
 import static fr.umlv.smalljs.stackinterp.TagValues.encodeDictObject;
-import static fr.umlv.smalljs.stackinterp.TagValues.encodeReference;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -17,7 +12,6 @@ import java.util.stream.Collectors;
 
 import fr.umlv.smalljs.ast.Expr;
 import fr.umlv.smalljs.ast.Script;
-import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
 public final class StackInterpreter {
@@ -409,28 +403,22 @@ public final class StackInterpreter {
 	public static JSObject createGlobalEnv(PrintStream outStream) {
 		JSObject globalEnv = JSObject.newEnv(null);
 		globalEnv.register("global", globalEnv);
-		globalEnv.register("print", JSObject.newFunction("print", (receiver, args) -> {
+		globalEnv.register("print", JSObject.newFunction("print", (_, args) -> {
 			System.err.println("print called with " + Arrays.toString(args));
 			outStream.println(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(" ")));
 			return UNDEFINED;
 		}));
-		globalEnv.register("+", JSObject.newFunction("+", (receiver, args) -> (Integer) args[0] + (Integer) args[1]));
-		globalEnv.register("-", JSObject.newFunction("-", (receiver, args) -> (Integer) args[0] - (Integer) args[1]));
-		globalEnv.register("/", JSObject.newFunction("/", (receiver, args) -> (Integer) args[0] / (Integer) args[1]));
-		globalEnv.register("*", JSObject.newFunction("*", (receiver, args) -> (Integer) args[0] * (Integer) args[1]));
-		globalEnv.register("%", JSObject.newFunction("%", (receiver, args) -> (Integer) args[0] % (Integer) args[1]));
-
-		globalEnv.register("==", JSObject.newFunction("==", (receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
-		globalEnv.register("!=", JSObject.newFunction("!=", (receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
-		globalEnv.register("<", JSObject.newFunction("<",
-				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
-		globalEnv.register("<=", JSObject.newFunction("<=",
-				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
-		globalEnv.register(">", JSObject.newFunction(">",
-				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
-		globalEnv.register(">=", JSObject.newFunction(">=",
-				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
-
+		globalEnv.register("+", JSObject.newFunction("+", (_, args) -> (Integer) args[0] + (Integer) args[1]));
+		globalEnv.register("-", JSObject.newFunction("-", (_, args) -> (Integer) args[0] - (Integer) args[1]));
+		globalEnv.register("/", JSObject.newFunction("/", (_, args) -> (Integer) args[0] / (Integer) args[1]));
+		globalEnv.register("*", JSObject.newFunction("*", (_, args) -> (Integer) args[0] * (Integer) args[1]));
+		globalEnv.register("%", JSObject.newFunction("%", (_, args) -> (Integer) args[0] % (Integer) args[1]));
+		globalEnv.register("==", JSObject.newFunction("==", (_, args) -> args[0].equals(args[1]) ? 1 : 0));
+		globalEnv.register("!=", JSObject.newFunction("!=", (_, args) -> !args[0].equals(args[1]) ? 1 : 0));
+		globalEnv.register("<", JSObject.newFunction("<", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
+		globalEnv.register("<=", JSObject.newFunction("<=", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
+		globalEnv.register(">", JSObject.newFunction(">", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
+		globalEnv.register(">=", JSObject.newFunction(">=", (_, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
 		return globalEnv;
 	}
 
