@@ -52,7 +52,7 @@ public class RT {
     // make it accept an Object (not a JSObject) as first parameter
     // create a generic invoker (MethodHandles.invoker()) on the parameter types without the qualifier
     // drop the qualifier
-    // use MethopdHandles.foldArguments with GET_MH as combiner
+    // use MethodHandles.foldArguments with GET_MH as combiner
     // create a constant callsite
   }
 
@@ -70,7 +70,7 @@ public class RT {
     //var classLoader = (FunClassLoader) lookup.lookupClass().getClassLoader();
     //var globalEnv = classLoader.getGlobal();
     //var fun = classLoader.getDictionary().lookupAndClear(funId);
-    //return ByteCodeRewriter.createFunction(fun.name().orElse("lambda"), fun.parameters(), fun.body(), globalEnv);
+    //return ByteCodeRewriter.createFunction(fun.optName().orElse("lambda"), fun.parameters(), fun.body(), globalEnv);
   }
 
   public static CallSite bsm_register(Lookup lookup, String name, MethodType type, String functionName) {

@@ -204,8 +204,6 @@ public class ByteCodeRewriter {
         }
         case Fun fun -> {
           Optional<String> optName = fun.optName();
-          List<String> parameters = fun.parameters();
-          Block body = fun.body();
           throw new UnsupportedOperationException("TODO Fun");
           // register the fun inside the fun directory and get the corresponding id
           // emit a LDC to load the function corresponding to the id at runtime
