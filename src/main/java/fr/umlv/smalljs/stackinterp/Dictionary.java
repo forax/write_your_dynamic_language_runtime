@@ -3,7 +3,7 @@ package fr.umlv.smalljs.stackinterp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Dictionary {
+public final class Dictionary {
 	private final HashMap<Object, Integer> indexMap = new HashMap<>();
 	private final ArrayList<Object> constants = new ArrayList<>();
 

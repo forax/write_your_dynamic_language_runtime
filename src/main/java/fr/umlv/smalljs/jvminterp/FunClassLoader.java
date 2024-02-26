@@ -2,7 +2,7 @@ package fr.umlv.smalljs.jvminterp;
 
 import fr.umlv.smalljs.rt.JSObject;
 
-class FunClassLoader extends ClassLoader {
+final class FunClassLoader extends ClassLoader {
   private final FunDictionary dictionary;
   private final JSObject global; 
   

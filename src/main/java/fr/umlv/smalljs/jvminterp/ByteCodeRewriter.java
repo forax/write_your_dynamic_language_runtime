@@ -42,7 +42,7 @@ import fr.umlv.smalljs.ast.Expr.New;
 import fr.umlv.smalljs.ast.Expr.Return;
 import fr.umlv.smalljs.rt.JSObject;
 
-public class ByteCodeRewriter {
+public final class ByteCodeRewriter {
     public static JSObject createFunction(String name, List<String> parameters, Block body, JSObject global) {
         var env = JSObject.newEnv(null);
 

@@ -11,7 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.function.Function;
 
-public class JSObject {
+public final class JSObject {
   private final JSObject proto;
   private final String name;
   private final MethodHandle mh;
@@ -26,15 +26,14 @@ public class JSObject {
   private static final MethodHandle INVOKER;
   static {
     try {
-      INVOKER = MethodHandles.lookup().findVirtual(Invoker.class, "invoke", MethodType.methodType(Object.class, JSObject.class, Object.class, Object[].class));
+      INVOKER = MethodHandles.lookup().findVirtual(Invoker.class, "invoke", MethodType.methodType(Object.class, Object.class, Object[].class));
     } catch (NoSuchMethodException | IllegalAccessException e) {
       throw new AssertionError(e);
     }
   }
 
-  @FunctionalInterface
   public interface Invoker {
-    Object invoke(JSObject self, Object receiver, Object... args);
+    Object invoke(Object receiver, Object... args);
   }
   
   private JSObject(JSObject proto, String name, MethodHandle mh) {
@@ -44,16 +43,14 @@ public class JSObject {
   }
   
   private JSObject(JSObject proto, String name, Invoker invoker) {
-    this.proto = proto;
-    this.name = requireNonNull(name);
-    this.mh = INVOKER.bindTo(invoker).bindTo(this).asVarargsCollector(Object[].class);
+    this(proto, name, INVOKER.bindTo(invoker).asVarargsCollector(Object[].class));
   }
   
   public static JSObject newObject(JSObject proto) {
-    return new JSObject(proto, "object", (_1, _2, _3) -> { throw new Failure("object can not be applied"); });
+    return new JSObject(proto, "object", (_1, _2) -> { throw new Failure("object can not be applied"); });
   }
   public static JSObject newEnv(JSObject parent) {
-    return new JSObject(parent, "env", (_1, _2, _3) -> { throw new Failure("env can not be applied"); });
+    return new JSObject(parent, "env", (_1, _2) -> { throw new Failure("env can not be applied"); });
   }
   public static JSObject newFunction(String name, Invoker invoker) {
     var function =  new JSObject(null, "function " + name, invoker);
@@ -81,11 +78,11 @@ public class JSObject {
   public Object fastAccess(int slot) {
     return valueMap.fastAccess(slot);
   }
-  
+
   public Object invoke(Object receiver, Object[] args) {
     //System.err.println("invoke " + this + " " + receiver + " " + java.util.Arrays.toString(args));
     //System.err.println("invoke mh " + mh);
-    
+
     if (!mh.isVarargsCollector() && args.length != mh.type().parameterCount() - 1) {
       throw new Failure("arguments doesn't match parameters count " + args.length + " " + (mh.type().parameterCount() - 1));
     }
@@ -129,7 +126,9 @@ public class JSObject {
   
   public JSObject mirror(Function<Object, Object> valueMapper) {
     var mirror = newObject(null);
-    valueMap.forEach((key, value) -> mirror.register(key, valueMapper.apply(value)));
+    valueMap.forEach((key, value) -> {
+      mirror.register(key, valueMapper.apply(value));  
+    });
     return mirror;
   }
   

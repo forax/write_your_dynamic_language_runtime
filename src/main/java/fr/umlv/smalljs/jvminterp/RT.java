@@ -21,7 +21,7 @@ import fr.umlv.smalljs.rt.ArrayMap.Layout;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
-public class RT {
+public final class RT {
   private static final MethodHandle INVOKER, LOOKUP, REGISTER, TRUTH, GET_MH, METH_LOOKUP_MH;
   static {
     var lookup = MethodHandles.lookup();

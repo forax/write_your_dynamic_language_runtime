@@ -15,11 +15,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import fr.umlv.smalljs.ast.Expr;
 import fr.umlv.smalljs.ast.Script;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
-public class StackInterpreter {
+public final class StackInterpreter {
 	private static void push(int[] stack, int sp, int value) {
 		stack[sp] = value;
 	}
@@ -408,36 +409,36 @@ public class StackInterpreter {
 	public static JSObject createGlobalEnv(PrintStream outStream) {
 		JSObject globalEnv = JSObject.newEnv(null);
 		globalEnv.register("global", globalEnv);
-		globalEnv.register("print", JSObject.newFunction("print", (self, receiver, args) -> {
+		globalEnv.register("print", JSObject.newFunction("print", (receiver, args) -> {
 			System.err.println("print called with " + Arrays.toString(args));
 			outStream.println(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(" ")));
 			return UNDEFINED;
 		}));
-		globalEnv.register("+", JSObject.newFunction("+", (self, receiver, args) -> (Integer) args[0] + (Integer) args[1]));
-		globalEnv.register("-", JSObject.newFunction("-", (self, receiver, args) -> (Integer) args[0] - (Integer) args[1]));
-		globalEnv.register("/", JSObject.newFunction("/", (self, receiver, args) -> (Integer) args[0] / (Integer) args[1]));
-		globalEnv.register("*", JSObject.newFunction("*", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
-		globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] % (Integer) args[1]));
+		globalEnv.register("+", JSObject.newFunction("+", (receiver, args) -> (Integer) args[0] + (Integer) args[1]));
+		globalEnv.register("-", JSObject.newFunction("-", (receiver, args) -> (Integer) args[0] - (Integer) args[1]));
+		globalEnv.register("/", JSObject.newFunction("/", (receiver, args) -> (Integer) args[0] / (Integer) args[1]));
+		globalEnv.register("*", JSObject.newFunction("*", (receiver, args) -> (Integer) args[0] * (Integer) args[1]));
+		globalEnv.register("%", JSObject.newFunction("%", (receiver, args) -> (Integer) args[0] % (Integer) args[1]));
 
-		globalEnv.register("==", JSObject.newFunction("==", (self, receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
-		globalEnv.register("!=", JSObject.newFunction("!=", (self, receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
+		globalEnv.register("==", JSObject.newFunction("==", (receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
+		globalEnv.register("!=", JSObject.newFunction("!=", (receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
 		globalEnv.register("<", JSObject.newFunction("<",
-				(self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
+				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
 		globalEnv.register("<=", JSObject.newFunction("<=",
-				(self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
+				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
 		globalEnv.register(">", JSObject.newFunction(">",
-				(self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
+				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
 		globalEnv.register(">=", JSObject.newFunction(">=",
-				(self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
+				(receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
 
 		return globalEnv;
 	}
 
-	public static void interpret(Script script, PrintStream outStream) {
+	public static Object interpret(Script script, PrintStream outStream) {
 		JSObject globalEnv = createGlobalEnv(outStream);
-		var body = script.body();
-		var function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, new Dictionary(),
-				globalEnv);
-		function.invoke(UNDEFINED, new Object[0]);
+		Expr.Block body = script.body();
+		Dictionary dictionary = new Dictionary();
+		JSObject function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, dictionary);
+		return StackInterpreter.execute(function, dictionary, globalEnv);
 	}
 }

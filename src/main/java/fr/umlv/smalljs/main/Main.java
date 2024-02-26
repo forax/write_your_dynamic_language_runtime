@@ -16,7 +16,7 @@ import static java.nio.file.Files.newBufferedReader;
 import static java.nio.file.Paths.get;
 
 // run with /path/to/jdk-15/bin/java --enable-preview --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main ast samples/hello.js
-public class Main {
+public final class Main {
   private static BiConsumer<Script, PrintStream> interpreter(String name) {
     return switch (name) {
       case "ast" -> ASTInterpreter::interpret;

@@ -37,7 +37,7 @@ import fr.umlv.smalljs.ast.Expr.Return;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
-public class InstrRewriter {
+public final class InstrRewriter {
 	static class InstrBuffer {
 		private int[] instrs;
 		private int size;
@@ -71,7 +71,7 @@ public class InstrRewriter {
 		}
 	}
 
-	public static JSObject createFunction(Optional<String> name, List<String> parameters, Block body, Dictionary dict, JSObject globalEnv) {
+	public static JSObject createFunction(Optional<String> name, List<String> parameters, Block body, Dictionary dict) {
 		var env = JSObject.newEnv(null);
 
 		env.register("this", 0);
@@ -81,7 +81,7 @@ public class InstrRewriter {
 		visitVariable(body, env);
 
 		var buffer = new InstrBuffer();
-		visit(body, env, buffer, dict, globalEnv);
+		visit(body, env, buffer, dict);
 		buffer.emit(CONST).emit(encodeDictObject(UNDEFINED, dict));
 		buffer.emit(RET);
 
@@ -89,11 +89,8 @@ public class InstrRewriter {
 		Instructions.dump(instrs, dict);
 
 		var code = new Code(instrs, parameters.size() + 1 /* this */, env.length());
-		var function = JSObject.newFunction(name.orElse("lambda"), (self, receiver, args) -> {
-			if (receiver != UNDEFINED || args.length != 0) {
-				throw new Failure("can not interpret a function with a receiver and/or arguments");
-			}
-			return StackInterpreter.execute(self, dict, globalEnv);
+		var function = JSObject.newFunction(name.orElse("lambda"), (receiver, args) -> {
+			throw new Failure("native call not supported");
 		});
 		function.register("__code__", code);
 		return function;
@@ -145,13 +142,13 @@ public class InstrRewriter {
 		};
 	}
 
-	private static void visit(Expr expression, JSObject env, InstrBuffer buffer, Dictionary dict, JSObject globalEnv) {
+	private static void visit(Expr expression, JSObject env, InstrBuffer buffer, Dictionary dict) {
 		switch (expression) {
 			case Block(List<Expr> instrs, int lineNumber) -> {
 				// for each expression of the block
 				for (var instr : instrs) {
 					// visit the expression
-					visit(instr, env, buffer, dict, globalEnv);
+					visit(instr, env, buffer, dict);
 					// if the expression is an instruction (i.e. return void)
 					if (!(instr instanceof Instr)) {
 						// ask to top the top of the stack

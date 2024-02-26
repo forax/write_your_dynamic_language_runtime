@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import fr.umlv.smalljs.ast.Expr.Fun;
 
-class FunDictionary {
+final class FunDictionary {
   private final ArrayList<Fun> dictionary = new ArrayList<>();
   
   int register(Fun fun) {

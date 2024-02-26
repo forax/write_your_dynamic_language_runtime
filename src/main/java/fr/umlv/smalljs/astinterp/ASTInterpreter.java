@@ -27,7 +27,7 @@ import java.util.Optional;
 import static fr.umlv.smalljs.rt.JSObject.UNDEFINED;
 import static java.util.stream.Collectors.joining;
 
-public class ASTInterpreter {
+public final class ASTInterpreter {
   private static JSObject asJSObject(Object value, int lineNumber) {
     if (!(value instanceof JSObject jsObject)) {
       throw new Failure("at line " + lineNumber + ", type error " + value + " is not a JSObject");
@@ -96,23 +96,23 @@ public class ASTInterpreter {
     JSObject globalEnv = JSObject.newEnv(null);
     Block body = script.body();
     globalEnv.register("global", globalEnv);
-    globalEnv.register("print", JSObject.newFunction("print", (self, receiver, args) -> {
+    globalEnv.register("print", JSObject.newFunction("print", (receiver, args) -> {
       System.err.println("print called with " + Arrays.toString(args));
       outStream.println(Arrays.stream(args).map(Object::toString).collect(joining(" ")));
       return UNDEFINED;
     }));
-    globalEnv.register("+", JSObject.newFunction("+", (self, receiver, args) -> (Integer) args[0] + (Integer) args[1]));
-    globalEnv.register("-", JSObject.newFunction("-", (self, receiver, args) -> (Integer) args[0] - (Integer) args[1]));
-    globalEnv.register("/", JSObject.newFunction("/", (self, receiver, args) -> (Integer) args[0] / (Integer) args[1]));
-    globalEnv.register("*", JSObject.newFunction("*", (self, receiver, args) -> (Integer) args[0] * (Integer) args[1]));
-    globalEnv.register("%", JSObject.newFunction("%", (self, receiver, args) -> (Integer) args[0] % (Integer) args[1]));
+    globalEnv.register("+", JSObject.newFunction("+", (receiver, args) -> (Integer) args[0] + (Integer) args[1]));
+    globalEnv.register("-", JSObject.newFunction("-", (receiver, args) -> (Integer) args[0] - (Integer) args[1]));
+    globalEnv.register("/", JSObject.newFunction("/", (receiver, args) -> (Integer) args[0] / (Integer) args[1]));
+    globalEnv.register("*", JSObject.newFunction("*", (receiver, args) -> (Integer) args[0] * (Integer) args[1]));
+    globalEnv.register("%", JSObject.newFunction("%", (receiver, args) -> (Integer) args[0] % (Integer) args[1]));
 
-    globalEnv.register("==", JSObject.newFunction("==", (self, receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
-    globalEnv.register("!=", JSObject.newFunction("!=", (self, receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
-    globalEnv.register("<", JSObject.newFunction("<", (self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
-    globalEnv.register("<=", JSObject.newFunction("<=", (self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
-    globalEnv.register(">", JSObject.newFunction(">", (self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
-    globalEnv.register(">=", JSObject.newFunction(">=", (self, receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
+    globalEnv.register("==", JSObject.newFunction("==", (receiver, args) -> args[0].equals(args[1]) ? 1 : 0));
+    globalEnv.register("!=", JSObject.newFunction("!=", (receiver, args) -> !args[0].equals(args[1]) ? 1 : 0));
+    globalEnv.register("<", JSObject.newFunction("<", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) < 0) ? 1 : 0));
+    globalEnv.register("<=", JSObject.newFunction("<=", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) <= 0) ? 1 : 0));
+    globalEnv.register(">", JSObject.newFunction(">", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) > 0) ? 1 : 0));
+    globalEnv.register(">=", JSObject.newFunction(">=", (receiver, args) -> (((Comparable<Object>) args[0]).compareTo(args[1]) >= 0) ? 1 : 0));
     visit(body, globalEnv);
   }
 }
