@@ -422,11 +422,11 @@ public final class StackInterpreter {
 		return globalEnv;
 	}
 
-	public static Object interpret(Script script, PrintStream outStream) {
+	public static void interpret(Script script, PrintStream outStream) {
 		JSObject globalEnv = createGlobalEnv(outStream);
 		Expr.Block body = script.body();
 		Dictionary dictionary = new Dictionary();
 		JSObject function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, dictionary);
-		return StackInterpreter.execute(function, dictionary, globalEnv);
+		StackInterpreter.execute(function, dictionary, globalEnv);
 	}
 }
