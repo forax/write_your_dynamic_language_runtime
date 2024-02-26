@@ -22,11 +22,10 @@ import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
 public final class RT {
-  private static final MethodHandle INVOKER, LOOKUP, REGISTER, TRUTH, GET_MH, METH_LOOKUP_MH;
+  private static final MethodHandle LOOKUP, REGISTER, TRUTH, GET_MH, METH_LOOKUP_MH;
   static {
     var lookup = MethodHandles.lookup();
     try {
-      INVOKER = lookup.findVirtual(JSObject.class, "invoke", methodType(Object.class, Object.class, Object[].class));
       LOOKUP = lookup.findVirtual(JSObject.class, "lookup", methodType(Object.class, String.class));
       REGISTER = lookup.findVirtual(JSObject.class, "register", methodType(void.class, String.class, Object.class));
       TRUTH = lookup.findStatic(RT.class, "truth", methodType(boolean.class, Object.class));
