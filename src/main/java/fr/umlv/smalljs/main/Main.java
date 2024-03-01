@@ -8,14 +8,15 @@ import fr.umlv.smalljs.stackinterp.StackInterpreter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.function.BiConsumer;
 
 import static fr.umlv.smalljs.ast.ASTBuilder.createScript;
 import static java.lang.System.in;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newBufferedReader;
-import static java.nio.file.Paths.get;
 
-// run with /path/to/jdk-15/bin/java --enable-preview --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main ast samples/hello.js
+// run with /path/to/jdk-22/bin/java --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main ast samples/hello.js
 public final class Main {
   private static BiConsumer<Script, PrintStream> interpreter(String name) {
     return switch (name) {
@@ -42,7 +43,7 @@ public final class Main {
     }
     try {
       var interpreter = interpreter(args[0]);
-      try (var reader = (args.length == 2) ? newBufferedReader(get(args[1])) : new InputStreamReader(in)) {
+      try (var reader = (args.length == 2) ? newBufferedReader(Path.of(args[1])) : new InputStreamReader(in, UTF_8)) {
         var script = createScript(reader);
         interpreter.accept(script, System.out);
       }
