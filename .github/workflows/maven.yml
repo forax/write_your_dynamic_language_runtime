@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '22-ea', '23-ea' ]
+        java: [ '23' ]
     name: Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v4
