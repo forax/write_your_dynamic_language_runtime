@@ -7,7 +7,7 @@ values
 
 smalljs runtime has 3 kinds of values, integers, strings and user defined objects.
 
-For the interpreter, every values is a 32 bits tagged integer,
+For the interpreter, a value is a 32 bits tagged integer,
 the interpreter uses the last bits to differentiate the kind of values.
 The same encoding is used for the value on stack or in the heap.
 
@@ -18,10 +18,10 @@ xxxxxxxx xxxxxxxx xxxxxxxx xxxxxx00 -> reference on heap
 ```
 
 This encoding (which is roughly similar to the one used by V8) as the advantages that simple operations
-like an addition or a substraction on small integerss can be done directly without doing the conversion
+like an addition or a subtraction on small integers can be done directly without doing the conversion
 between a tagged value to the real integer and back.
 
-By example, let suppose we want to execute `a + b`, with `a = 2` and `b = 10`,
+For example, let suppose we want to execute `a + b`, with `a = 2` and `b = 10`,
 let's call x and y the encoding of a and b, 2 is encoded as 5 and 10 as 21,
 more generally, given the way small integers are encoded `x = 2a + 1` and `y = 2b + 1`,
 so instead of decoding 5 and 21, doing the addition and recoding them, we can add the encoded value and subtract one.
@@ -195,7 +195,7 @@ Each object is described by
   
 The JSObject representing a class stores for each field name the corresponding slot index.
 
-By example, 
+For example, 
 ```
   var object = {
     x: 1,
