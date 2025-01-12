@@ -343,8 +343,8 @@ public final class StackInterpreter {
 					// get JSObject from class
 					//var clazz = (JSObject) decodeDictObject(vClass, dict);
 					// get field slot from JSObject
-					//int slot = clazz.lookup(fieldName);
-					//if (slot == UNDEFINED) {
+					//int slotOrUndefined = clazz.lookup(fieldName);
+					//if (slotOrUndefined == UNDEFINED) {
 					// no slot, push undefined
 					//	push(..);
 					//	continue;

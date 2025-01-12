@@ -174,7 +174,7 @@ public final class InstrRewriter {
 				// emit undefined
 				//buffer.emit(...).emit(...)
 				// visit all arguments
-				//for (var arg : funCall.args()) {
+				//for (var arg : args) {
 				//	visit(...);
 				//}
 				// emit the funcall
@@ -188,10 +188,10 @@ public final class InstrRewriter {
 				//var slotOrUndefined = env.lookup(...);
 				//if (slotOrUndefined == UNDEFINED) {
 				// emit a lookup with the name
-				//buffer.emit(...).emit(...);
+				//  buffer.emit(...).emit(...);
 				//} else {
 				// load the local variable with the slot
-				//buffer.emit(...).emit(...);
+				//  buffer.emit(...).emit(...);
 				//}
 			}
 			case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
@@ -214,8 +214,8 @@ public final class InstrRewriter {
 				//buffer.emit(...).emit(...);
 				// if the name is present emit a code to register the function in the global environment
 				//fun.name().ifPresent(name -> {
-				//buffer.emit(DUP);
-				//buffer.emit(...).emit(...);
+				//  buffer.emit(DUP);
+				//  buffer.emit(...).emit(...);
 				//});
 			}
 			case Return(Expr expr, int lineNumber) -> {
@@ -246,7 +246,7 @@ public final class InstrRewriter {
 				// create a JSObject class
 				//var clazz = JSObject.newObject(null);
 				// loop over all the field initializations
-				//initMap().forEach((fieldName, expr) -> {
+				//initMap.forEach((fieldName, expr) -> {
 				//  register the field name with the right slot
 				//  clazz.register(...);
 				//   visit the initialization expression
