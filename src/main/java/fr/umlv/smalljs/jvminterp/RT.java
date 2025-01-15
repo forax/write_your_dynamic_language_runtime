@@ -22,15 +22,17 @@ import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
 public final class RT {
-  private static final MethodHandle LOOKUP, REGISTER, TRUTH, GET_MH, METH_LOOKUP_MH, PARAMETER_CHECK;
+  private static final MethodHandle LOOKUP, REGISTER, INVOKE, TRUTH, METH_LOOKUP_MH;
   static {
     var lookup = MethodHandles.lookup();
     try {
       LOOKUP = lookup.findVirtual(JSObject.class, "lookup", methodType(Object.class, String.class));
       REGISTER = lookup.findVirtual(JSObject.class, "register", methodType(void.class, String.class, Object.class));
-      GET_MH = lookup.findVirtual(JSObject.class, "getMethodHandle", methodType(MethodHandle.class));
-      PARAMETER_CHECK = lookup.findStatic(RT.class, "parameterCheck", methodType(MethodHandle.class, MethodHandle.class, int.class));
+
+      INVOKE = lookup.findVirtual(JSObject.class, "invoke", methodType(Object.class, Object.class, Object[].class));
+
       TRUTH = lookup.findStatic(RT.class, "truth", methodType(boolean.class, Object.class));
+
       METH_LOOKUP_MH = lookup.findStatic(RT.class, "lookupMethodHandle", methodType(MethodHandle.class, JSObject.class, String.class));
     } catch (NoSuchMethodException | IllegalAccessException e) {
       throw new AssertionError(e);
@@ -54,21 +56,10 @@ public final class RT {
     // create a constant callsite
   }
 
-  private static MethodHandle parameterCheck(MethodHandle mh, int parameterCount) {
-    if (!mh.isVarargsCollector() && mh.type().parameterCount() != parameterCount) {
-      throw new Failure("wrong number of arguments " + (parameterCount - 1) + " but should be " + (mh.type().parameterCount() - 1));
-    }
-    return mh;
-  }
-
   public static CallSite bsm_funcall(Lookup lookup, String name, MethodType type) {
     throw new UnsupportedOperationException("TODO bsm_funcall");
-    // take GET_MH method handle
-    // check parameters count (TODO)
-    // make it accept an Object (not a JSObject) as first parameter
-    // create a generic invoker (MethodHandles.invoker()) on the parameter types without the qualifier
-    // drop the qualifier
-    // use MethodHandles.foldArguments with GET_MH as combiner
+    // get INVOKE method handle
+    // make it accept an Object (not a JSObject) and objects as other parameters
     // create a constant callsite
   }
 
