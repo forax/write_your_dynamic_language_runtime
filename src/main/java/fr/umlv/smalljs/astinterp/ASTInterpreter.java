@@ -59,7 +59,7 @@ public final class ASTInterpreter {
         //var functionName = optName.orElse("lambda");
         //Invoker invoker = new Invoker() {
         //  @Override
-        //  public Object invoke(JSObject self, Object receiver, Object... args) {
+        //  public Object invoke(Object receiver, Object... args) {
         //    // check the arguments length
         //    // create a new environment
         //    // add this and all the parameters
