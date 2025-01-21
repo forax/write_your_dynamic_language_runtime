@@ -166,7 +166,9 @@ public final class ByteCodeRewriter {
     private static void visit(Expr expression, JSObject env, MethodVisitor mv, FunDictionary dictionary) {
       switch(expression) {
         case Block(List<Expr> instrs, int lineNumber) -> {
-          throw new UnsupportedOperationException("TODO Block");
+          if (true) {
+            throw new UnsupportedOperationException("TODO Block");
+          }
           // for each expression
           // generate line numbers
           // visit it
@@ -210,7 +212,7 @@ public final class ByteCodeRewriter {
           // generate an invokedynamic doing a register with the function name
         }
         case Return(Expr expr, int lineNumber) -> {
-          // throw new UnsupportedOperationException("TODO Return");
+          throw new UnsupportedOperationException("TODO Return");
           // visit the return expression
           // generate the bytecode
         }

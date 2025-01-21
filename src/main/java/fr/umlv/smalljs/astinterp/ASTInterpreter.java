@@ -38,7 +38,9 @@ public final class ASTInterpreter {
   static Object visit(Expr expression, JSObject env) {
     return switch (expression) {
       case Block(List<Expr> instrs, int lineNumber) -> {
-				//throw new UnsupportedOperationException("TODO Block");
+        if (true) {
+          throw new UnsupportedOperationException("TODO Block");
+        }
         // TODO loop over all instructions
         yield UNDEFINED;
       }
