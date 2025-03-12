@@ -15,7 +15,7 @@ public final class JSObject {
   private final JSObject proto;
   private final String name;
   private final MethodHandle mh;
-  private final /*LinkedHashMap<String, Object>*/ArrayMap valueMap = new /*LinkedHashMap<>*/ArrayMap();
+  private final ArrayMap valueMap = new ArrayMap();
   private SwitchPoint switchPoint = new SwitchPoint();
   
   private static final class Undefined {
@@ -67,16 +67,16 @@ public final class JSObject {
     return function;
   }
   
-  public String getName() {
+  public String name() {
 		return name;
 	}
-  public MethodHandle getMethodHandle() {
+  public MethodHandle methodHandle() {
     return mh;
   }
-  public SwitchPoint getSwitchPoint() {
+  public SwitchPoint switchPoint() {
     return switchPoint;
   }
-  public ArrayMap.Layout getLayout() {
+  public ArrayMap.Layout layout() {
     return valueMap.layout();
   }
   public Object fastAccess(int slot) {

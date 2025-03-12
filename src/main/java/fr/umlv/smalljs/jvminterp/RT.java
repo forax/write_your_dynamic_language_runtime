@@ -109,7 +109,7 @@ public final class RT {
   @SuppressWarnings("unused")  // used by a method handle
   private static MethodHandle lookupMethodHandle(JSObject receiver, String fieldName) {
     var function = (JSObject) receiver.lookup(fieldName);
-    return function.getMethodHandle();
+    return function.methodHandle();
   }
 
   public static CallSite bsm_methodcall(Lookup lookup, String name, MethodType type) {
