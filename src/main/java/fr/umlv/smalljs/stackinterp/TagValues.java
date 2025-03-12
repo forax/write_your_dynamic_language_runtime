@@ -2,7 +2,7 @@ package fr.umlv.smalljs.stackinterp;
 
 import fr.umlv.smalljs.rt.JSObject;
 
-public interface TagValues {
+interface TagValues {
 	// every value are stored as 32 bits integer, boolean, small ints, constant (dictionary object) and reference
 	// the suffix indicates the kind of value
 	//    1 -> small integers (SmallInt) or boolean (TRUE/FALSE)

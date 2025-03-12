@@ -83,7 +83,7 @@ public final class JSObject {
     return valueMap.fastAccess(slot);
   }
 
-  public Object invoke(Object receiver, Object[] args) {
+  public Object invoke(Object receiver, Object... args) {
     //System.err.println("invoke " + this + " " + receiver + " " + java.util.Arrays.toString(args));
     //System.err.println("invoke mh " + mh);
 

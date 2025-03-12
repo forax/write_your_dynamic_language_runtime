@@ -1,6 +1,6 @@
 package fr.umlv.smalljs.stackinterp;
 
-public interface Instructions {
+interface Instructions {
 	int CONST = 1; // CONST tag_value (smallint or dictionary_index)
 	int LOOKUP = 2; // LOOKUP dictionary_index (String global_name)
 	int REGISTER = 3; // REGISTER dictionary_index (String global_name)

@@ -11,14 +11,15 @@ final class FunClassLoader extends ClassLoader {
     this.global = global;
   }
 
-  JSObject getGlobal() {
+  public JSObject global() {
     return global;
   }
-  FunDictionary getDictionary() {
+
+  public FunDictionary dictionary() {
     return dictionary;
   }
   
-  Class<?> createClass(String name, byte[] instrs) {
+  public Class<?> createClass(String name, byte[] instrs) {
     return defineClass(name, instrs, 0, instrs.length);
   }
 }

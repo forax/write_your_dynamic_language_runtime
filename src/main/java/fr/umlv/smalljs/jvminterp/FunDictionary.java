@@ -7,13 +7,13 @@ import fr.umlv.smalljs.ast.Expr.Fun;
 final class FunDictionary {
   private final ArrayList<Fun> dictionary = new ArrayList<>();
   
-  int register(Fun fun) {
+  public int register(Fun fun) {
     var id = dictionary.size();
     dictionary.add(fun);
     return id;
   }
   
-  Fun lookupAndClear(int id) {
+  public Fun lookupAndClear(int id) {
     var fun = dictionary.get(id);
     dictionary.set(id, null);     // Fun will be garbage collected
     return fun;

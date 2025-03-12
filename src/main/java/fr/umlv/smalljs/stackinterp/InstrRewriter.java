@@ -37,8 +37,8 @@ import fr.umlv.smalljs.ast.Expr.Return;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
-public final class InstrRewriter {
-	static class InstrBuffer {
+final class InstrRewriter {
+	static final class InstrBuffer {
 		private int[] instrs;
 		private int size;
 
@@ -71,7 +71,7 @@ public final class InstrRewriter {
 		}
 	}
 
-	public static JSObject createFunction(Optional<String> name, List<String> parameters, Block body, Dictionary dict) {
+	static JSObject createFunction(Optional<String> name, List<String> parameters, Block body, Dictionary dict) {
 		var env = JSObject.newEnv(null);
 
 		env.register("this", 0);
@@ -99,7 +99,7 @@ public final class InstrRewriter {
 	private static void visitVariable(Expr expression, JSObject env) {
 		switch (expression) {
 			case Block(List<Expr> instrs, int lineNumber) -> {
-				for (Expr instr : instrs) {
+				for (var instr : instrs) {
 					visitVariable(instr, env);
 				}
 			}

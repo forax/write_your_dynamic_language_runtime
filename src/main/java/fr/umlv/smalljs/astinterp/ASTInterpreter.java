@@ -95,7 +95,7 @@ public final class ASTInterpreter {
 
   @SuppressWarnings("unchecked")
   private static JSObject createGlobalEnv(PrintStream outStream) {
-    JSObject globalEnv = JSObject.newEnv(null);
+    var globalEnv = JSObject.newEnv(null);
     globalEnv.register("global", globalEnv);
     globalEnv.register("print", JSObject.newFunction("print", (_, args) -> {
       System.err.println("print called with " + Arrays.toString(args));
@@ -117,8 +117,8 @@ public final class ASTInterpreter {
   }
 
   public static void interpret(Script script, PrintStream outStream) {
-    JSObject globalEnv =createGlobalEnv(outStream);
-    Block body = script.body();
+    var globalEnv =createGlobalEnv(outStream);
+    var body = script.body();
     visit(body, globalEnv);
   }
 }

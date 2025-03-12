@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import fr.umlv.smalljs.ast.Expr;
 import fr.umlv.smalljs.ast.Script;
 import fr.umlv.smalljs.rt.JSObject;
 
@@ -400,8 +399,8 @@ public final class StackInterpreter {
 
 
 	@SuppressWarnings("unchecked")
-	public static JSObject createGlobalEnv(PrintStream outStream) {
-		JSObject globalEnv = JSObject.newEnv(null);
+	static JSObject createGlobalEnv(PrintStream outStream) {
+		var globalEnv = JSObject.newEnv(null);
 		globalEnv.register("global", globalEnv);
 		globalEnv.register("print", JSObject.newFunction("print", (_, args) -> {
 			System.err.println("print called with " + Arrays.toString(args));
@@ -423,10 +422,10 @@ public final class StackInterpreter {
 	}
 
 	public static void interpret(Script script, PrintStream outStream) {
-		JSObject globalEnv = createGlobalEnv(outStream);
-		Expr.Block body = script.body();
-		Dictionary dictionary = new Dictionary();
-		JSObject function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, dictionary);
+		var globalEnv = createGlobalEnv(outStream);
+		var body = script.body();
+		var dictionary = new Dictionary();
+		var function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, dictionary);
 		StackInterpreter.execute(function, dictionary, globalEnv);
 	}
 }
