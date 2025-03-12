@@ -145,16 +145,15 @@ public final class InstrRewriter {
 	private static void visit(Expr expression, JSObject env, InstrBuffer buffer, Dictionary dict) {
 		switch (expression) {
 			case Block(List<Expr> instrs, int lineNumber) -> {
+				throw new UnsupportedOperationException("TODO Block");
 				// for each expression of the block
-				for (var instr : instrs) {
 					// visit the expression
-					visit(instr, env, buffer, dict);
-					// if the expression is an instruction (i.e. return void)
-					if (!(instr instanceof Instr)) {
-						// ask to top the top of the stack
-						buffer.emit(POP);
-					}
-				}
+					// if the expression is not an instruction (the value still on stack)
+					//if (!(instr instanceof Instr)) {
+						  // ask to remove the top of the stack
+						  // buffer.emit(POP);
+					//}
+				//}
 			}
 			case Literal<?>(Object literalValue, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Literal");
