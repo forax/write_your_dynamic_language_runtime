@@ -197,7 +197,7 @@ public final class StackInterpreter {
 					  //	args[i] = decodeAnyValue(...);
 					  //}
 
-					  // System.err.println("call native " + newFunction.getName() + " with " +
+					  // System.err.println("call native " + newFunction.name() + " with " +
 					  // receiver + " " + java.util.Arrays.toString(args));
 
 					  // call native function
@@ -217,7 +217,7 @@ public final class StackInterpreter {
 
 					// check number of arguments
 					//if (code.parameterCount() != argumentCount + 1/* this */) {
-					//	throw new Failure("wrong number of arguments for " + newFunction.getName() + " expected "
+					//	throw new Failure("wrong number of arguments for " + newFunction.name() + " expected "
 					//			+ (code.parameterCount() - 1) + " but was " + argumentCount);
 					//}
 
