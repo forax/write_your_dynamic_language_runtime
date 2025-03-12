@@ -347,20 +347,13 @@ public class JVMInterpreterTests {
 
   @Tag("Q16") @Test
   public void objectSetAFieldValue() {
-//    assertEquals(
-//        "Jane\n",
-//        execute("""
-//                var john = { name: "John" };
-//                john.name = "Jane";
-//                print(john.name);
-//                """));
     assertEquals(
-            "",
-            execute("""
+        "Jane\n",
+        execute("""
                 var john = { name: "John" };
                 john.name = "Jane";
+                print(john.name);
                 """));
-
   }
   @Tag("Q16") @Test
   public void objectGetAndSetAField() {
@@ -409,6 +402,5 @@ public class JVMInterpreterTests {
                 print(fun(object));
                 print(fun(object2));
                 """));
-  }
-  */
+  }*/
 }

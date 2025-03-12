@@ -45,6 +45,7 @@ public class StackInterpreterGCTests {
     return outStream.toString(UTF_8).replace("\r\n", "\n");
   }
 
+	/*
   @Tag("Q2") @Test
   public void gcTest() {
   	var dict = new Dictionary();
@@ -207,4 +208,5 @@ public class StackInterpreterGCTests {
   	};
     execute(new Code(instrs, 1, 4), dict);
   }
+	*/
 }

@@ -395,5 +395,6 @@ public class StackInterpreterTests {
                 object.foo(42);
                 object.foo(42);
                 """));
-  }*/
+  }
+  */
 }

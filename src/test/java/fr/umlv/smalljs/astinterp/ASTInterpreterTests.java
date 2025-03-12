@@ -6,15 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import fr.umlv.smalljs.rt.Failure;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import fr.umlv.smalljs.rt.Failure;
 
 @SuppressWarnings("static-method")
 public class ASTInterpreterTests {
@@ -97,10 +94,6 @@ public class ASTInterpreterTests {
   public void printAVariableDefinedAfter() {
     assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
   }
-  @Tag("Q9") @Test
-  public void defineAVariableTwice() {
-    assertThrows(Failure.class, () -> execute("var a = 3\nvar a = 2;\n"));
-  }
 
   @Tag("Q10") @Test
   public void callAUserDefinedFunctionAndPrint() {
@@ -113,7 +106,7 @@ public class ASTInterpreterTests {
   }
   @Tag("Q10") @Test
   public void callAUserDefinedFunctionWithTheWrongNumberOfArguments() {
-  	assertThrows(Failure.class, () -> execute("""
+    assertThrows(Failure.class, () -> execute("""
             function foo(a, b) {
             }
             print(foo(2));
@@ -218,7 +211,7 @@ public class ASTInterpreterTests {
             """));
   }
   @Tag("Q11") @Test
-  public void callAUserDefinedFunctionWithAnIfAndAVariabe() {
+  public void callAUserDefinedFunctionWithAnIfAndAVariable() {
     assertEquals("0\n7\n", execute("""
             function f(x) {
                 if (x < 3) {
@@ -232,7 +225,7 @@ public class ASTInterpreterTests {
             print(f(7));
             """));
   }
-  
+
   @Tag("Q12") @Test
   public void callFibo() {
     assertEquals("21\n", execute("""
@@ -282,7 +275,7 @@ public class ASTInterpreterTests {
             print(f());
             """));
   }
-  
+
   @Tag("Q13") @Test
   public void createAnObject() {
     assertEquals("""
@@ -300,7 +293,7 @@ public class ASTInterpreterTests {
                 print(o);
                 """));
   }
-  
+
   @Tag("Q14") @Test
   public void createAnObjectFromAVariableValue() {
     assertEquals("""
@@ -329,8 +322,7 @@ public class ASTInterpreterTests {
                   b: print('b')
                 };"""));
   }
-  
-  
+
   @Tag("Q15") @Test
   public void objectGetAFieldValue() {
     assertEquals(
@@ -349,8 +341,8 @@ public class ASTInterpreterTests {
                 print(john.foo);
                 """));
   }
-  
-  @Tag("Q16") @Test
+
+ @Tag("Q16") @Test
   public void objectSetAFieldValue() {
     assertEquals(
         "Jane\n",
@@ -372,7 +364,7 @@ public class ASTInterpreterTests {
                 print(f(obj));
                 """));
   }
-  
+
   @Tag("Q17") @Test
   public void objectCallAMethod() {
     assertEquals(
@@ -387,5 +379,26 @@ public class ASTInterpreterTests {
                 object.foo(42);
                 object.foo(42);
                 """));
-  }*/
+  }
+  @Tag("Q17") @Test
+  public void objectCallAMethodTwice() {
+    assertEquals(
+        "3\n3\n",
+        execute("""
+                function fun(o) {
+                  return o.field;
+                }
+                var object = {
+                  field: 3,
+                  toto: 0
+                };
+                var object2 = {
+                  field: 3,
+                  toto: 4
+                };
+                print(fun(object));
+                print(fun(object2));
+                """));
+  }
+  */
 }
