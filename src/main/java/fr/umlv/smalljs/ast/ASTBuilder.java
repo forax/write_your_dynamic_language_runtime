@@ -1,12 +1,5 @@
 package fr.umlv.smalljs.ast;
 
-import java.io.Reader;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import fr.umlv.smalljs.ast.Expr.Block;
 import fr.umlv.smalljs.ast.Expr.FieldAccess;
 import fr.umlv.smalljs.ast.Expr.FieldAssignment;
@@ -24,8 +17,14 @@ import fr.umlv.smalljs.grammar.tools.GrammarEvaluator;
 import fr.umlv.smalljs.grammar.tools.TerminalEvaluator;
 import fr.umlv.tatoo.runtime.buffer.impl.LocationTracker;
 import fr.umlv.tatoo.runtime.buffer.impl.ReaderWrapper;
+import java.io.Reader;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class ASTBuilder implements GrammarEvaluator {
+public final class ASTBuilder implements GrammarEvaluator {
   private final LocationTracker tracker;
 
   ASTBuilder(LocationTracker tracker) {
@@ -33,9 +32,9 @@ public class ASTBuilder implements GrammarEvaluator {
   }
 
   public static Script createScript(Reader reader) {
-    LocationTracker tracker = new LocationTracker();
-    ReaderWrapper buffer = new ReaderWrapper(reader, tracker);
-    ASTBuilder astBuilder = new ASTBuilder(tracker);
+    var tracker = new LocationTracker();
+    var buffer = new ReaderWrapper(reader, tracker);
+    var astBuilder = new ASTBuilder(tracker);
     Analyzers.run(buffer, new TerminalBuilder(tracker), astBuilder, null, null);
     return astBuilder.script;
   }
@@ -136,7 +135,7 @@ public class ASTBuilder implements GrammarEvaluator {
   }
   @Override
   public Expr expr_function_creation(Literal<String> id_optional, List<Literal<String>> parameters, Block block) {
-    Optional<Literal<String>> optionalName = Optional.ofNullable(id_optional);
+    var optionalName = Optional.ofNullable(id_optional);
     return new Fun(
         optionalName.map(Literal::value),
         parameters.stream().map(Literal::value).toList(),
@@ -155,7 +154,7 @@ public class ASTBuilder implements GrammarEvaluator {
   @Override
   public Expr expr_new(List<Expr[]> init_star) {
     return new New(
-        Collections.unmodifiableMap(init_star.stream().collect(Collectors.toMap((Expr[] v) -> v[0].toString(), (Expr[] v) -> v[1], (_1, _2) -> null, LinkedHashMap::new))),
+        Collections.unmodifiableMap(init_star.stream().collect(Collectors.toMap((Expr[] v) -> v[0].toString(), (Expr[] v) -> v[1], (_, _) -> null, LinkedHashMap::new))),
         init_star.stream().mapToInt(x -> x[0].lineNumber()).findFirst().orElse(1 + tracker.getLineNumber()));
   }
   @Override
@@ -169,57 +168,57 @@ public class ASTBuilder implements GrammarEvaluator {
   
   @Override
   public Expr expr_add(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("+", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_sub(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("-", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_mul(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("*", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_div(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("/", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_rem(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("%", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_eq(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("==", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_ne(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("!=", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_lt(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("<", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_le(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("<=", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_gt(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess(">", lineNumber), List.of(expr, expr2), lineNumber);
   }
   @Override
   public Expr expr_ge(Expr expr, Expr expr2) {
-    int lineNumber = expr.lineNumber();
+    var lineNumber = expr.lineNumber();
     return new FunCall(new LocalVarAccess("!>=", lineNumber), List.of(expr, expr2), lineNumber);
   }
 }
