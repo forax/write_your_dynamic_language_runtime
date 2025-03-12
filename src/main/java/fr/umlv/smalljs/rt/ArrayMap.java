@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 public final class ArrayMap extends AbstractMap<String, Object> {
-  public static class Layout {
+  public static final class Layout {
     private final LinkedHashMap<String, Integer> slotMap;
     private final HashMap<String, Layout> forwardMap = new HashMap<>();
     
