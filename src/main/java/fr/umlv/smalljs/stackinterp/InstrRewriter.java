@@ -103,7 +103,7 @@ final class InstrRewriter {
 					visitVariable(instr, env);
 				}
 			}
-			case Literal<?>(Object value, int lineNumber) -> {
+			case Literal(Object value, int lineNumber) -> {
 				// do nothing
 			}
 			case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
@@ -155,7 +155,7 @@ final class InstrRewriter {
 					//}
 				//}
 			}
-			case Literal<?>(Object literalValue, int lineNumber) -> {
+			case Literal(Object literalValue, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Literal");
 				// test if the literal value is a positive integers
 				//if (literalValue instanceof Integer value && value >= 0) {

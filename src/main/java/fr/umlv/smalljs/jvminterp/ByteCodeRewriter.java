@@ -105,7 +105,7 @@ public final class ByteCodeRewriter {
           visitVariable(instr, env);
         }
       }
-      case Literal<?>(Object value, int lineNumber) -> {
+      case Literal(Object value, int lineNumber) -> {
         // do nothing
       }
       case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
@@ -172,7 +172,7 @@ public final class ByteCodeRewriter {
         // visit it
         // if not an instruction and generate a POP
       }
-      case Literal<?>(Object value, int lineNumber) -> {
+      case Literal(Object value, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO Literal");
         // switch on the value
         // if it's an Integer, wrap it into a ConstantDynamic because the JVM doesn't have a primitive for boxed integer

@@ -58,7 +58,7 @@ public sealed interface Expr {
     }
   }
 
-  record Literal<T>(T value, int lineNumber) implements Expr {
+  record Literal(Object value, int lineNumber) implements Expr {
     public Literal {
       requireNonNull(value);
     }

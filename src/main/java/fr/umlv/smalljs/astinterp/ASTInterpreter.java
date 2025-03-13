@@ -44,7 +44,7 @@ public final class ASTInterpreter {
         // TODO loop over all instructions
         yield UNDEFINED;
       }
-      case Literal<?>(Object value, int lineNumber) -> {
+      case Literal(Object value, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO Literal");
       }
       case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {

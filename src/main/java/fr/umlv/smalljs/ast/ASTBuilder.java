@@ -579,7 +579,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
     }
     if (ctx.StringLiteral() != null) {
       var text = ctx.StringLiteral().getText();
-      return new Expr.Literal<String>(text.substring(1, text.length() - 1), lineNumber(ctx));
+      return new Expr.Literal(text.substring(1, text.length() - 1), lineNumber(ctx));
     }
     throw new UnsupportedOperationException("unsupported syntax 'literal' at " + lineNumber(ctx));
   }
@@ -589,7 +589,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
     if (ctx.DecimalLiteral() == null) {
       throw new UnsupportedOperationException("unsupported syntax 'numeric literal' at " + lineNumber(ctx));
     }
-    return new Expr.Literal<Integer>(Integer.parseInt(ctx.DecimalLiteral().getText()), lineNumber(ctx));
+    return new Expr.Literal(Integer.parseInt(ctx.DecimalLiteral().getText()), lineNumber(ctx));
   }
 
   @Override
