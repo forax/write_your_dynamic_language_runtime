@@ -7,7 +7,7 @@ values
 
 smalljs runtime has 3 kinds of values, integers, strings and user defined objects.
 
-For the interpreter, a value is a 32 bits tagged integer,
+For the interpreter, every value are 32 bits tagged integers,
 the interpreter uses the last bits to differentiate the kind of values.
 The same encoding is used for the value on stack or in the heap.
 
@@ -18,7 +18,7 @@ xxxxxxxx xxxxxxxx xxxxxxxx xxxxxx00 -> reference on heap
 ```
 
 This encoding (which is roughly similar to the one used by V8) as the advantages that simple operations
-like an addition or a subtraction on small integers can be done directly without doing the conversion
+like an addition or a substraction on small integess can be done directly without doing the conversion
 between a tagged value to the real integer and back.
 
 For example, let suppose we want to execute `a + b`, with `a = 2` and `b = 10`,
@@ -117,7 +117,7 @@ When calling a function, the smalljs semantics requires the arguments to be copi
 to avoid that copy at runtime, the argument of a function call and the parameter the called function
 reference the same part of the stack (that's why the activation zone is in the middle). 
 
-By example, if we have the following code
+For example, if we have the following code
 ```
   function f(i, j) {  // (this=0, i=1,  j=2)
     print(j);

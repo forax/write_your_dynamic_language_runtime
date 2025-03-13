@@ -2,7 +2,7 @@
 
 This repository is used for the course "How to implement a dynamic language on the JVM" at University Gustave Eiffel (Paris France)
 
-This repository provides the basis to implement your own
+This repository provide the basis to implement your own
 - Abstract Syntax Tree Interpreter
 - Stack based Interpreter
 - Java Virtual Machine based Interpreter
@@ -15,14 +15,14 @@ run Maven with a Java 23
 ```
   mvn package
 ```
-a jar named smalljs-1.0.jar in the folder `target` is generated
+a jar named smalljs-2.0.jar in the folder `target` is generated
 
 How to run it
 ---
 Still with Java 23
 ```
-  java --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main ast samples/hello.js
-  java --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main stack samples/hello.js
-  java --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main jvm samples/hello.js
+  java -jar target/smalljs-2.0.jar ast samples/hello.js
+  java -jar target/smalljs-2.0.jar stack samples/hello.js
+  java -jar target/smalljs-2.0.jar jvm samples/hello.js
 ```
 with 'ast' being the AST interpreter, 'stack' being the Stack based interpreter and 'jvm' being the JVM based interpreter.

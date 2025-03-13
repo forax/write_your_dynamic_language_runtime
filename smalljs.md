@@ -56,7 +56,7 @@ Inside a function, there is an hidden parameter named 'this' that correspond to 
 instance creation
 --
 when creating an instance, the fields value are evaluated in the order of declaration.
-By example
+For example
 ```
 var foo = {
   a: print('a'),
@@ -135,7 +135,7 @@ var foo = bar;
 foo(3);  // function call
 ```
 
-New(Map<String, Expr> initMap)
+ObjectLiteral(Map<String, Expr> initMap)
 allocation of an instance
 ```
 var a = {
