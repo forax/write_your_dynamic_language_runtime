@@ -100,45 +100,22 @@ public final class ByteCodeRewriter {
 
   private static void visitVariable(Expr expression, JSObject env) {
     switch (expression) {
-      case Block(List<Expr> instrs, int lineNumber) -> {
-        for (var instr : instrs) {
+      case Block(List<Expr> instrs, _) -> {
+        for (Expr instr : instrs) {
           visitVariable(instr, env);
         }
       }
-      case Literal(Object value, int lineNumber) -> {
-        // do nothing
-      }
-      case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
-        // do nothing
-      }
-      case LocalVarAccess(String name, int lineNumber) -> {
-        // do nothing
-      }
-      case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
+      case LocalVarAssignment(String name, _, boolean declaration, _) -> {
         if (declaration) {
           env.register(name, env.length());
         }
       }
-      case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
-        // do nothing
-      }
-      case Return(Expr expr, int lineNumber) -> {
-        // do nothing
-      }
-      case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
+      case If(_, Block trueBlock, Block falseBlock, _) -> {
         visitVariable(trueBlock, env);
         visitVariable(falseBlock, env);
       }
-      case New(Map<String, Expr> initMap, int lineNumber) -> {
-        // do nothing
-      }
-      case FieldAccess(Expr receiver, String name, int lineNumber) -> {
-        // do nothing
-      }
-      case FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) -> {
-        // do nothing
-      }
-      case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
+      case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, New _, FieldAccess _,
+           FieldAssignment _, MethodCall _ -> {
         // do nothing
       }
     };
