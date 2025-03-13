@@ -100,9 +100,9 @@ public final class ByteCodeRewriter {
 
   private static void visitVariable(Expr expression, JSObject env) {
     switch (expression) {
-      case Block(List<Expr> instrs, _) -> {
-        for (var instr : instrs) {
-          visitVariable(instr, env);
+      case Block(List<Expr> exprs, _) -> {
+        for (var expr : exprs) {
+          visitVariable(expr, env);
         }
       }
       case LocalVarAssignment(String name, _, boolean declaration, _) -> {
@@ -142,12 +142,12 @@ public final class ByteCodeRewriter {
 
   private static void visit(Expr expression, JSObject env, MethodVisitor mv, FunDictionary dictionary) {
     switch(expression) {
-      case Block(List<Expr> instrs, int lineNumber) -> {
+      case Block(List<Expr> exprs, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO Block");
         // for each expression
         // generate line numbers
         // visit it
-        // if not an instruction and generate a POP
+        // if not a statement, generate a POP
       }
       case Literal(Object value, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO Literal");

@@ -9,14 +9,14 @@ import static java.util.Objects.requireNonNull;
 public sealed interface Expr {
   int lineNumber();
 
-  sealed interface Instr {
+  sealed interface Statement {
     // maker interface for expressions that return void
   }
 
-  record Block(List<Expr> instrs, int lineNumber) implements Expr, Instr {
+  record Block(List<Expr> exprs, int lineNumber) implements Expr, Statement {
     public Block {
-      requireNonNull(instrs);
-      lineNumber = instrs.stream().mapToInt(Expr::lineNumber).findFirst().orElse(lineNumber);
+      requireNonNull(exprs);
+      lineNumber = exprs.stream().mapToInt(Expr::lineNumber).findFirst().orElse(lineNumber);
     }
   }
 
@@ -27,7 +27,7 @@ public sealed interface Expr {
     }
   }
 
-  record FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) implements Expr, Instr {
+  record FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) implements Expr, Statement {
     public FieldAssignment {
       requireNonNull(receiver);
       requireNonNull(name);
@@ -50,7 +50,7 @@ public sealed interface Expr {
     }
   }
 
-  record If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) implements Expr, Instr{
+  record If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) implements Expr, Statement {
     public If {
       requireNonNull(condition);
       requireNonNull(trueBlock);
@@ -74,7 +74,7 @@ public sealed interface Expr {
     }
   }
 
-  record LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) implements Expr, Instr {
+  record LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) implements Expr, Statement {
     public LocalVarAssignment {
       requireNonNull(name);
       requireNonNull(expr);
@@ -96,7 +96,7 @@ public sealed interface Expr {
     }
   }
 
-  record Return(Expr expr, int lineNumber) implements Expr, Instr {
+  record Return(Expr expr, int lineNumber) implements Expr, Statement {
     public Return {
       requireNonNull(expr);
     }

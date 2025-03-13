@@ -27,7 +27,7 @@ import fr.umlv.smalljs.ast.Expr.FieldAssignment;
 import fr.umlv.smalljs.ast.Expr.Fun;
 import fr.umlv.smalljs.ast.Expr.FunCall;
 import fr.umlv.smalljs.ast.Expr.If;
-import fr.umlv.smalljs.ast.Expr.Instr;
+import fr.umlv.smalljs.ast.Expr.Statement;
 import fr.umlv.smalljs.ast.Expr.Literal;
 import fr.umlv.smalljs.ast.Expr.LocalVarAccess;
 import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
@@ -98,9 +98,9 @@ final class InstrRewriter {
 
 	private static void visitVariable(Expr expression, JSObject env) {
 		switch (expression) {
-			case Block(List<Expr> instrs, _) -> {
-				for (var instr : instrs) {
-					visitVariable(instr, env);
+			case Block(List<Expr> exprs, _) -> {
+				for (var expr : exprs) {
+					visitVariable(expr, env);
 				}
 			}
 			case LocalVarAssignment(String name, _, boolean declaration, _) -> {
@@ -121,12 +121,12 @@ final class InstrRewriter {
 
 	private static void visit(Expr expression, JSObject env, InstrBuffer buffer, Dictionary dict) {
 		switch (expression) {
-			case Block(List<Expr> instrs, int lineNumber) -> {
+			case Block(List<Expr> exprs, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Block");
 				// for each expression of the block
 					// visit the expression
-					// if the expression is not an instruction (the value still on stack)
-					//if (!(instr instanceof Instr)) {
+					// if the expression is not a statement (the value still on stack)
+					//if (!(instr instanceof Statement)) {
 						  // ask to remove the top of the stack
 						  // buffer.emit(POP);
 					//}
