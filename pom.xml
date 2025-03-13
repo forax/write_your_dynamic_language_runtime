@@ -21,13 +21,11 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>9.7.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
             <version>9.7.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -74,6 +72,7 @@
                     <artifactSet>
                         <includes>
                             <include>org.ow2.asm:*</include>
+                            <include>org.antlr:antlr4-runtime</include>
                         </includes>
                     </artifactSet>
                     <filters>
