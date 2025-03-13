@@ -9,14 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import fr.umlv.smalljs.rt.Failure;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.io.StringReader;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
 public class ASTInterpreterTests {
   private static String execute(String code) {
-    var script = createScript(new StringReader(code));
+    var script = createScript(code);
     var outStream = new ByteArrayOutputStream(8192);
     ASTInterpreter.interpret(script, new PrintStream(outStream, false, UTF_8));
     return outStream.toString(UTF_8).replace("\r\n", "\n");
@@ -256,13 +255,18 @@ public class ASTInterpreterTests {
   @Tag("Q12") @Test
   public void callSeveralOperations() {
     assertEquals("5\n-1\n6\n0\n", execute("""
+            function add(a, b) { return a + b; }
+            function sub(a, b) { return a - b; }
+            function mul(a, b) { return a * b; }
+            function div(a, b) { return a / b; }
+            
             function calc(f, a, b) {
-             return f(a, b);
+              return f(a, b);
             }
-            print(calc(+, 2, 3));
-            print(calc(-, 2, 3));
-            print(calc(*, 2, 3));
-            print(calc(/, 2, 3));
+            print(calc(add, 2, 3));
+            print(calc(sub, 2, 3));
+            print(calc(mul, 2, 3));
+            print(calc(div, 2, 3));
             """));
   }
   @Tag("Q12") @Test

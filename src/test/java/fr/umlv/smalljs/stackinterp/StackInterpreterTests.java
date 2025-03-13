@@ -1,27 +1,24 @@
 package fr.umlv.smalljs.stackinterp;
 
-import fr.umlv.smalljs.rt.Failure;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-
 import static fr.umlv.smalljs.ast.ASTBuilder.createScript;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import fr.umlv.smalljs.rt.Failure;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 @SuppressWarnings("static-method")
 public class StackInterpreterTests {
   private static String execute(String code) {
-    var script = createScript(new StringReader(code));
+    var script = createScript(code);
     var outStream = new ByteArrayOutputStream(8192);
-    StackInterpreter.interpret(script, new PrintStream(outStream, false, UTF_8));
-    return outStream.toString(UTF_8).replace("\r\n", "\n");
+    StackInterpreter.interpret(script, new PrintStream(outStream, false, StandardCharsets.UTF_8));
+    return outStream.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
   }
 
   /*
@@ -34,19 +31,19 @@ public class StackInterpreterTests {
   public void integer3() {
     assertEquals("", execute("3\n"));
   }
-
+  
   @Tag("Q4") @Test
   public void print() {
     assertEquals("hello\n", execute("print(\"hello\")\n"));
     assertEquals("foobar\n", execute("print('foobar')\n"));
     assertEquals("3\n", execute("print(3)\n"));
   }
-
+  
   @Tag("Q5") @Test
   public void printPrint() {
     assertFalse(execute("print(print)\n").isEmpty());
   }
-
+  
   @Tag("Q6") @Test
   public void printOperations() {
     assertEquals("5\n", execute("print(3 + 2)\n"));
@@ -54,12 +51,12 @@ public class StackInterpreterTests {
     assertEquals("6\n", execute("print(3 * 2)\n"));
     assertEquals("1\n", execute("print(3 / 2)\n"));
   }
-
+  
   @Tag("Q7") @Test
   public void printPrint3() {
     assertEquals("3\nundefined\n", execute("print(print(3))\n"));
   }
-
+  
   @Tag("Q8") @Test
   public void printAVariable() {
     assertEquals("3\n", execute("""
@@ -91,12 +88,12 @@ public class StackInterpreterTests {
             print('hello', me);
             """));
   }
-
+  
   @Tag("Q9") @Test
   public void printAVariableDefinedAfter() {
     assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
   }
-
+  
   @Tag("Q10") @Test
   public void callAUserDefinedFunctionAndPrint() {
     assertEquals("3\n", execute("""
@@ -151,7 +148,7 @@ public class StackInterpreterTests {
             print(undef());
             """));
   }
-
+  
   @Tag("Q11") @Test
   public void printWithAnIf() {
     assertEquals("false\n", execute("""
@@ -240,7 +237,7 @@ public class StackInterpreterTests {
             print(f(7));
             """));
   }
-
+  
   @Tag("Q12") @Test
   public void callFibo() {
     assertEquals("21\n", execute("""
@@ -271,13 +268,18 @@ public class StackInterpreterTests {
   @Tag("Q12") @Test
   public void callSeveralOperations() {
     assertEquals("5\n-1\n6\n0\n", execute("""
+            function add(a, b) { return a + b; }
+            function sub(a, b) { return a - b; }
+            function mul(a, b) { return a * b; }
+            function div(a, b) { return a / b; }
+            
             function calc(f, a, b) {
-             return f(a, b);
+              return f(a, b);
             }
-            print(calc(+, 2, 3));
-            print(calc(-, 2, 3));
-            print(calc(*, 2, 3));
-            print(calc(/, 2, 3));
+            print(calc(add, 2, 3));
+            print(calc(sub, 2, 3));
+            print(calc(mul, 2, 3));
+            print(calc(div, 2, 3));
             """));
   }
   @Tag("Q12") @Test
@@ -291,7 +293,7 @@ public class StackInterpreterTests {
             """));
   }
   
-
+  
   @Tag("Q13") @Test
   public void createAnObject() {
     assertEquals("""
@@ -309,7 +311,7 @@ public class StackInterpreterTests {
                 print(o);
                 """));
   }
-
+  
   @Tag("Q14") @Test
   public void createAnObjectFromAVariableValue() {
     assertEquals("""
@@ -338,7 +340,7 @@ public class StackInterpreterTests {
                   b: print('b')
                 };"""));
   }
-
+  
   @Tag("Q15") @Test
   public void objectGetAFieldValue() {
     assertEquals(
@@ -357,7 +359,7 @@ public class StackInterpreterTests {
                 print(john.foo);
                 """));
   }
-
+  
   @Tag("Q16") @Test
   public void objectSetAFieldValue() {  // patch visit variable
     assertEquals(
@@ -380,7 +382,7 @@ public class StackInterpreterTests {
                 print(f(obj));
                 """));
   }
-
+  
   @Tag("Q17") @Test
   public void objectCallAMethod() {
     assertEquals(

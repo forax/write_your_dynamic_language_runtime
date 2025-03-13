@@ -4,7 +4,7 @@
     <groupId>fr.umlv.smalljs</groupId>
     <artifactId>smalljs</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>2.0</version>
     <name>smalljs</name>
 
     <properties>
@@ -12,6 +12,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.13.2</version>
+        </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
@@ -30,34 +35,27 @@
             <version>5.11.3</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- local dependency -->
-        <dependency>
-            <groupId>fr.umlv.tatoo</groupId>
-            <artifactId>tatoo-runtime</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${pom.basedir}/lib/tatoo-runtime.jar</systemPath>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.0</version>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.13.2</version>
+                <configuration>
+                    <sourceDirectory>${basedir}</sourceDirectory>
+                    <includes>
+                        <include>ECMAScript.g4</include>
+                    </includes>
+                    <visitor>true</visitor>
+                    <listener>true</listener>
+                </configuration>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>add-source</goal>
+                            <goal>antlr4</goal>
                         </goals>
-                        <configuration>
-                            <sources>
-                                <source>grammar/gen-src</source>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
