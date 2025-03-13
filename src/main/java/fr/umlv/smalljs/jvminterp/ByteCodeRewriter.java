@@ -101,7 +101,7 @@ public final class ByteCodeRewriter {
   private static void visitVariable(Expr expression, JSObject env) {
     switch (expression) {
       case Block(List<Expr> instrs, _) -> {
-        for (Expr instr : instrs) {
+        for (var instr : instrs) {
           visitVariable(instr, env);
         }
       }
