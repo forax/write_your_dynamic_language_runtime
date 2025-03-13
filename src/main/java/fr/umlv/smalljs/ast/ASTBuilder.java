@@ -52,10 +52,6 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitSourceElement(ECMAScriptParser.SourceElementContext ctx) {
-    //if (ctx.statement() != null) {
-    //  return ctx.statement().accept(this);
-    //}
-    //return ctx.functionDeclaration().accept(this);
     return ctx.children.getFirst().accept(this);
   }
 
