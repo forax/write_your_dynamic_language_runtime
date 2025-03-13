@@ -30,10 +30,6 @@
 
 grammar ECMAScript;
 
-@header {
-package fr.umlv.smalljs.grammar.antlr;
-}
-
 @parser::members {
 
     /**
