@@ -278,7 +278,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
             (_, _) -> { throw new AssertionError(); },
             LinkedHashMap<String, Expr>::new));
 
-    return new Expr.New(initMap, lineNumber(ctx));
+    return new Expr.ObjectLiteral(initMap, lineNumber(ctx));
   }
   @Override
   public Expr visitPropertyNameAndValueList(ECMAScriptParser.PropertyNameAndValueListContext ctx) {

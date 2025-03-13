@@ -89,8 +89,8 @@ public sealed interface Expr {
     }
   }
 
-  record New(Map<String, Expr> initMap, int lineNumber) implements Expr {
-    public New {
+  record ObjectLiteral(Map<String, Expr> initMap, int lineNumber) implements Expr {
+    public ObjectLiteral {
       // don't use Map.copyOf here because the order is not guaranteed
       requireNonNull(initMap);
     }

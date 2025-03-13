@@ -38,7 +38,7 @@ import fr.umlv.smalljs.ast.Expr.Literal;
 import fr.umlv.smalljs.ast.Expr.LocalVarAccess;
 import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
 import fr.umlv.smalljs.ast.Expr.MethodCall;
-import fr.umlv.smalljs.ast.Expr.New;
+import fr.umlv.smalljs.ast.Expr.ObjectLiteral;
 import fr.umlv.smalljs.ast.Expr.Return;
 import fr.umlv.smalljs.rt.JSObject;
 
@@ -114,7 +114,7 @@ public final class ByteCodeRewriter {
         visitVariable(trueBlock, env);
         visitVariable(falseBlock, env);
       }
-      case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, New _, FieldAccess _,
+      case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, ObjectLiteral _, FieldAccess _,
            FieldAssignment _, MethodCall _ -> {
         // do nothing
       }
@@ -198,8 +198,8 @@ public final class ByteCodeRewriter {
         // visit the true block
         // visit the false block
       }
-      case New(Map<String, Expr> initMap, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO New");
+      case ObjectLiteral(Map<String, Expr> initMap, int lineNumber) -> {
+        throw new UnsupportedOperationException("TODO ObjectLiteral");
         // call newObject with an INVOKESTATIC
         // for each initialization expression
           // generate a string with the key

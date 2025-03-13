@@ -11,7 +11,7 @@ import fr.umlv.smalljs.ast.Expr.Literal;
 import fr.umlv.smalljs.ast.Expr.LocalVarAccess;
 import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
 import fr.umlv.smalljs.ast.Expr.MethodCall;
-import fr.umlv.smalljs.ast.Expr.New;
+import fr.umlv.smalljs.ast.Expr.ObjectLiteral;
 import fr.umlv.smalljs.ast.Expr.Return;
 import fr.umlv.smalljs.ast.Script;
 import fr.umlv.smalljs.rt.Failure;
@@ -78,8 +78,8 @@ public final class ASTInterpreter {
       case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO If");
       }
-      case New(Map<String, Expr> initMap, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO New");
+      case ObjectLiteral(Map<String, Expr> initMap, int lineNumber) -> {
+				throw new UnsupportedOperationException("TODO ObjectLiteral");
       }
       case FieldAccess(Expr receiver, String name, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO FieldAccess");

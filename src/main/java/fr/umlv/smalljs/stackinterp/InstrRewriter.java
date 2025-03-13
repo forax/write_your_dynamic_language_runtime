@@ -32,7 +32,7 @@ import fr.umlv.smalljs.ast.Expr.Literal;
 import fr.umlv.smalljs.ast.Expr.LocalVarAccess;
 import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
 import fr.umlv.smalljs.ast.Expr.MethodCall;
-import fr.umlv.smalljs.ast.Expr.New;
+import fr.umlv.smalljs.ast.Expr.ObjectLiteral;
 import fr.umlv.smalljs.ast.Expr.Return;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
@@ -112,7 +112,7 @@ final class InstrRewriter {
 				visitVariable(trueBlock, env);
 				visitVariable(falseBlock, env);
 			}
-			case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, New _, FieldAccess _,
+			case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, ObjectLiteral _, FieldAccess _,
 					 FieldAssignment _, MethodCall _ -> {
 				// do nothing
 			}
@@ -217,8 +217,8 @@ final class InstrRewriter {
 				// patch the second placeholder
 				//buffer.patch(..., buffer.label());
 			}
-			case New(Map<String, Expr> initMap, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO New");
+			case ObjectLiteral(Map<String, Expr> initMap, int lineNumber) -> {
+				throw new UnsupportedOperationException("TODO ObjectLiteral");
 				// create a JSObject class
 				//var clazz = JSObject.newObject(null);
 				// loop over all the field initializations
