@@ -19,7 +19,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
-  ASTBuilder() {}
+  private ASTBuilder() {}
 
   public static Script createScript(String code) {
     var input = CharStreams.fromString(code);
@@ -127,57 +127,68 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
     return new Expr.If(condition, trueBlock, falseBlock, lineNumber(ctx));
   }
 
+  private UnsupportedOperationException unsupported(String feature, Token token) {
+    return new UnsupportedOperationException("unsupported syntax '" + feature + "' at " + token.getLine());
+  }
+  private UnsupportedOperationException unsupported(String feature, ParserRuleContext ctx) {
+    return new UnsupportedOperationException("unsupported syntax '" + feature + "' at " + lineNumber(ctx));
+  }
+
   @Override
   public Expr visitDoStatement(ECMAScriptParser.DoStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'do ... while' at " + lineNumber(ctx));
+    throw unsupported("do ... while", ctx);
   }
 
   @Override
   public Expr visitWhileStatement(ECMAScriptParser.WhileStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'while' at " + lineNumber(ctx));
+    throw unsupported("while", ctx);
   }
 
   @Override
   public Expr visitForStatement(ECMAScriptParser.ForStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'for' at " + lineNumber(ctx));
+    throw unsupported("for", ctx);
   }
   @Override
   public Expr visitForVarStatement(ECMAScriptParser.ForVarStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'for' at " + lineNumber(ctx));
+    throw unsupported("for", ctx);
   }
   @Override
   public Expr visitForInStatement(ECMAScriptParser.ForInStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'for' at " + lineNumber(ctx));
+    throw unsupported("for", ctx);
   }
   @Override
   public Expr visitForVarInStatement(ECMAScriptParser.ForVarInStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'for' at " + lineNumber(ctx));
+    throw unsupported("for", ctx);
   }
 
   @Override
   public Expr visitContinueStatement(ECMAScriptParser.ContinueStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'continue' at " + lineNumber(ctx));
+    throw unsupported("continue", ctx);
   }
 
   @Override
   public Expr visitBreakStatement(ECMAScriptParser.BreakStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'break' at " + lineNumber(ctx));
+    throw unsupported("break", ctx);
   }
 
   @Override
   public Expr visitReturnStatement(ECMAScriptParser.ReturnStatementContext ctx) {
-    var expr = ctx.expressionSequence().accept(this);
+    var expressionSequence = ctx.expressionSequence();
+    if (expressionSequence == null) {
+      throw unsupported("return with no expression", ctx);
+    }
+    var expr = expressionSequence.accept(this);
     return new Expr.Return(expr, lineNumber(ctx));
   }
 
   @Override
   public Expr visitWithStatement(ECMAScriptParser.WithStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'with' at " + lineNumber(ctx));
+    throw unsupported("with", ctx);
   }
 
   @Override
   public Expr visitSwitchStatement(ECMAScriptParser.SwitchStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'switch' at " + lineNumber(ctx));
+    throw unsupported("switc", ctx);
   }
   @Override
   public Expr visitCaseBlock(ECMAScriptParser.CaseBlockContext ctx) {
@@ -198,17 +209,17 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitLabelledStatement(ECMAScriptParser.LabelledStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'label' at " + lineNumber(ctx));
+    throw unsupported("label", ctx);
   }
 
   @Override
   public Expr visitThrowStatement(ECMAScriptParser.ThrowStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'throw' at " + lineNumber(ctx));
+    throw unsupported("throw", ctx);
   }
 
   @Override
   public Expr visitTryStatement(ECMAScriptParser.TryStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'try' at " + lineNumber(ctx));
+    throw unsupported("try", ctx);
   }
   @Override
   public Expr visitCatchProduction(ECMAScriptParser.CatchProductionContext ctx) {
@@ -221,7 +232,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitDebuggerStatement(ECMAScriptParser.DebuggerStatementContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'debugger' at " + lineNumber(ctx));
+    throw unsupported("debugger", ctx);
   }
 
   private List<String> formalParameterList(ECMAScriptParser.FormalParameterListContext ctx) {
@@ -253,7 +264,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitArrayLiteral(ECMAScriptParser.ArrayLiteralContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'array literal' at " + lineNumber(ctx));
+    throw unsupported("array literal", ctx);
   }
   @Override
   public Expr visitElementList(ECMAScriptParser.ElementListContext ctx) {
@@ -271,7 +282,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
           if (prop instanceof ECMAScriptParser.PropertyExpressionAssignmentContext propAssignment) {
             return propAssignment;
           }
-          throw new UnsupportedOperationException("unsupported syntax 'getter or setter' at " + lineNumber(ctx));
+          throw unsupported("getter or setter", ctx);
         })
         .collect(toMap(p -> p.propertyName().getText(),
             p -> p.singleExpression().accept(this),
@@ -326,24 +337,24 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   @Override
   public Expr visitExpressionSequence(ECMAScriptParser.ExpressionSequenceContext ctx) {
     if (ctx.singleExpression().size() != 1) {
-      throw new UnsupportedOperationException("unsupported syntax 'comma separated expression' at " + lineNumber(ctx));
+      throw unsupported("comma separated expression", ctx);
     }
     return ctx.singleExpression().getFirst().accept(this);
   }
 
   @Override
   public Expr visitTernaryExpression(ECMAScriptParser.TernaryExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'ternary expression' at " + lineNumber(ctx));
+    throw unsupported("ternary expression", ctx);
   }
 
   @Override
   public Expr visitLogicalAndExpression(ECMAScriptParser.LogicalAndExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'logical and' at " + lineNumber(ctx));
+    throw unsupported("logical and", ctx);
   }
 
   @Override
   public Expr visitPreIncrementExpression(ECMAScriptParser.PreIncrementExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'pre-increment' at " + lineNumber(ctx));
+    throw unsupported("pre-increment", ctx);
   }
 
   @Override
@@ -353,22 +364,22 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitInExpression(ECMAScriptParser.InExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax `in expression' at " + lineNumber(ctx));
+    throw unsupported("in expression", ctx);
   }
 
   @Override
   public Expr visitLogicalOrExpression(ECMAScriptParser.LogicalOrExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'logical or' at " + lineNumber(ctx));
+    throw unsupported("logical or", ctx);
   }
 
   @Override
   public Expr visitNotExpression(ECMAScriptParser.NotExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'logical not' at " + lineNumber(ctx));
+    throw unsupported("logical not", ctx);
   }
 
   @Override
   public Expr visitPreDecreaseExpression(ECMAScriptParser.PreDecreaseExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'pre-decrement' at " + lineNumber(ctx));
+    throw unsupported("pre-decrement", ctx);
   }
 
   @Override
@@ -398,7 +409,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitUnaryMinusExpression(ECMAScriptParser.UnaryMinusExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'unary minus' at " + lineNumber(ctx));
+    throw unsupported("unary minus", ctx);
   }
 
   @Override
@@ -414,33 +425,33 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
       var name = identifierName(field.identifierName());
       return new Expr.FieldAssignment(receiver, name, expr, lineNumber(field.Dot().getSymbol()));
     }
-    throw new UnsupportedOperationException("unsupported syntax 'assignment' at " + lineNumber(ctx));
+    throw unsupported("assignment", ctx);
 
   }
 
   @Override
   public Expr visitPostDecreaseExpression(ECMAScriptParser.PostDecreaseExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'post-decrement' at " + lineNumber(ctx));
+    throw unsupported("post-decrement", ctx);
   }
 
   @Override
   public Expr visitTypeofExpression(ECMAScriptParser.TypeofExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'typeof' at " + lineNumber(ctx));
+    throw unsupported("typeof", ctx);
   }
 
   @Override
   public Expr visitInstanceofExpression(ECMAScriptParser.InstanceofExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'instanceof' at " + lineNumber(ctx));
+    throw unsupported("instanceof", ctx);
   }
 
   @Override
   public Expr visitUnaryPlusExpression(ECMAScriptParser.UnaryPlusExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'unary plus' at " + lineNumber(ctx));
+    throw unsupported("unary plus", ctx);
   }
 
   @Override
   public Expr visitDeleteExpression(ECMAScriptParser.DeleteExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'delete' at " + lineNumber(ctx));
+    throw unsupported("delete", ctx);
   }
 
   private Expr binOp(String op, Expr left, Expr right, int lineNumber) {
@@ -451,7 +462,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   public Expr visitEqualityExpression(ECMAScriptParser.EqualityExpressionContext ctx) {
     var op = ctx.Equals() != null ? "==" : ctx.NotEquals() != null ? "!=" : null;
     if (op == null) {
-      throw new UnsupportedOperationException("unsupported syntax '=== or !==' at " + lineNumber(ctx));
+      throw unsupported("=== or !==", ctx);
     }
     var left = ctx.singleExpression(0).accept(this);
     var right = ctx.singleExpression(1).accept(this);
@@ -460,7 +471,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitBitXOrExpression(ECMAScriptParser.BitXOrExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'bit xor' at " + lineNumber(ctx));
+    throw unsupported("bit xor", ctx);
   }
 
   @Override
@@ -473,7 +484,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitBitShiftExpression(ECMAScriptParser.BitShiftExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'bit shift' at " + lineNumber(ctx));
+    throw unsupported("bit shift", ctx);
   }
 
   @Override
@@ -499,17 +510,17 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitPostIncrementExpression(ECMAScriptParser.PostIncrementExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'post increment' at " + lineNumber(ctx));
+    throw unsupported("post increment", ctx);
   }
 
   @Override
   public Expr visitBitNotExpression(ECMAScriptParser.BitNotExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'bit not' at " + lineNumber(ctx));
+    throw unsupported("bit not", ctx);
   }
 
   @Override
   public Expr visitNewExpression(ECMAScriptParser.NewExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'new' at " + lineNumber(ctx));
+    throw unsupported("new", ctx);
   }
 
   @Override
@@ -519,14 +530,14 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitArrayLiteralExpression(ECMAScriptParser.ArrayLiteralExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'array literal' at " + lineNumber(ctx));
+    throw unsupported("array literal", ctx);
   }
 
   private String identifierName(ECMAScriptParser.IdentifierNameContext ctx) {
     if (ctx.Identifier() != null) {
       return ctx.Identifier().getText();
     }
-    throw new UnsupportedOperationException("unsupported syntax 'keyword identifier' at " + lineNumber(ctx));
+    throw unsupported("keyword identifier", ctx);
   }
 
   @Override
@@ -538,7 +549,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitMemberIndexExpression(ECMAScriptParser.MemberIndexExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'indexed expression' at " + lineNumber(ctx));
+    throw unsupported("indexed expression", ctx);
   }
 
   @Override
@@ -549,22 +560,22 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitBitAndExpression(ECMAScriptParser.BitAndExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'bit and' at " + lineNumber(ctx));
+    throw unsupported("bit and", ctx);
   }
 
   @Override
   public Expr visitBitOrExpression(ECMAScriptParser.BitOrExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'bit or' at " + lineNumber(ctx));
+    throw unsupported("bit or", ctx);
   }
 
   @Override
   public Expr visitAssignmentOperatorExpression(ECMAScriptParser.AssignmentOperatorExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'assignment operator' at " + lineNumber(ctx));
+    throw unsupported("assignment operator'", ctx);
   }
 
   @Override
   public Expr visitVoidExpression(ECMAScriptParser.VoidExpressionContext ctx) {
-    throw new UnsupportedOperationException("unsupported syntax 'void operator' at " + lineNumber(ctx));
+    throw unsupported("void operator", ctx);
   }
 
   @Override
@@ -581,15 +592,16 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
       var text = ctx.StringLiteral().getText();
       return new Expr.Literal(text.substring(1, text.length() - 1), lineNumber(ctx));
     }
-    throw new UnsupportedOperationException("unsupported syntax 'literal' at " + lineNumber(ctx));
+    throw unsupported("literal", ctx);
   }
 
   @Override
   public Expr visitNumericLiteral(ECMAScriptParser.NumericLiteralContext ctx) {
     if (ctx.DecimalLiteral() == null) {
-      throw new UnsupportedOperationException("unsupported syntax 'numeric literal' at " + lineNumber(ctx));
+      throw unsupported("numeric literal", ctx);
     }
-    return new Expr.Literal(Integer.parseInt(ctx.DecimalLiteral().getText()), lineNumber(ctx));
+    var text = ctx.DecimalLiteral().getText();
+    return new Expr.Literal(Integer.parseInt(text), lineNumber(ctx));
   }
 
   @Override
@@ -644,6 +656,6 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitErrorNode(ErrorNode errorNode) {
-    throw new UnsupportedOperationException("unsupported syntax 'error' at " + lineNumber(errorNode.getSymbol()));
+    throw unsupported("error", errorNode.getSymbol());
   }
 }
