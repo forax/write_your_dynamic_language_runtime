@@ -37,6 +37,7 @@ public class StackInterpreterTests {
     assertEquals("hello\n", execute("print(\"hello\")\n"));
     assertEquals("foobar\n", execute("print('foobar')\n"));
     assertEquals("3\n", execute("print(3)\n"));
+    assertEquals("undefined\n", execute("print(undefined)\n"));
   }
   
   @Tag("Q5") @Test

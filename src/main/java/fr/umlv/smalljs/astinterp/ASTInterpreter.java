@@ -97,6 +97,7 @@ public final class ASTInterpreter {
   private static JSObject createGlobalEnv(PrintStream outStream) {
     var globalEnv = JSObject.newEnv(null);
     globalEnv.register("globalThis", globalEnv);
+    globalEnv.register("undefined", UNDEFINED);
     globalEnv.register("print", JSObject.newFunction("print", (_, args) -> {
       System.err.println("print called with " + Arrays.toString(args));
       outStream.println(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(" ")));

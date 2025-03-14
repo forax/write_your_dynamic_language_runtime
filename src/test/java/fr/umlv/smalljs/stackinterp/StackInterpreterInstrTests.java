@@ -95,6 +95,17 @@ public class StackInterpreterInstrTests {
   	};
     assertEquals("hello\n", execute(new Code(instrs, 1, 1), dict));
   }
+  @Tag("Q4") @Test
+	// print(undefined)
+	public void printUndefined() {
+		var dict = new Dictionary();
+		int[] instrs = {
+				CONST, encodeDictObject(UNDEFINED, dict),
+				PRINT,
+				RET
+		};
+		assertEquals("undefined\n", execute(new Code(instrs, 1, 1), dict));
+	}
 
   @Tag("Q5") @Test
   public void nativePrintHello() {
