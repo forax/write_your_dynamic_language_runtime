@@ -277,7 +277,11 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitObjectLiteral(ECMAScriptParser.ObjectLiteralContext ctx) {
-    var initMap = ctx.propertyNameAndValueList().propertyAssignment().stream()
+    var propertyNameAndValueList = ctx.propertyNameAndValueList();
+    if (propertyNameAndValueList == null) {
+      return new Expr.ObjectLiteral(new LinkedHashMap<>(), lineNumber(ctx));
+    }
+    var initMap = propertyNameAndValueList.propertyAssignment().stream()
         .map(prop -> {
           if (prop instanceof ECMAScriptParser.PropertyExpressionAssignmentContext propAssignment) {
             return propAssignment;
@@ -288,7 +292,6 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
             p -> p.singleExpression().accept(this),
             (_, _) -> { throw new AssertionError(); },
             LinkedHashMap<String, Expr>::new));
-
     return new Expr.ObjectLiteral(initMap, lineNumber(ctx));
   }
   @Override
