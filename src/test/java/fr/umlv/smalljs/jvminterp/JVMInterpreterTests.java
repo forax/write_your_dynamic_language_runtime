@@ -459,9 +459,17 @@ public class JVMInterpreterTests {
     }
 
     @Test
+    public void objectCallNonExistingMethod() {
+      assertThrows(Failure.class, () -> execute("""
+                  var object = {};
+                  object.foo(101);
+                  """));
+    }
+
+    @Test
     public void objectCallAMethodTwice() {
       assertEquals(
-          "3\n3\n",
+          "3\n7\n",
           execute("""
                   function fun(o) {
                     return o.field;
@@ -471,7 +479,7 @@ public class JVMInterpreterTests {
                     toto: 0
                   };
                   var object2 = {
-                    field: 3,
+                    field: 7,
                     toto: 4
                   };
                   print(fun(object));

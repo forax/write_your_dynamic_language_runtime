@@ -471,6 +471,27 @@ public class StackInterpreterTests {
                   object.foo(42);
                   """));
     }
+
+    @Test
+    public void objectCallAMethodTwice() {
+      assertEquals(
+          "3\n7\n",
+          execute("""
+                  function fun(o) {
+                    return o.field;
+                  }
+                  var object = {
+                    field: 3,
+                    toto: 0
+                  };
+                  var object2 = {
+                    field: 7,
+                    toto: 4
+                  };
+                  print(fun(object));
+                  print(fun(object2));
+                  """));
+    }
   }
   */
 }
