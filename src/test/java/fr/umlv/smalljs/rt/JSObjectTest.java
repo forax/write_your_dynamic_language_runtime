@@ -20,7 +20,7 @@ public class JSObjectTest {
           () -> assertNotNull(obj),
           () -> assertEquals("object", obj.name()),
           () -> assertEquals(1, obj.length()),
-          () -> assertEquals(745, obj.lookup("x"))
+          () -> assertEquals(745, obj.lookupOrDefault("x", null))
       );
     }
 
@@ -34,8 +34,8 @@ public class JSObjectTest {
       assertAll(
           () -> assertNotNull(env),
           () -> assertEquals("env", env.name()),
-          () -> assertSame(34, env.lookup("b")),
-          () -> assertSame(12, env.lookup("a"))
+          () -> assertSame(34, env.lookupOrDefault("b", null)),
+          () -> assertSame(12, env.lookupOrDefault("a", null))
       );
     }
 
@@ -43,7 +43,7 @@ public class JSObjectTest {
     public void testNewFunctionWithInvoker() {
       JSObject.Invoker invoker = (receiver, args) -> "result";
       var func = JSObject.newFunction("test", invoker);
-      var apply = func.lookup("apply");
+      var apply = func.lookupOrDefault("apply", null);
 
       assertAll(
           () -> assertNotNull(func),
@@ -73,32 +73,15 @@ public class JSObjectTest {
   @Nested
   public class PropertyTests {
     @Test
-    public void testPrototypeInheritance() {
-      var proto = JSObject.newObject(null);
-      proto.register("a", 1);
-      proto.register("b", 2);
-
-      var obj = JSObject.newObject(proto);
-      obj.register("c", 3);
-
-      assertAll(
-          () -> assertEquals(1, obj.lookup("a")),
-          () -> assertEquals(2, obj.lookup("b")),
-          () -> assertEquals(3, obj.lookup("c")),
-          () -> assertEquals(1, obj.length()) // Only direct properties count for length
-      );
-    }
-
-    @Test
     public void testRegisterAndLookup() {
       var obj = JSObject.newObject(null);
       obj.register("a", 1);
       obj.register("b", "text");
 
       assertAll(
-          () -> assertEquals(1, obj.lookup("a")),
-          () -> assertEquals("text", obj.lookup("b")),
-          () -> assertSame(JSObject.UNDEFINED, obj.lookup("c")),
+          () -> assertEquals(1, obj.lookupOrDefault("a", null)),
+          () -> assertEquals("text", obj.lookupOrDefault("b", null)),
+          () -> assertNull(obj.lookupOrDefault("c", null)),
           () -> assertEquals(2, obj.length())
       );
     }
@@ -110,8 +93,25 @@ public class JSObjectTest {
       obj.register("a", 2);
 
       assertAll(
-          () -> assertEquals(2, obj.lookup("a")),
+          () -> assertEquals(2, obj.lookupOrDefault("a", null)),
           () -> assertEquals(1, obj.length()) // Length shouldn't change for updates
+      );
+    }
+
+    @Test
+    public void testPrototypeInheritance() {
+      var proto = JSObject.newObject(null);
+      proto.register("a", 1);
+      proto.register("b", 2);
+
+      var obj = JSObject.newObject(proto);
+      obj.register("c", 3);
+
+      assertAll(
+          () -> assertEquals(1, obj.lookupOrDefault("a", null)),
+          () -> assertEquals(2, obj.lookupOrDefault("b", null)),
+          () -> assertEquals(3, obj.lookupOrDefault("c", null)),
+          () -> assertEquals(1, obj.length()) // Only direct properties count for length
       );
     }
 
@@ -228,9 +228,9 @@ public class JSObjectTest {
       });
 
       assertAll(
-          () -> assertEquals(2, mirror.lookup("a")),
-          () -> assertEquals(4, mirror.lookup("b")),
-          () -> assertEquals("text", mirror.lookup("c"))
+          () -> assertEquals(2, mirror.lookupOrDefault("a", null)),
+          () -> assertEquals(4, mirror.lookupOrDefault("b", null)),
+          () -> assertEquals("text", mirror.lookupOrDefault("c", null))
       );
     }
 
@@ -245,10 +245,10 @@ public class JSObjectTest {
       var mirror = obj.mirror(Object::toString);
 
       assertAll(
-          () -> assertEquals("42", mirror.lookup("int")),
-          () -> assertEquals("3.14", mirror.lookup("double")),
-          () -> assertEquals("hello", mirror.lookup("string")),
-          () -> assertEquals("true", mirror.lookup("boolean"))
+          () -> assertEquals("42", mirror.lookupOrDefault("int", null)),
+          () -> assertEquals("3.14", mirror.lookupOrDefault("double", null)),
+          () -> assertEquals("hello", mirror.lookupOrDefault("string", null)),
+          () -> assertEquals("true", mirror.lookupOrDefault("boolean", null))
       );
     }
 
@@ -262,7 +262,7 @@ public class JSObjectTest {
 
       var mirror = outerObj.mirror(value -> value);
 
-      assertSame(innerObj, mirror.lookup("nested"));
+      assertSame(innerObj, mirror.lookupOrDefault("nested", null));
     }
 
 

@@ -161,8 +161,7 @@ public final class ByteCodeRewriter {
         // visit the qualifier
         // load "this"
         // for each argument, visit it
-        // the name of the invokedynamic is either "builtincall" or "funcall"
-        // generate an invokedynamic with the right name
+        // generate an invokedynamic
       }
       case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO LocalVarAssignment");
@@ -174,7 +173,7 @@ public final class ByteCodeRewriter {
       case LocalVarAccess(String name, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO LocalVarAccess");
         // lookup to find if it's a local var access or a lookup access
-        // if undefined
+        // if it does not exist
         //  generate an invokedynamic doing a lookup
         // otherwise
         //  load the local variable at the slot

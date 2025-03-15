@@ -159,8 +159,8 @@ final class InstrRewriter {
 				// get the local variable name
 				//var name = ...
 				// find if there is a local variable in the environment with the name
-				//var slotOrUndefined = env.lookup(...);
-				//if (slotOrUndefined == UNDEFINED) {
+				//var slot = env.lookupOrDefault(...);
+				//if (slot == null) {
 				// emit a lookup with the name
 				//  buffer.emit(...).emit(...);
 				//} else {
@@ -173,9 +173,9 @@ final class InstrRewriter {
 				// visit the expression
 				// visit(...);
 				// find if there is a local variable in the env from the name
-				//var slotOrUndefined = env.lookup(...);
-				//if (slotOrUndefined == UNDEFINED) {
-				//	throw new Failure("unknown local variable " + name);
+				//var slot = env.lookupOrDefault(...);
+				//if (slot == null) {
+				//	throw new Failure("unknown variable " + name);
 				//}
 				// emit a store at the variable slot
 				//buffer.emit(...).emit(...);
@@ -183,7 +183,7 @@ final class InstrRewriter {
 			case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
 				// create a JSObject function
-				///var function = createFunction(optName, parameters, body, dict, globalEnv);
+				// var function = createFunction(optName, parameters, body, dict, globalEnv);
 				// emit a const on the function
 				//buffer.emit(...).emit(...);
 				// if the name is present emit a code to register the function in the global environment

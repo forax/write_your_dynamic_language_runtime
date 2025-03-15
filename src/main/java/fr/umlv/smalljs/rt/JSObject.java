@@ -134,16 +134,16 @@ public final class JSObject {
     }
   }
   
-  public Object lookup(String key) {
+  public Object lookupOrDefault(String key, Object defaultValue) {
     requireNonNull(key);
     var slot = layout.slot(key);
     if (slot != -1) {
       return array[slot];
     }
     if (proto != null) {
-      return proto.lookup(key);
+      return proto.lookupOrDefault(key, defaultValue);
     }
-    return UNDEFINED;
+    return defaultValue;
   }
 
   public void register(String key, Object value) {

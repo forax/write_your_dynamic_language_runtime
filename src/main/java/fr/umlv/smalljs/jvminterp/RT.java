@@ -20,18 +20,19 @@ import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
 public final class RT {
-  private static final MethodHandle LOOKUP, REGISTER, INVOKE, TRUTH, METH_LOOKUP_MH;
+  private static final MethodHandle LOOKUP_OR_DEFAULT, LOOKUP_OR_FAIL, REGISTER, INVOKE, TRUTH, LOOKUP_MH;
   static {
     var lookup = MethodHandles.lookup();
     try {
-      LOOKUP = lookup.findVirtual(JSObject.class, "lookup", methodType(Object.class, String.class));
+      LOOKUP_OR_DEFAULT = lookup.findVirtual(JSObject.class, "lookupOrDefault", methodType(Object.class, String.class, Object.class));
+      LOOKUP_OR_FAIL = lookup.findStatic(RT.class, "lookupOrFail", methodType(Object.class, JSObject.class, String.class));
       REGISTER = lookup.findVirtual(JSObject.class, "register", methodType(void.class, String.class, Object.class));
 
       INVOKE = lookup.findVirtual(JSObject.class, "invoke", methodType(Object.class, Object.class, Object[].class));
 
       TRUTH = lookup.findStatic(RT.class, "truth", methodType(boolean.class, Object.class));
 
-      METH_LOOKUP_MH = lookup.findStatic(RT.class, "lookupMethodHandle", methodType(MethodHandle.class, JSObject.class, String.class));
+      LOOKUP_MH = lookup.findStatic(RT.class, "lookupMethodHandle", methodType(MethodHandle.class, JSObject.class, String.class));
     } catch (NoSuchMethodException | IllegalAccessException e) {
       throw new AssertionError(e);
     }
@@ -45,12 +46,21 @@ public final class RT {
     return constant;
   }
 
-  public static CallSite bsm_lookup(Lookup lookup, String name, MethodType type, String functionName) {
+  @SuppressWarnings("unused")  // used by a method handle
+  private static Object lookupOrFail(JSObject jsObject, String key) {
+    var value = jsObject.lookupOrDefault(key, null);
+    if (value == null) {
+      throw new Failure("no value for " + key);
+    }
+    return value;
+  }
+
+  public static CallSite bsm_lookup(Lookup lookup, String name, MethodType type, String variableName) {
     throw new UnsupportedOperationException("TODO bsm_lookup");
     //var classLoader = (FunClassLoader) lookup.lookupClass().getClassLoader();
     //var globalEnv = classLoader.getGlobal();
-    // get the LOOKUP method handle
-    // use the global environment as first argument and the functionName as second argument
+    // get the LOOKUP_OR_FAIL method handle
+    // use the global environment as first argument and the variableName as second argument
     // create a constant callsite
   }
 
@@ -90,8 +100,8 @@ public final class RT {
 
   public static CallSite bsm_get(Lookup lookup, String name, MethodType type, String fieldName) {
     throw new UnsupportedOperationException("TODO bsm_get");
-    // get the LOOKUP method handle
-    // use the fieldName as second argument
+    // get the LOOKUP_OR_DEFAULT method handle
+    // use the fieldName and UNDEFINED as second argument and third argument
     // make it accept an Object (not a JSObject) as first parameter
     // create a constant callsite
   }
@@ -106,7 +116,10 @@ public final class RT {
 
   @SuppressWarnings("unused")  // used by a method handle
   private static MethodHandle lookupMethodHandle(JSObject receiver, String fieldName) {
-    var function = (JSObject) receiver.lookup(fieldName);
+    var function = (JSObject) receiver.lookupOrDefault(fieldName, null);
+    if (function == null) {
+      throw new Failure("no method " + fieldName);
+    }
     return function.methodHandle();
   }
 

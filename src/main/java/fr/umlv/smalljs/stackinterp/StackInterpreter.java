@@ -77,7 +77,7 @@ public final class StackInterpreter {
 	public static Object execute(JSObject function, Dictionary dict, JSObject globalEnv) {
 		var stack = new int[96 /* 4096 */];
 		var heap = new int[96 /* 4096 */];
-		var code = (Code) function.lookup("__code__");
+		var code = (Code) function.lookupOrDefault("__code__", null);
 		var instrs = code.instrs();
 
 		var undefined = encodeDictObject(UNDEFINED, dict);
@@ -105,7 +105,9 @@ public final class StackInterpreter {
 					//int indexTagValue = ...
 					// decode the name from the instruction
 					//String name = ...
-					// lookup the name and push as any anyValue
+					// lookup the name
+					// if it does not exist throw a failure
+					// otherwise push as any anyValue
 					//push(...);
 
 					//dumpStack("in lookup", stack, sp, bp, dict, heap);
@@ -186,8 +188,8 @@ public final class StackInterpreter {
 					//}
 
 					// check if the function contains a code attribute
-					//var maybeCode = newFunction.lookup("__code__");
-					//if (maybeCode == UNDEFINED) { // native call !
+					//var maybeCode = newFunction.lookupOrDefault("__code__", null);
+					//if (maybeCode == null) { // native call !
 					// decode receiver
 					//var receiver = decodeAnyValue(...);
 
@@ -338,17 +340,16 @@ public final class StackInterpreter {
 					//int value = ...
 					//int ref = ...
 					// get class on heap from the reference
-					//int vClass = ...;
+					//int vClass = ...
 					// get JSObject from class
 					//var clazz = (JSObject) decodeDictObject(vClass, dict);
 					// get field slot from JSObject
-					//int slotOrUndefined = clazz.lookup(fieldName);
-					//if (slotOrUndefined == UNDEFINED) {
+					//var slot = ...
+					//if (slot == null) {
 					// no slot, push undefined
 					//	push(..);
 					//	continue;
 					//}
-
 					// get the field index
 					//int fieldIndex = ...
 					// get field value
@@ -369,11 +370,10 @@ public final class StackInterpreter {
 					// get JSObject from class
 					//var clazz = (JSObject) decodeDictObject(vClass, dict);
 					// get field slot from JSObject
-					//var slotOrUndefined = clazz.lookup(fieldName);
-					//if (slotOrUndefined == UNDEFINED) {
+					//var slot = ...
+					//if (slot == null) {
 					//	throw new Failure("invalid field " + fieldName);
 					//}
-
 					// get the field index
 					//var fieldIndex = ...
 					// store field value from the top of the stack on heap
@@ -386,7 +386,7 @@ public final class StackInterpreter {
 					// decode the value
 					//var value = decodeAnyValue(...);
 					// find "print" in the global environment
-					//var print = (JSObject) globalEnv.lookup("print");
+					//var print = (JSObject) globalEnv.lookupOrDefault("print", null);
 					// invoke it
 					//print.invoke(UNDEFINED, new Object[]{ value });
 					// push undefined on the stack
@@ -427,6 +427,6 @@ public final class StackInterpreter {
 		var body = script.body();
 		var dictionary = new Dictionary();
 		var function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, dictionary);
-		StackInterpreter.execute(function, dictionary, globalEnv);
+		execute(function, dictionary, globalEnv);
 	}
 }

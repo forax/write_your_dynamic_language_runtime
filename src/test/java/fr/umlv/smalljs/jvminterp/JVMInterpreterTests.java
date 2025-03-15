@@ -95,6 +95,13 @@ public class JVMInterpreterTests {
     }
 
     @Test
+    public void printNoVariable() {
+      assertThrows(Failure.class, () -> execute("""
+              print(a);
+              """));
+    }
+
+    @Test
     public void printSeveralAssignments() {
       assertEquals("42\n42\n", execute("""
               var a = 42;

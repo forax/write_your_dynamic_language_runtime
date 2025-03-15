@@ -35,6 +35,36 @@ public final class ASTInterpreter {
     return jsObject;
   }
 
+  private static Object execute(Expr.Block body, JSObject env) {
+    // initialize declared variables to UNDEFINED
+    visitVariable(body, env);
+    // interpret the AST
+    return visit(body, env);
+  }
+
+  private static void visitVariable(Expr expression, JSObject env) {
+    switch (expression) {
+      case Block(List<Expr> exprs, _) -> {
+        for (var expr : exprs) {
+          visitVariable(expr, env);
+        }
+      }
+      case LocalVarAssignment(String name, _, boolean declaration, _) -> {
+        if (declaration) {
+          env.register(name, UNDEFINED);
+        }
+      }
+      case If(_, Block trueBlock, Block falseBlock, _) -> {
+        visitVariable(trueBlock, env);
+        visitVariable(falseBlock, env);
+      }
+      case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, ObjectLiteral _, FieldAccess _,
+           FieldAssignment _, MethodCall _ -> {
+        // do nothing
+      }
+    };
+  }
+
   static Object visit(Expr expression, JSObject env) {
     return switch (expression) {
       case Block(List<Expr> exprs, int lineNumber) -> {
@@ -65,7 +95,7 @@ public final class ASTInterpreter {
         //    // check the arguments length
         //    // create a new environment
         //    // add this and all the parameters
-        //    // visit the body
+        //    // execute the body
         //  }
         //};
         // create the JS function with the invoker
@@ -120,7 +150,7 @@ public final class ASTInterpreter {
   public static void interpret(Script script, PrintStream outStream) {
     var globalEnv =createGlobalEnv(outStream);
     var body = script.body();
-    visit(body, globalEnv);
+    execute(body, globalEnv);
   }
 }
 

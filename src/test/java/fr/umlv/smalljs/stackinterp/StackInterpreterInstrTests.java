@@ -283,6 +283,18 @@ public class StackInterpreterInstrTests {
 		}
 
 		@Test
+		public void printNoVariable() {
+			// print(a)
+			var dict = new Dictionary();
+			int[] instrs = {
+					LOOKUP, encodeDictObject("a", dict),
+					PRINT,
+					RET
+			};
+			assertThrows(Failure.class, () -> execute(new Code(instrs, 1, 2), dict));
+		}
+
+		@Test
 		public void printSeveralAssignments() {
 			// var a = 42;
 			// var b = a;
