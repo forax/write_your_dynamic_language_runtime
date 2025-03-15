@@ -26,7 +26,7 @@ public class JSObjectTest {
 
     @Test
     public void testNewEnv() {
-      var parent = JSObject.newObject(null);
+      var parent = JSObject.newEnv(null);
       parent.register("a", 12);
       var env = JSObject.newEnv(parent);
       env.register("b", 34);
