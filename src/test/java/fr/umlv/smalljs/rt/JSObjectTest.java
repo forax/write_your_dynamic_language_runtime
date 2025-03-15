@@ -121,8 +121,8 @@ public class JSObjectTest {
       obj.register("a", 42);
       obj.register("b", "text");
 
-      var slotA = obj.layout().slot("a");
-      var slotB = obj.layout().slot("b");
+      var slotA = obj.layoutSlot("a");
+      var slotB = obj.layoutSlot("b");
 
       assertAll(
           () -> assertEquals(0, slotA),
@@ -144,9 +144,9 @@ public class JSObjectTest {
       var layout = obj.layout();
 
       assertAll(
-          () -> assertEquals(0, layout.slot("a")),
-          () -> assertEquals(1, layout.slot("b")),
-          () -> assertEquals(-1, layout.slot("c"))
+          () -> assertEquals(0, obj.layoutSlot("a")),
+          () -> assertEquals(1, obj.layoutSlot("b")),
+          () -> assertEquals(-1, obj.layoutSlot("c"))
       );
     }
 

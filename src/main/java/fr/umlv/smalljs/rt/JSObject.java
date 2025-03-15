@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 
 public final class JSObject {
-  public static final class Layout {
+  private static final class Layout {
     private final LinkedHashMap<String, Integer> slotMap;
     private final HashMap<String, Layout> forwardMap = new HashMap<>();
 
@@ -23,7 +23,7 @@ public final class JSObject {
       this.slotMap = slotMap;
     }
 
-    public int slot(Object key) {
+    private int slot(String key) {
       return slotMap.getOrDefault(key, -1);
     }
 
@@ -105,8 +105,11 @@ public final class JSObject {
   public SwitchPoint switchPoint() {
     return switchPoint;
   }
-  public Layout layout() {
+  public Object layout() {
     return layout;
+  }
+  public int layoutSlot(String key) {
+    return layout.slot(key);
   }
   public Object fastAccess(int slot) {
     return array[slot];
