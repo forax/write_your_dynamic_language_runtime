@@ -35,9 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings("static-method")
 public class StackInterpreterInstrTests {
 	private static JSObject newFunction(String name, Code code) {
-		var fun = JSObject.newFunction(name, (receiver, args) -> {
-			throw new Failure("native call not supported");
-		});
+		var fun = JSObject.newFunction(name, JSObject.NO_INVOKER_MH);
 		fun.register("__code__", code);
 		return fun;
 	}

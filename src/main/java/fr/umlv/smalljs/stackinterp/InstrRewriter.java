@@ -89,9 +89,7 @@ final class InstrRewriter {
 		Instructions.dump(instrs, dict);
 
 		var code = new Code(instrs, parameters.size() + 1 /* this */, env.length());
-		var function = JSObject.newFunction(name.orElse("lambda"), (receiver, args) -> {
-			throw new Failure("native call not supported");
-		});
+		var function = JSObject.newFunction(name.orElse("lambda"), JSObject.NO_INVOKER_MH);
 		function.register("__code__", code);
 		return function;
 	}

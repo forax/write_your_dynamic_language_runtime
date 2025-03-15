@@ -30,9 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SuppressWarnings("static-method")
 public class StackInterpreterGCTests {
 	private static JSObject newMainFunction(Code code) {
-    var fun = JSObject.newFunction("main", (receiver, args) -> {
-      throw new Failure("native call not supported");
-    });
+    var fun = JSObject.newFunction("main", JSObject.NO_INVOKER_MH);
     fun.register("__code__", code);
     return fun;
   }

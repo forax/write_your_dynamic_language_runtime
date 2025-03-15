@@ -14,8 +14,8 @@ import java.util.function.Function;
 public final class JSObject {
   private final JSObject proto;
   private final String name;
-  private final MethodHandle mh;
   private final ArrayMap valueMap = new ArrayMap();
+  private final MethodHandle mh;
   private SwitchPoint switchPoint = new SwitchPoint();
   
   private static final class Undefined {
@@ -35,29 +35,30 @@ public final class JSObject {
   public interface Invoker {
     Object invoke(Object receiver, Object... args);
   }
+
+  private static MethodHandle asMethodHandle(Invoker invoker) {
+    return INVOKER.bindTo(invoker).withVarargs(true);
+  }
+
+  public static final MethodHandle NO_INVOKER_MH =
+      asMethodHandle((_, _) -> { throw new Failure("can not be invoked"); });
   
   private JSObject(JSObject proto, String name, MethodHandle mh) {
     this.proto = proto;
     this.name = name;
     this.mh = mh;
   }
-
-  private JSObject(JSObject proto, String name, Invoker invoker) {
-    this(proto, name, INVOKER.bindTo(invoker).withVarargs(true));
-  }
   
   public static JSObject newObject(JSObject proto) {
-    return new JSObject(proto, "object", (_, _) -> { throw new Failure("object can not be invoked"); });
+    return new JSObject(proto, "object", NO_INVOKER_MH);
   }
   public static JSObject newEnv(JSObject parent) {
-    return new JSObject(parent, "env", (_, _) -> { throw new Failure("env can not be invoked"); });
+    return new JSObject(parent, "env", NO_INVOKER_MH);
   }
   public static JSObject newFunction(String name, Invoker invoker) {
     requireNonNull(name);
     requireNonNull(invoker);
-    var function =  new JSObject(null, "function " + name, invoker);
-    function.register("apply", function);
-    return function;
+    return newFunction(name, asMethodHandle(invoker));
   }
   public static JSObject newFunction(String name, MethodHandle mh) {
     requireNonNull(name);
