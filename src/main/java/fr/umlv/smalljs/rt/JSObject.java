@@ -6,15 +6,43 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SwitchPoint;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public final class JSObject {
+  public static final class Layout {
+    private final LinkedHashMap<String, Integer> slotMap;
+    private final HashMap<String, Layout> forwardMap = new HashMap<>();
+
+    private Layout(LinkedHashMap<String, Integer> slotMap) {
+      this.slotMap = slotMap;
+    }
+
+    public int slot(Object key) {
+      return slotMap.getOrDefault(key, -1);
+    }
+
+    private Layout forward(String key) {
+      return forwardMap.computeIfAbsent(key, k -> {
+        var newSlotMap = new LinkedHashMap<>(slotMap);
+        newSlotMap.put(k, newSlotMap.size());
+        return new Layout(newSlotMap);
+      });
+    }
+  }
+
+  private static final Layout ROOT = new Layout(new LinkedHashMap<>());
+  private static final Object[] EMPTY_ARRAY = new Object[0];
+
   private final JSObject proto;
   private final String name;
-  private final ArrayMap valueMap = new ArrayMap();
+  private Layout layout = ROOT;
+  private Object[] array = EMPTY_ARRAY;
   private final MethodHandle mh;
   private SwitchPoint switchPoint = new SwitchPoint();
   
@@ -77,11 +105,11 @@ public final class JSObject {
   public SwitchPoint switchPoint() {
     return switchPoint;
   }
-  public ArrayMap.Layout layout() {
-    return valueMap.layout();
+  public Layout layout() {
+    return layout;
   }
   public Object fastAccess(int slot) {
-    return valueMap.fastAccess(slot);
+    return array[slot];
   }
 
   public Object invoke(Object receiver, Object... args) {
@@ -105,9 +133,9 @@ public final class JSObject {
   
   public Object lookup(String key) {
     requireNonNull(key);
-    var value = valueMap.get(key);
-    if (value != null) {
-      return value;
+    var slot = layout.slot(key);
+    if (slot != -1) {
+      return array[slot];
     }
     if (proto != null) {
       return proto.lookup(key);
@@ -118,22 +146,30 @@ public final class JSObject {
   public void register(String key, Object value) {
     requireNonNull(key);
     requireNonNull(value);
-    valueMap.put(key, value);
-    
+    var slot = layout.slot(key);
+    if (slot != -1) {
+      array[slot] = value;
+    } else {
+      layout = layout.forward(key);
+      array = Arrays.copyOf(array, array.length + 1);
+      array[array.length - 1] = value;
+    }
+
     // broadcast change, not thread safe
     SwitchPoint.invalidateAll(new SwitchPoint[] { switchPoint });
     switchPoint = new SwitchPoint();
   }
   
   public int length() {
-    return valueMap.size();
+    return array.length;
   }
   
-  public JSObject mirror(Function<Object, Object> valueMapper) {
+  public JSObject mirror(UnaryOperator<Object> valueMapper) {
     requireNonNull(valueMapper);
     var mirror = newObject(null);
-    valueMap.forEach((key, value) -> {
-      mirror.register(key, valueMapper.apply(value));  
+    var array = this.array;
+    layout.slotMap.forEach((key, slot) -> {
+      mirror.register(key, valueMapper.apply(array[slot]));
     });
     return mirror;
   }
@@ -162,9 +198,9 @@ public final class JSObject {
       return;
     }
     builder.append("{ // ").append(jsObject.name).append('\n');
-    jsObject.valueMap.forEach((key, value) -> {
+    jsObject.layout.slotMap.forEach((key, slot) -> {
       builder.append("  ").append(key).append(": ");
-      toString(value, builder, seen);
+      toString(jsObject.array[slot], builder, seen);
       builder.append("\n");
     });
     builder.append("  proto: ");

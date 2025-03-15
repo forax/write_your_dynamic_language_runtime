@@ -16,8 +16,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
 
-import fr.umlv.smalljs.rt.ArrayMap;
-import fr.umlv.smalljs.rt.ArrayMap.Layout;
+import fr.umlv.smalljs.rt.JSObject.Layout;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
