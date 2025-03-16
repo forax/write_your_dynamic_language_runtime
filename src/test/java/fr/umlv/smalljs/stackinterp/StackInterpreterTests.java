@@ -165,11 +165,10 @@ public class StackInterpreterTests {
 
     @Test
     public void callVariableFunction() {
-      assertEquals("6\n6\n", execute("""
+      assertEquals("6\n", execute("""
               var foo = function bar(x) {
                 return x * 2;}
               print(foo(3));
-              print(bar(3));
               """));
     }
 

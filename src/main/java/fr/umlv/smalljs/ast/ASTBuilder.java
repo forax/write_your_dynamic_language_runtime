@@ -7,7 +7,6 @@ import fr.umlv.smalljs.grammar.antlr.ECMAScriptVisitor;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -37,6 +36,10 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   }
   private int lineNumber(ParserRuleContext ctx) {
     return lineNumber(ctx.getStart());
+  }
+
+  private UnsupportedOperationException unsupported(String feature, ParserRuleContext ctx) {
+    return new UnsupportedOperationException("unsupported syntax '" + feature + "' at " + lineNumber(ctx));
   }
 
   @Override
@@ -125,13 +128,6 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
     }
     var falseBlock = asBlock(statement.get(1).accept(this));
     return new Expr.If(condition, trueBlock, falseBlock, lineNumber(ctx));
-  }
-
-  private UnsupportedOperationException unsupported(String feature, Token token) {
-    return new UnsupportedOperationException("unsupported syntax '" + feature + "' at " + token.getLine());
-  }
-  private UnsupportedOperationException unsupported(String feature, ParserRuleContext ctx) {
-    return new UnsupportedOperationException("unsupported syntax '" + feature + "' at " + lineNumber(ctx));
   }
 
   @Override
@@ -245,9 +241,12 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   @Override
   public Expr visitFunctionDeclaration(ECMAScriptParser.FunctionDeclarationContext ctx) {
     var name = ctx.Identifier() instanceof TerminalNode id ? id.getText() : null;
+    if (name == null) {
+      throw unsupported("unnamed function statement", ctx);
+    }
     var parameters = formalParameterList(ctx.formalParameterList());
     var body = (Expr.Block) ctx.functionBody().accept(this);
-    return new Expr.Fun(Optional.ofNullable(name), parameters, body, lineNumber(ctx));
+    return new Expr.Fun(name, parameters, true, body, lineNumber(ctx));
   }
   @Override
   public Expr visitFormalParameterList(ECMAScriptParser.FormalParameterListContext ctx) {
@@ -404,10 +403,10 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitFunctionExpression(ECMAScriptParser.FunctionExpressionContext ctx) {
-    var name = ctx.Identifier() instanceof TerminalNode id ? id.getText() : null;
+    var name = ctx.Identifier() instanceof TerminalNode id ? id.getText() : "anonymous";
     var parameters = formalParameterList(ctx.formalParameterList());
     var body = (Expr.Block) ctx.functionBody().sourceElements().accept(this);
-    return new Expr.Fun(Optional.ofNullable(name), parameters, body, lineNumber(ctx));
+    return new Expr.Fun(name, parameters, false, body, lineNumber(ctx));
   }
 
   @Override
@@ -659,6 +658,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
 
   @Override
   public Expr visitErrorNode(ErrorNode errorNode) {
-    throw unsupported("error", errorNode.getSymbol());
+    var token = errorNode.getSymbol();
+    throw new UnsupportedOperationException("unsupported syntax '" + "error" + "' at " + token.getLine());
   }
 }

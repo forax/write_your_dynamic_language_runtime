@@ -458,7 +458,6 @@ public class StackInterpreterInstrTests {
 			//   return x * 2;
 			// }
 			// print(foo(3));
-			// print(bar(3));
 			var dict = new Dictionary();
 			int[] bar = {
 					LOOKUP, encodeDictObject("*", dict),
@@ -471,23 +470,15 @@ public class StackInterpreterInstrTests {
 			var barFunction = newFunction("bar", new Code(bar, 2, 2));
 			int[] main = {
 					CONST, encodeDictObject(barFunction, dict),
-					DUP,
-					REGISTER, encodeDictObject("bar", dict),
 					STORE, 1,
 					LOAD, 1,
 					CONST, encodeDictObject(UNDEFINED, dict),
 					CONST, encodeSmallInt(3),
 					FUNCALL, 1,
 					PRINT,
-					POP,
-					LOOKUP, encodeDictObject("bar", dict),
-					CONST, encodeDictObject(UNDEFINED, dict),
-					CONST, encodeSmallInt(3),
-					FUNCALL, 1,
-					PRINT,
 					RET
 			};
-			assertEquals("6\n6\n", execute(new Code(main, 1, 2), dict));
+			assertEquals("6\n", execute(new Code(main, 1, 2), dict));
 		}
 
 		@Test

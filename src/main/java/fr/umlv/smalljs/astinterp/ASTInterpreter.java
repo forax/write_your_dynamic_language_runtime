@@ -86,7 +86,7 @@ public final class ASTInterpreter {
       case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO LocalVarAssignment");
       }
-      case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
+      case Fun(String name, List<String> parameters, boolean toplevel, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
         //var functionName = optName.orElse("lambda");
         //Invoker invoker = new Invoker() {
@@ -99,7 +99,7 @@ public final class ASTInterpreter {
         //  }
         //};
         // create the JS function with the invoker
-        // register it if necessary
+        // register it into the global env if it's a toplevel
         // yield the function
       }
       case Return(Expr expr, int lineNumber) -> {

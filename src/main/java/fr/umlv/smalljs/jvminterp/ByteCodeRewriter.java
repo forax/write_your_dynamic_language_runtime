@@ -179,11 +179,12 @@ public final class ByteCodeRewriter {
         //  load the local variable at the slot
       }
       case Fun fun -> {
-        Optional<String> optName = fun.optName();
+        var name = fun.name();
+        var toplevel = fun.toplevel();
         throw new UnsupportedOperationException("TODO Fun");
         // register the fun inside the fun directory and get the corresponding id
         // emit a LDC to load the function corresponding to the id at runtime
-        // generate an invokedynamic doing a register with the function name
+        // generate an invokedynamic doing a register with the function name if it's a toplevel
       }
       case Return(Expr expr, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO Return");

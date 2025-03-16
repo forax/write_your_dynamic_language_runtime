@@ -426,7 +426,7 @@ public final class StackInterpreter {
 		var globalEnv = createGlobalEnv(outStream);
 		var body = script.body();
 		var dictionary = new Dictionary();
-		var function = InstrRewriter.createFunction(Optional.of("main"), List.of(), body, dictionary);
+		var function = InstrRewriter.createFunction("main", List.of(), body, dictionary);
 		execute(function, dictionary, globalEnv);
 	}
 }

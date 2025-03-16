@@ -1,10 +1,9 @@
 package fr.umlv.smalljs.ast;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import static java.util.Objects.requireNonNull;
 
 public sealed interface Expr {
   int lineNumber();
@@ -35,9 +34,9 @@ public sealed interface Expr {
     }
   }
 
-  record Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) implements Expr {
+  record Fun(String name, List<String> parameters, boolean toplevel, Block body, int lineNumber) implements Expr {
     public Fun {
-      requireNonNull(optName);
+      requireNonNull(name);
       requireNonNull(parameters);
       requireNonNull(body);
     }

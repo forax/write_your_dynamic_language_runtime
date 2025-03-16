@@ -71,7 +71,7 @@ final class InstrRewriter {
 		}
 	}
 
-	static JSObject createFunction(Optional<String> name, List<String> parameters, Block body, Dictionary dict) {
+	static JSObject createFunction(String name, List<String> parameters, Block body, Dictionary dict) {
 		var env = JSObject.newEnv(null);
 
 		env.register("this", 0);
@@ -89,7 +89,7 @@ final class InstrRewriter {
 		Instructions.dump(instrs, dict);
 
 		var code = new Code(instrs, parameters.size() + 1 /* this */, env.length());
-		var function = JSObject.newFunction(name.orElse("lambda"), JSObject.NO_INVOKER_MH);
+		var function = JSObject.newFunction(name, JSObject.NO_INVOKER_MH);
 		function.register("__code__", code);
 		return function;
 	}
@@ -180,17 +180,17 @@ final class InstrRewriter {
 				// emit a store at the variable slot
 				//buffer.emit(...).emit(...);
 			}
-			case Fun(Optional<String> optName, List<String> parameters, Block body, int lineNumber) -> {
+			case Fun(String name, List<String> parameters, boolean topLevel, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
 				// create a JSObject function
-				// var function = createFunction(optName, parameters, body, dict, globalEnv);
+				// var function = createFunction(name, parameters, body, dict, globalEnv);
 				// emit a const on the function
 				//buffer.emit(...).emit(...);
-				// if the name is present emit a code to register the function in the global environment
-				//fun.name().ifPresent(name -> {
+				// if it's a toplevel register the function in the global environment
+				//if (topLevel) {
 				//  buffer.emit(DUP);
 				//  buffer.emit(...).emit(...);
-				//});
+				//}
 			}
 			case Return(Expr expr, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Return");
