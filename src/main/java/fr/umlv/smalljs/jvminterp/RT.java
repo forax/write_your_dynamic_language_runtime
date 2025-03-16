@@ -75,8 +75,8 @@ public final class RT {
     throw new UnsupportedOperationException("TODO bsm_fun");
     //var classLoader = (FunClassLoader) lookup.lookupClass().getClassLoader();
     //var globalEnv = classLoader.getGlobal();
-    //var fun = classLoader.getDictionary().lookupAndClear(funId);
-    //return ByteCodeRewriter.createFunction(fun.optName().orElse("lambda"), fun.parameters(), fun.body(), globalEnv);
+    // get the dictionary and get the Fun object corresponding to the id
+    // create the function using ByteCodeRewriter.createFunction(...)
   }
 
   public static CallSite bsm_register(Lookup lookup, String name, MethodType type, String functionName) {
