@@ -24,8 +24,17 @@ public class StackInterpreterTests {
   @Nested
   public class Q2 {
     @Test
-    public void helloString() {
-      assertEquals("", execute("\"hello\"\n"));
+    public void helloDoubleQuotedString() {
+      assertEquals("", execute("""
+              "hello"
+              """));
+    }
+
+    @Test
+    public void helloSingleQuotedString() {
+      assertEquals("", execute("""
+              'hello'
+              """));
     }
   }
 
@@ -33,7 +42,9 @@ public class StackInterpreterTests {
   public class Q3 {
     @Test
     public void integer3() {
-      assertEquals("", execute("3\n"));
+      assertEquals("", execute("""
+              3
+              """));
     }
   }
 

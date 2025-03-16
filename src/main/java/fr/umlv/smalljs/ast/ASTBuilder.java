@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toMap;
 
 import fr.umlv.smalljs.grammar.antlr.ECMAScriptParser;
 import fr.umlv.smalljs.grammar.antlr.ECMAScriptVisitor;
+import fr.umlv.smalljs.rt.JSObject;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -171,7 +172,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   public Expr visitReturnStatement(ECMAScriptParser.ReturnStatementContext ctx) {
     var expressionSequence = ctx.expressionSequence();
     if (expressionSequence == null) {
-      throw unsupported("return with no expression", ctx);
+      return new Expr.Return(new Expr.Literal(JSObject.UNDEFINED, lineNumber(ctx)), lineNumber(ctx));
     }
     var expr = expressionSequence.accept(this);
     return new Expr.Return(expr, lineNumber(ctx));
@@ -557,6 +558,9 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   @Override
   public Expr visitIdentifierExpression(ECMAScriptParser.IdentifierExpressionContext ctx) {
     var name = ctx.Identifier().getText();
+    if (name.equals("undefined")) {
+      return new Expr.Literal(JSObject.UNDEFINED, lineNumber(ctx));
+    }
     return new Expr.LocalVarAccess(name, lineNumber(ctx));
   }
 

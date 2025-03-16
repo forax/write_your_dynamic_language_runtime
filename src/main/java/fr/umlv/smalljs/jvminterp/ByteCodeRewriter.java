@@ -149,12 +149,17 @@ public final class ByteCodeRewriter {
         // visit it
         // if not a statement, generate a POP
       }
-      case Literal(Object value, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO Literal");
-        // switch on the value
-        // if it's an Integer, wrap it into a ConstantDynamic because the JVM doesn't have a primitive for boxed integer
-        // if it's a String, use visitLDCInstr
-        // otherwise report an error
+      case Literal(Integer integer, int lineNumber) -> {
+        throw new UnsupportedOperationException("TODO Literal Integer");
+        // use visitLDCInstr with a ConstantDynamic because the JVM does not support Integer (but supports int)
+      }
+      case Literal(String s, int lineNumber) -> {
+        throw new UnsupportedOperationException("TODO Literal String");
+        // use visitLDCInstr because the JVM natively supports strings
+      }
+      case Literal _ -> {  // should be UNDEFINED
+        throw new UnsupportedOperationException("TODO Literal UNDEFINED");
+        // use visitLDCInstr with a ConstantDynamic because the JVM does not support UNDEFINED natively
       }
       case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO FunCall");
