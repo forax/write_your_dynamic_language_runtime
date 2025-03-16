@@ -7,14 +7,14 @@ the smalljs programming language is mostly a subset of JavaScript.
 semantics
 ---
 
-smalljs has 3 kinds of values, 2 primitive types and one reference type
+smalljs has 4 kinds of values, 3 primitive types and one reference type
+- undefined, 
 - int, a primitive 32 bits signed integers
 - String, a character string (with 31 bits max size)
 - JSObject, any objects
 
 A JSObject is a dictionary that associate a String to a value
-there are 4 sub-kinds of JSObject
-- undefined which is the type of the value 'undefined'
+there are 3 sub-kinds of JSObject
 - function,
   has 2 special keys, '__code__' that returns the opcodes of the function or 'undefined' if the function is native (+, -, ==, etc are native functions) and 'apply' which contains the function itself so 'f(3)' is equivalent to 'f.apply(3)'.
 - environment,
@@ -35,7 +35,7 @@ the language has no real booleans so the int 0 and null are false, everything el
 local variable resolution
 --
 when resolving the name of a variable, the interpreter first search for a local variable with the name, if it doesn't exist it looks for the name in the global environment otherwise an error is raised.
-by example
+For example
 ```
 var a = foo;   // no local variable 'foo', so equivalent to global.foo
 a              // local variable 'a'
@@ -55,7 +55,7 @@ Inside a function, there is an hidden parameter named 'this' that correspond to 
 
 instance creation
 --
-when creating an instance, the fields value are evaluated in the order of declaration.
+when creating an instance, the field values are evaluated in the order of declaration.
 For example
 ```
 var foo = {
@@ -73,21 +73,21 @@ the abstract syntax tree is composed of several kind of nodes
 Expr(int lineNumber)
 root of the hierarchy
 
-Literal<T>(T value)
-constant expression (String or int)
+Literal(Object value)
+constant expression (undefined, int or String)
 ```
-42       // an int
-'hello'  // a String
-"hello"  // a String
+undefined  // undefined
+42         // an int
+'hello'    // a String
+"hello"    // a String
 ```
 
-Block(List<Expr> instrs)
+Block(List<Expr> statements)
 ```
 {
-   // 0 or more expressions
+   // 0 or more statements
 }
 ```
-list of instructions
 
 If(Expr condition, Block trueBlock, Block falseBlock)
 ```
@@ -98,7 +98,7 @@ if (2 == 3) {
 }
 ```
 
-Fun(Optional<String> name, List<String> parameters, Block body)
+Fun(String name, List<String> parameters, boolean toplevel, Block body)
 function declaration
 ```
 function foo(x) {
@@ -108,6 +108,7 @@ function foo(x) {
 
 Return(Expr expr)
 ```
+return;   // equivalent to return undefined;
 return 3;
 ```
 
