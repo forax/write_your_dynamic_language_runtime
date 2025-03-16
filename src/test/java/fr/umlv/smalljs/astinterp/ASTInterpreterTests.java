@@ -447,13 +447,24 @@ public class ASTInterpreterTests {
   @Nested
   public class Q16 {
     @Test
-    public void objectSetAFieldValue() {
+    public void objectUpdateAFieldValue() {
       assertEquals(
           "Jane\n",
           execute("""
                   var john = { name: "John" };
                   john.name = "Jane";
                   print(john.name);
+                  """));
+    }
+
+    @Test
+    public void objectSetANewFieldValue() {
+      assertEquals(
+          "Jane\n",
+          execute("""
+                  var object = { };
+                  object.name = "Jane";
+                  print(object.name);
                   """));
     }
 

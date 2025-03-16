@@ -414,12 +414,24 @@ public class JVMInterpreterTests {
   @Nested
   public class Q15 {
     @Test
-    public void objectGetAFieldValue() {
+    public void objectUpdateAFieldValue() {
       assertEquals(
-          "John\n",
+          "Jane\n",
           execute("""
                   var john = { name: "John" };
+                  john.name = "Jane";
                   print(john.name);
+                  """));
+    }
+
+    @Test
+    public void objectSetANewFieldValue() {
+      assertEquals(
+          "Jane\n",
+          execute("""
+                  var object = { };
+                  object.name = "Jane";
+                  print(object.name);
                   """));
     }
 
