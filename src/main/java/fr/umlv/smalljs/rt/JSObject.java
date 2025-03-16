@@ -103,7 +103,10 @@ public final class JSObject {
     return mh;
   }
   public SwitchPoint switchPoint() {
-    return switchPoint;
+    if (switchPoint != null) {
+      return switchPoint;
+    }
+    return switchPoint = new SwitchPoint();  // lazy allocate
   }
   public Object layout() {
     return layout;
@@ -158,9 +161,10 @@ public final class JSObject {
       array[array.length - 1] = value;
     }
 
-    // broadcast change, not thread safe
-    SwitchPoint.invalidateAll(new SwitchPoint[] { switchPoint });
-    switchPoint = new SwitchPoint();
+    if (switchPoint != null) {
+      SwitchPoint.invalidateAll(new SwitchPoint[]{ switchPoint });
+    }
+    switchPoint = null;
   }
   
   public int length() {
