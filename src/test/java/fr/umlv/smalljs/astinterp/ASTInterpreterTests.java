@@ -113,6 +113,13 @@ public class ASTInterpreterTests {
     }
 
     @Test
+    public void printAssignmentNoVariable() {
+      assertThrows(Failure.class, () -> execute("""
+              a = 3;
+              """));
+    }
+
+    @Test
     public void printSeveralAssignments() {
       assertEquals("42\n42\n", execute("""
               var a = 42;

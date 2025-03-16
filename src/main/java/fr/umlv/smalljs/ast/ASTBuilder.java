@@ -419,8 +419,8 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   public Expr visitAssignmentExpression(ECMAScriptParser.AssignmentExpressionContext ctx) {
     var expr = ctx.singleExpression(1).accept(this);
     var left = ctx.singleExpression(0);
-    if (left instanceof ECMAScriptParser.LiteralExpressionContext literal) {
-      var name = literal.literal().getText();
+    if (left instanceof ECMAScriptParser.IdentifierExpressionContext identifierExpression) {
+      var name = identifierExpression.Identifier().getText();
       return new Expr.LocalVarAssignment(name, expr, false, lineNumber(ctx.Assign().getSymbol()));
     }
     if (left instanceof ECMAScriptParser.MemberDotExpressionContext field) {
@@ -428,6 +428,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
       var name = identifierName(field.identifierName());
       return new Expr.FieldAssignment(receiver, name, expr, lineNumber(field.Dot().getSymbol()));
     }
+    System.err.println("left " + left.getClass());
     throw unsupported("assignment", ctx);
 
   }
