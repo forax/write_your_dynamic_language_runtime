@@ -152,6 +152,16 @@ public class StackInterpreterTests {
     }
 
     @Test
+    public void callAFunctionThatReturnUndefinedAndPrint() {
+      assertEquals("undefined\n", execute("""
+              function foo() {
+                return;
+              }
+              print(foo());
+              """));
+    }
+
+    @Test
     public void callAUserDefinedFunctionWithTheWrongNumberOfArguments() {
       assertThrows(Failure.class, () -> execute("""
               function foo(a, b) {

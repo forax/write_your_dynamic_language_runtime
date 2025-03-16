@@ -143,7 +143,7 @@ public final class StackInterpreter {
 				}
 				case Instructions.DUP -> {
 					throw new UnsupportedOperationException("TODO DUP");
-					// get value on top of the stack
+					// get value on top of the stack (without remove it)
 					//var value = ...
 					// push it on top of the stack
 					//push(...);

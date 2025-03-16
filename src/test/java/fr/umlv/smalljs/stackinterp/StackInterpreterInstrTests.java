@@ -383,6 +383,32 @@ public class StackInterpreterInstrTests {
 		}
 
 		@Test
+		public void callAFunctionThatReturnUndefinedAndPrint() {
+			// function foo() {
+			//   return;
+			// }
+			// print(foo());
+			var dict = new Dictionary();
+			int[] foo = {
+					CONST, encodeDictObject(UNDEFINED, dict),
+					RET
+			};
+			var fooFun = newFunction("foo", new Code(foo, 1, 1));
+			int[] main = {
+					CONST, encodeDictObject(fooFun, dict),
+					DUP,
+					REGISTER, encodeDictObject("foo", dict),
+					POP,
+					LOOKUP, encodeDictObject("foo", dict),
+					CONST, encodeDictObject(UNDEFINED, dict),
+					FUNCALL, 0,
+					PRINT,
+					RET
+			};
+			assertEquals("undefined\n", execute(new Code(main, 1, 1), dict));
+		}
+
+		@Test
 		public void callAUserDefinedFunctionWithTheWrongNumberOfArguments() {
 			// function foo(a, b) {
 			// }
