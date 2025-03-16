@@ -18,7 +18,6 @@ import static fr.umlv.smalljs.stackinterp.TagValues.encodeSmallInt;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import fr.umlv.smalljs.ast.Expr;
 import fr.umlv.smalljs.ast.Expr.Block;

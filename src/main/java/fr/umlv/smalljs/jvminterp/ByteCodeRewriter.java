@@ -18,7 +18,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
