@@ -25,18 +25,18 @@ import java.util.Map;
 
 import fr.umlv.smalljs.ast.Expr;
 import fr.umlv.smalljs.ast.Expr.Block;
+import fr.umlv.smalljs.ast.Expr.Call;
 import fr.umlv.smalljs.ast.Expr.FieldAccess;
 import fr.umlv.smalljs.ast.Expr.FieldAssignment;
 import fr.umlv.smalljs.ast.Expr.Fun;
-import fr.umlv.smalljs.ast.Expr.FunCall;
+import fr.umlv.smalljs.ast.Expr.Identifier;
 import fr.umlv.smalljs.ast.Expr.If;
 import fr.umlv.smalljs.ast.Expr.Statement;
 import fr.umlv.smalljs.ast.Expr.Literal;
-import fr.umlv.smalljs.ast.Expr.LocalVarAccess;
-import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
 import fr.umlv.smalljs.ast.Expr.MethodCall;
 import fr.umlv.smalljs.ast.Expr.ObjectLiteral;
 import fr.umlv.smalljs.ast.Expr.Return;
+import fr.umlv.smalljs.ast.Expr.VarAssignment;
 import fr.umlv.smalljs.rt.Failure;
 import fr.umlv.smalljs.rt.JSObject;
 
@@ -104,7 +104,7 @@ final class InstrRewriter {
 					visitVariable(expr, env);
 				}
 			}
-			case LocalVarAssignment(String name, _, boolean declaration, _) -> {
+			case VarAssignment(String name, _, boolean declaration, _) -> {
 				if (declaration) {
 					env.register(name, env.length());
 				}
@@ -113,7 +113,7 @@ final class InstrRewriter {
 				visitVariable(trueBlock, env);
 				visitVariable(falseBlock, env);
 			}
-			case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, ObjectLiteral _, FieldAccess _,
+			case Literal _, Call _, Identifier _, Fun _, Return _, ObjectLiteral _, FieldAccess _,
 					 FieldAssignment _, MethodCall _ -> {
 				// do nothing
 			}
@@ -144,8 +144,8 @@ final class InstrRewriter {
 				//buffer.emit(...).emit(...);
 				//}
 			}
-			case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO FunCall");
+			case Call(Expr qualifier, List<Expr> args, int lineNumber) -> {
+				throw new UnsupportedOperationException("TODO Call");
 				// visit the qualifier
 				//visit(...);
 				// emit undefined
@@ -157,8 +157,8 @@ final class InstrRewriter {
 				// emit the funcall
 				//buffer.emit(...).emit(...);
 			}
-			case LocalVarAccess(String name, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO LocalVarAccess");
+			case Identifier(String name, int lineNumber) -> {
+				throw new UnsupportedOperationException("TODO Identifier");
 				// get the local variable name
 				//var name = ...
 				// find if there is a local variable in the environment with the name
@@ -171,8 +171,8 @@ final class InstrRewriter {
 				//  buffer.emit(...).emit(...);
 				//}
 			}
-			case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO LocalVarAssignment");
+			case VarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
+				throw new UnsupportedOperationException("TODO VarAssignment");
 				// visit the expression
 				// visit(...);
 				// find if there is a local variable in the env from the name

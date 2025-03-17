@@ -28,17 +28,17 @@ import org.objectweb.asm.util.CheckClassAdapter;
 
 import fr.umlv.smalljs.ast.Expr;
 import fr.umlv.smalljs.ast.Expr.Block;
+import fr.umlv.smalljs.ast.Expr.Call;
 import fr.umlv.smalljs.ast.Expr.FieldAccess;
 import fr.umlv.smalljs.ast.Expr.FieldAssignment;
 import fr.umlv.smalljs.ast.Expr.Fun;
-import fr.umlv.smalljs.ast.Expr.FunCall;
+import fr.umlv.smalljs.ast.Expr.Identifier;
 import fr.umlv.smalljs.ast.Expr.If;
 import fr.umlv.smalljs.ast.Expr.Literal;
-import fr.umlv.smalljs.ast.Expr.LocalVarAccess;
-import fr.umlv.smalljs.ast.Expr.LocalVarAssignment;
 import fr.umlv.smalljs.ast.Expr.MethodCall;
 import fr.umlv.smalljs.ast.Expr.ObjectLiteral;
 import fr.umlv.smalljs.ast.Expr.Return;
+import fr.umlv.smalljs.ast.Expr.VarAssignment;
 import fr.umlv.smalljs.rt.JSObject;
 
 public final class ByteCodeRewriter {
@@ -104,7 +104,7 @@ public final class ByteCodeRewriter {
           visitVariable(expr, env);
         }
       }
-      case LocalVarAssignment(String name, _, boolean declaration, _) -> {
+      case VarAssignment(String name, _, boolean declaration, _) -> {
         if (declaration) {
           env.register(name, env.length());
         }
@@ -113,7 +113,7 @@ public final class ByteCodeRewriter {
         visitVariable(trueBlock, env);
         visitVariable(falseBlock, env);
       }
-      case Literal _, FunCall _, LocalVarAccess _, Fun _, Return _, ObjectLiteral _, FieldAccess _,
+      case Literal _, Call _, Identifier _, Fun _, Return _, ObjectLiteral _, FieldAccess _,
            FieldAssignment _, MethodCall _ -> {
         // do nothing
       }
@@ -160,22 +160,22 @@ public final class ByteCodeRewriter {
         throw new UnsupportedOperationException("TODO Literal UNDEFINED");
         // use visitLDCInstr with a ConstantDynamic because the JVM does not support UNDEFINED natively
       }
-      case FunCall(Expr qualifier, List<Expr> args, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO FunCall");
+      case Call(Expr qualifier, List<Expr> args, int lineNumber) -> {
+        throw new UnsupportedOperationException("TODO Call");
         // visit the qualifier
         // load "this"
         // for each argument, visit it
         // generate an invokedynamic
       }
-      case LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO LocalVarAssignment");
+      case VarAssignment(String name, Expr expr, boolean declaration, int lineNumber) -> {
+        throw new UnsupportedOperationException("TODO VarAssignment");
         // visit the expression
         // lookup that name in the environment
         // if it does not exist throw a Failure
         // otherwise STORE the top of the stack at the local variable slot
       }
-      case LocalVarAccess(String name, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO LocalVarAccess");
+      case Identifier(String name, int lineNumber) -> {
+        throw new UnsupportedOperationException("TODO Identifier");
         // lookup to find if it's a local var access or a lookup access
         // if it does not exist
         //  generate an invokedynamic doing a lookup

@@ -42,8 +42,8 @@ public sealed interface Expr {
     }
   }
 
-  record FunCall(Expr qualifier, List<Expr> args, int lineNumber) implements Expr {
-    public FunCall {
+  record Call(Expr qualifier, List<Expr> args, int lineNumber) implements Expr {
+    public Call {
       requireNonNull(qualifier);
       requireNonNull(args);
     }
@@ -67,14 +67,14 @@ public sealed interface Expr {
     }
   }
 
-  record LocalVarAccess(String name, int lineNumber) implements Expr {
-    public LocalVarAccess {
+  record Identifier(String name, int lineNumber) implements Expr {
+    public Identifier {
       requireNonNull(name);
     }
   }
 
-  record LocalVarAssignment(String name, Expr expr, boolean declaration, int lineNumber) implements Expr, Statement {
-    public LocalVarAssignment {
+  record VarAssignment(String name, Expr expr, boolean declaration, int lineNumber) implements Expr, Statement {
+    public VarAssignment {
       requireNonNull(name);
       requireNonNull(expr);
     }

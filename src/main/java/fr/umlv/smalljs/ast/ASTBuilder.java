@@ -84,7 +84,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   @Override
   public Expr visitVariableStatement(ECMAScriptParser.VariableStatementContext ctx) {
     var vars = ctx.variableDeclarationList().variableDeclaration().stream()
-        .<Expr>map(v -> new Expr.LocalVarAssignment(v.Identifier().getText(), v.initialiser().accept(this), true, lineNumber(v)))
+        .<Expr>map(v -> new Expr.VarAssignment(v.Identifier().getText(), v.initialiser().accept(this), true, lineNumber(v)))
         .toList();
     if (vars.size() == 1) {
       return vars.getFirst();
@@ -394,12 +394,12 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
       return new Expr.MethodCall(receiver, name, arguments(ctx.arguments()), lineNumber(ctx.arguments()));
     }
     var qualifier = left.accept(this);
-    return new Expr.FunCall(qualifier, arguments(ctx.arguments()), lineNumber(ctx.arguments()));
+    return new Expr.Call(qualifier, arguments(ctx.arguments()), lineNumber(ctx.arguments()));
   }
 
   @Override
   public Expr visitThisExpression(ECMAScriptParser.ThisExpressionContext ctx) {
-    return new Expr.LocalVarAccess("this", lineNumber(ctx));
+    return new Expr.Identifier("this", lineNumber(ctx));
   }
 
   @Override
@@ -421,7 +421,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
     var left = ctx.singleExpression(0);
     if (left instanceof ECMAScriptParser.IdentifierExpressionContext identifierExpression) {
       var name = identifierExpression.Identifier().getText();
-      return new Expr.LocalVarAssignment(name, expr, false, lineNumber(ctx.Assign().getSymbol()));
+      return new Expr.VarAssignment(name, expr, false, lineNumber(ctx.Assign().getSymbol()));
     }
     if (left instanceof ECMAScriptParser.MemberDotExpressionContext field) {
       var receiver = field.singleExpression().accept(this);
@@ -459,7 +459,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
   }
 
   private Expr binOp(String op, Expr left, Expr right, int lineNumber) {
-    return new Expr.FunCall(new Expr.LocalVarAccess(op, lineNumber), List.of(left, right), lineNumber);
+    return new Expr.Call(new Expr.Identifier(op, lineNumber), List.of(left, right), lineNumber);
   }
 
   @Override
@@ -562,7 +562,7 @@ public final class ASTBuilder implements ECMAScriptVisitor<Expr> {
     if (name.equals("undefined")) {
       return new Expr.Literal(JSObject.UNDEFINED, lineNumber(ctx));
     }
-    return new Expr.LocalVarAccess(name, lineNumber(ctx));
+    return new Expr.Identifier(name, lineNumber(ctx));
   }
 
   @Override
