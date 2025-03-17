@@ -70,7 +70,14 @@ public final class JSObject {
 
   public static final MethodHandle NO_INVOKER_MH =
       asMethodHandle((_, _) -> { throw new Failure("can not be invoked"); });
-  
+
+  private static final JSObject FUNCTION_PROTO = newObject(null);
+  static {
+    FUNCTION_PROTO.register("call", newFunction("call", (receiver, args) ->
+      ((JSObject) receiver).invoke(args[0], Arrays.stream(args, 1, args.length).toArray())
+    ));
+  }
+
   private JSObject(JSObject proto, String name, MethodHandle mh) {
     this.proto = proto;
     this.name = name;
@@ -91,9 +98,7 @@ public final class JSObject {
   public static JSObject newFunction(String name, MethodHandle mh) {
     requireNonNull(name);
     requireNonNull(mh);
-    var function = new JSObject(null, "function " + name, mh);
-    function.register("apply", function);
-    return function;
+    return new JSObject(FUNCTION_PROTO, "function " + name, mh);
   }
   
   public String name() {

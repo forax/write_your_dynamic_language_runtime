@@ -41,16 +41,16 @@ public class JSObjectTest {
 
     @Test
     public void testNewFunctionWithInvoker() {
-      JSObject.Invoker invoker = (receiver, args) -> "result";
+      JSObject.Invoker invoker = (receiver, args) -> "" + args[0] + args[1];
       var func = JSObject.newFunction("test", invoker);
-      var apply = func.lookupOrDefault("apply", null);
+      var call = func.lookupOrDefault("call", null);
 
       assertAll(
           () -> assertNotNull(func),
           () -> assertEquals("function test", func.name()),
           () -> assertNotNull(func.methodHandle()),
-          () -> assertNotNull(apply),
-          () -> assertSame(func, apply)
+          () -> assertNotNull(call),
+          () -> assertEquals("23", ((JSObject) call).invoke(func, null, 2, 3))
       );
     }
 

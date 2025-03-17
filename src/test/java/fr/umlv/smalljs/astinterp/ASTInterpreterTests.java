@@ -516,6 +516,14 @@ public class ASTInterpreterTests {
     }
 
     @Test
+    public void objectCallFunction() {
+      assertEquals("5\n", execute("""
+                  function foo(x, y) { return x + y; }
+                  print(foo.call(undefined, 2, 3));
+                  """));
+    }
+
+    @Test
     public void objectCallAMethodTwice() {
       assertEquals(
           "3\n7\n",
