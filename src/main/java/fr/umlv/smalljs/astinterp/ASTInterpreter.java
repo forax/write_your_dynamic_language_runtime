@@ -87,8 +87,7 @@ public final class ASTInterpreter {
       }
       case Fun(String name, List<String> parameters, boolean toplevel, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
-        //var functionName = optName.orElse("lambda");
-        //Invoker invoker = new Invoker() {
+        //Object.Invoker invoker = new Object.Invoke() {
         //  @Override
         //  public Object invoke(Object receiver, Object... args) {
         //    // check the arguments length
@@ -146,7 +145,7 @@ public final class ASTInterpreter {
   }
 
   public static void interpret(Script script, PrintStream outStream) {
-    var globalEnv =createGlobalEnv(outStream);
+    var globalEnv = createGlobalEnv(outStream);
     var body = script.body();
     execute(body, globalEnv);
   }
