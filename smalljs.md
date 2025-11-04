@@ -16,13 +16,17 @@ smalljs has 4 kinds of values, 3 primitive types and one reference type
 A JSObject is a dictionary that associate a String to a value
 there are 3 sub-kinds of JSObject
 - function,
-  has 2 special keys, '__code__' that returns the opcodes of the function or 'undefined' if the function is native (+, -, ==, etc are native functions) and 'apply' which contains the function itself so 'f(3)' is equivalent to 'f.apply(3)'.
+  has 2 special keys, '__code__' that returns the opcodes of the function or 'undefined'
+  if the function is native (+, -, ==, etc are native functions) and
+  'apply' which contains the function itself so 'f(3)' is equivalent to 'f.apply(3)'.
+
 - environment,
-  which associate a String to a function.
+  which associate a value to a String.
   When a function is declared with a name, the name is stored into the global environment.
-  The way to access to the predefined environment which contains all the native functions is to use the name 'global'.
+  The way to access to the predefined environment which contains all the native functions is to use the name 'globalThis'.
+
 - user defined objets
-  has a special key 'proto'
+  which has a special key 'proto'
 
 Operators precedence
 --
@@ -34,24 +38,28 @@ the language has no real booleans so the int 0 and null are false, everything el
 
 Local variable resolution
 --
-when resolving the name of a variable, the interpreter first search for a local variable with the name, if it doesn't exist it looks for the name in the global environment otherwise an error is raised.
+when resolving the name of a variable, the interpreter first search for a local variable with the name,
+if it doesn't exist it looks for the name in the global environment otherwise an error is raised.
 For example
 ```
-var a = foo;   // no local variable 'foo', so equivalent to global.foo
+var a = foo;   // no local variable 'foo', so equivalent to globalThis.foo
 a              // local variable 'a'
 ```
 
 Field resolution
 --
-when accessing to a field, the interpreter first lookup up into the current instance, then into its prototype (using the field 'proto' recursively until the field 'proto' is null) otherwise 'undefined' is returned.
+when accessing to a field, the interpreter first lookup up into the current instance,
+then into its prototype (using the field 'proto' recursively until the field 'proto' is null)
+otherwise 'undefined' is returned.
 
 Matching of parameters/arguments during a function call
 --
 if the number of arguments doesn't match the number of parameters, an error is reported.
 each parameter is assigned to the corresponding argument from left to right.
 
-moreover, a function can be called either using a function call or a method call.
-Inside a function, there is a hidden parameter named 'this' that correspond to the receiver if the function was called using a method call or 'undefined' if the function was called using a function call.
+moreover, each function can be called either using a function call or a method call.
+Inside a function, there is a hidden parameter named 'this' that correspond to the receiver
+if the function was called using a method call or 'undefined' if the function was called using a function call.
 
 Instance creation
 --
