@@ -199,8 +199,8 @@ public final class StackInterpreter {
 					  //	args[i] = decodeAnyValue(...);
 					  //}
 
-					  // System.err.println("call native " + newFunction.name() + " with " +
-					  // receiver + " " + java.util.Arrays.toString(args));
+					  //System.err.println("call native " + newFunction.name() + " with " +
+					  //   receiver + " " + java.util.Arrays.toString(args));
 
 					  // call native function
 					  //var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
@@ -388,7 +388,7 @@ public final class StackInterpreter {
 					// find "print" in the global environment
 					//var print = (JSObject) globalEnv.lookupOrDefault("print", null);
 					// invoke it
-					//print.invoke(UNDEFINED, new Object[]{ value });
+					//print.invoke(UNDEFINED, value);
 					// push undefined on the stack
 					//push(...);
 				}
