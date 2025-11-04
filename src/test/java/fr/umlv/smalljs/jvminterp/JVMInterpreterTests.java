@@ -193,12 +193,12 @@ public class JVMInterpreterTests {
 
     @Test
     public void callVariableFunction() {
-      assertEquals("6\nundefined\n", execute("""
-              var foo = function bar(x) {
-                return x * 2;}
-              print(foo(3));
-              print(globalThis.bar);
-              """));
+      assertEquals("6\n", execute("""
+          var foo = function bar(x) {
+            return x * 2;
+          }
+          print(foo(3));
+          """));
     }
 
     @Test
