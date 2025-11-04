@@ -12,11 +12,11 @@ final class FunClassLoader extends ClassLoader {
     super();
   }
 
-  public JSObject getGlobal() {
+  public JSObject global() {
     return global;
   }
 
-  public FunDictionary getDictionary() {
+  public FunDictionary dictionary() {
     return dictionary;
   }
   
