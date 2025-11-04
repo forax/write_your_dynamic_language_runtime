@@ -47,6 +47,7 @@ final class InstrRewriter {
 
 		InstrBuffer() {
 			instrs = new int[32];
+			super();
 		}
 
 		InstrBuffer emit(int value) {
@@ -186,7 +187,7 @@ final class InstrRewriter {
 			case Fun(String name, List<String> parameters, boolean topLevel, Block body, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Fun");
 				// create a JSObject function
-				// var function = createFunction(name, parameters, body, dict, globalEnv);
+				// var function = createFunction(name, parameters, body, dict);
 				// emit a const on the function
 				//buffer.emit(...).emit(...);
 				// if it's a toplevel register the function in the global environment
@@ -224,10 +225,10 @@ final class InstrRewriter {
 				//var clazz = JSObject.newObject(null);
 				// loop over all the field initializations
 				//initMap.forEach((fieldName, expr) -> {
-				//  register the field name with the right slot
-				//  clazz.register(...);
-				//   visit the initialization expression
-				//  visit(...);
+				  // register the field name with the right slot
+				  //clazz.register(...);
+				  // visit the initialization expression
+				  //visit(...);
 				//});
 				// emit a NEW with the class
 				//buffer.emit(...).emit(...);

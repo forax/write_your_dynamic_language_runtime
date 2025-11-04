@@ -1,12 +1,16 @@
 package fr.umlv.smalljs.jvminterp;
 
+import fr.umlv.smalljs.ast.Expr.Fun;
 import java.util.ArrayList;
 
-import fr.umlv.smalljs.ast.Expr.Fun;
-
 final class FunDictionary {
-  private final ArrayList<Fun> dictionary = new ArrayList<>();
-  
+  private final ArrayList<Fun> dictionary;
+
+  FunDictionary() {
+    dictionary = new ArrayList<>();
+    super();
+  }
+
   public int register(Fun fun) {
     var id = dictionary.size();
     dictionary.add(fun);

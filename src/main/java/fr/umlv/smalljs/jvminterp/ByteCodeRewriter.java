@@ -131,6 +131,7 @@ public final class ByteCodeRewriter {
   private static final Handle BSM_UNDEFINED = bsm("bsm_undefined", Object.class, Lookup.class, String.class, Class.class);
   private static final Handle BSM_CONST = bsm("bsm_const", Object.class, Lookup.class, String.class, Class.class, int.class);
   private static final Handle BSM_FUNCALL = bsm("bsm_funcall", CallSite.class, Lookup.class, String.class, MethodType.class);
+  private static final Handle BSM_GLOBALCALL = bsm("bsm_globalcall", CallSite.class, Lookup.class, String.class, MethodType.class, String.class);
   private static final Handle BSM_LOOKUP = bsm("bsm_lookup", CallSite.class, Lookup.class, String.class, MethodType.class, String.class);
   private static final Handle BSM_FUN = bsm("bsm_fun", Object.class, Lookup.class, String.class, Class.class, int.class);
   private static final Handle BSM_REGISTER = bsm("bsm_register", CallSite.class, Lookup.class, String.class, MethodType.class, String.class);
@@ -218,6 +219,7 @@ public final class ByteCodeRewriter {
         throw new UnsupportedOperationException("TODO FieldAssignment");
         // visit the receiver
         // visit the expression
+        // generate an invokedynamic that goes a set through BSM_SET
       }
       case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO MethodCall");

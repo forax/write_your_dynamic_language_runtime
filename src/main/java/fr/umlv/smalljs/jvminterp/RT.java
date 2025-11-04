@@ -71,6 +71,13 @@ public final class RT {
     // create a constant callsite
   }
 
+  public static CallSite bsm_globalcall(Lookup lookup, String name, MethodType type, String variableName) {
+    throw new UnsupportedOperationException("TODO bsm_globalcall");
+    //var classLoader = (FunClassLoader) lookup.lookupClass().getClassLoader();
+    //var globalEnv = classLoader.getGlobal();
+    // TODO
+  }
+
   public static Object bsm_fun(Lookup lookup, String name, Class<?> type, int funId) {
     throw new UnsupportedOperationException("TODO bsm_fun");
     //var classLoader = (FunClassLoader) lookup.lookupClass().getClassLoader();

@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 final class Dictionary {
-	private final HashMap<Object, Integer> indexMap = new HashMap<>();
-	private final ArrayList<Object> constants = new ArrayList<>();
+	private final HashMap<Object, Integer> indexMap;
+	private final ArrayList<Object> constants;
+
+	Dictionary() {
+		indexMap = new HashMap<>();
+		constants = new ArrayList<>();
+		super();
+	}
 
 	public int index(Object constant) {
 		return indexMap.computeIfAbsent(constant, key -> {

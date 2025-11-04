@@ -17,10 +17,12 @@ import java.util.function.UnaryOperator;
 public final class JSObject {
   private static final class Layout {
     private final LinkedHashMap<String, Integer> slotMap;
-    private final HashMap<String, Layout> forwardMap = new HashMap<>();
+    private final HashMap<String, Layout> forwardMap;
 
     private Layout(LinkedHashMap<String, Integer> slotMap) {
       this.slotMap = slotMap;
+      forwardMap = new HashMap<>();
+      super();
     }
 
     private int slot(String key) {
@@ -41,10 +43,10 @@ public final class JSObject {
 
   private final JSObject proto;
   private final String name;
-  private Layout layout = ROOT;
-  private Object[] array = EMPTY_ARRAY;
+  private Layout layout;
+  private Object[] array;
   private final MethodHandle mh;
-  private SwitchPoint switchPoint = new SwitchPoint();
+  private SwitchPoint switchPoint;
   
   private static final class Undefined {
   	@Override public String toString() { return "undefined"; }
@@ -82,6 +84,9 @@ public final class JSObject {
     this.proto = proto;
     this.name = name;
     this.mh = mh;
+    layout = ROOT;
+    array = EMPTY_ARRAY;
+    super();
   }
   
   public static JSObject newObject(JSObject proto) {

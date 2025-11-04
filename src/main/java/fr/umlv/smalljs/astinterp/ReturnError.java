@@ -7,8 +7,8 @@ final class ReturnError extends Error {
   private final Object value;
 
   ReturnError(Object value) {
-    super(null, null, false, false);
     this.value = requireNonNull(value);
+    super(null, null, false, false);
   }
   
   public Object getValue() {
