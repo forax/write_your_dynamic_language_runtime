@@ -190,8 +190,8 @@ public final class StackInterpreter {
 					// check if the function contains a code attribute
 					//var maybeCode = newFunction.lookupOrDefault("__code__", null);
 					//if (maybeCode == null) { // native call !
-					// decode receiver
-					//var receiver = decodeAnyValue(...);
+					  // decode receiver
+					  //var receiver = decodeAnyValue(...);
 
 					  // decode arguments
 					  //var args = new Object[argumentCount];
@@ -217,7 +217,7 @@ public final class StackInterpreter {
 					// initialize new code
 					//code = (Code) maybeCode;
 
-					// check number of arguments
+					// check the number of arguments
 					//if (code.parameterCount() != argumentCount + 1/* this */) {
 					//	throw new Failure("wrong number of arguments for " + newFunction.name() + " expected "
 					//			+ (code.parameterCount() - 1) + " but was " + argumentCount);
@@ -261,8 +261,8 @@ public final class StackInterpreter {
 					//int activation = ...
 					//pc = ...
 					//if (pc == 0) {
-					// end of the interpreter
-					//	return decodeAnyValue(result, dict, heap);
+					  // end of the interpreter
+					  //return decodeAnyValue(result, dict, heap);
 					//}
 
 					// restore sp, function and bp
@@ -295,7 +295,7 @@ public final class StackInterpreter {
 					//var condition = ...
 					// if condition is false change the program counter to the label
 					//if (condition == TagValues.FALSE) {
-					//	pc = label;
+					  //pc = label;
 					//}
 				}
 				case Instructions.NEW -> {
@@ -306,11 +306,11 @@ public final class StackInterpreter {
 
 					// out of memory ?
 					//if (hp + OBJECT_HEADER_SIZE + clazz.length() >= heap.length) {
-					//dumpHeap("before GC ", heap, hp, dict);
+					  //dumpHeap("before GC ", heap, hp, dict);
 
-					//throw new UnsupportedOperationException("TODO !!! GC !!!")
+					  //throw new UnsupportedOperationException("TODO !!! GC !!!")
 
-					//dumpHeap("after GC ", heap, hp, dict);
+					  //dumpHeap("after GC ", heap, hp, dict);
 					//}
 
 					//var ref = hp;
