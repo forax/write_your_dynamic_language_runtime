@@ -127,7 +127,7 @@ final class InstrRewriter {
 				throw new UnsupportedOperationException("TODO Block");
 				// for(var instr : exprs) {
 					// visit the expression
-					// if the expression is not a statement (the value still on stack)
+					// if the expression is not a statement (there is a value on stack)
 					//if (!(instr instanceof Statement)) {
 						  // ask to remove the top of the stack
 						  // buffer.emit(POP);
@@ -136,7 +136,7 @@ final class InstrRewriter {
 			}
 			case Literal(Object literalValue, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Literal");
-				// test if the literal value is a positive integers
+				// test if the literal value is a positive integer
 				//if (literalValue instanceof Integer value && value >= 0) {
 				// emit a small int
 				//buffer.emit(...).emit(...);
