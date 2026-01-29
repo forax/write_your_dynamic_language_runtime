@@ -73,7 +73,7 @@ public final class StackInterpreter {
 	private static final int RECEIVER_BASE_ARG_OFFSET = -1;
 	private static final int QUALIFIER_BASE_ARG_OFFSET = -2;
 
-	public static Object execute(JSObject function, Dictionary dict, JSObject globalEnv) {
+	static Object execute(JSObject function, Dictionary dict, JSObject globalEnv) {
 		var stack = new int[96 /* 4096 */];
 		var heap = new int[96 /* 4096 */];
 		var code = (Code) function.lookupOrDefault("__code__", null);
