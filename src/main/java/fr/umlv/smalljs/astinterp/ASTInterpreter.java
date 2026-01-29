@@ -147,19 +147,46 @@ public final class ASTInterpreter {
         throw new ReturnError(value);
       }
       case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO If");
+        var condValue = visit(condition, env);
+        if(!(condValue instanceof Integer)) {
+          throw new Failure("Condition is not an integer at line " + lineNumber);
+        }
+        if((Integer) condValue != 0) {
+          yield visit(trueBlock, env);
+        } else {
+          yield visit(falseBlock, env);
+        }
       }
       case ObjectLiteral(Map<String, Expr> initMap, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO ObjectLiteral");
+        var jsObject = JSObject.newObject(null);
+        initMap.forEach((name, expr) -> {
+          var value = visit(expr, env);
+          jsObject.register(name, value);
+        });
+        yield jsObject;
       }
       case FieldAccess(Expr receiver, String name, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO FieldAccess");
+        var object = visit(receiver, env);
+        var jsObject = asJSObject(object, lineNumber);
+        var value = jsObject.lookupOrDefault(name, UNDEFINED);
+        yield value;
       }
       case FieldAssignment(Expr receiver, String name, Expr expr, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO FieldAssignment");
+        var object = visit(receiver, env);
+        var jsObject = asJSObject(object, lineNumber);
+        var value = visit(expr, env);
+        jsObject.register(name, value);
+        yield value;
       }
       case MethodCall(Expr receiver, String name, List<Expr> args, int lineNumber) -> {
-        throw new UnsupportedOperationException("TODO MethodCall");
+        var object = visit(receiver, env);
+        var jsObject = asJSObject(object, lineNumber);
+        var method = jsObject.lookupOrDefault(name, null);
+        if (!(method instanceof JSObject function)) {
+          throw new Failure("no method " + name + " at line " + lineNumber);
+        }
+        var arguments = args.stream().map(arg -> visit(arg, env)).toArray();
+        yield function.invoke(jsObject, arguments);
       }
     };
   }
@@ -193,4 +220,3 @@ public final class ASTInterpreter {
     execute(body, globalEnv);
   }
 }
-
