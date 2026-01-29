@@ -203,7 +203,7 @@ public final class StackInterpreter {
 					  //   receiver + " " + java.util.Arrays.toString(args));
 
 					  // call native function
-					  //var result = encodeAnyValue(newFunction.invoke(receiver, args), dict);
+					  //Object result = newFunction.invoke(receiver, args);
 
 					  // fixup sp (receiver and function must be dropped)
 					  //sp = ...
