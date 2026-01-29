@@ -160,8 +160,6 @@ final class InstrRewriter {
 			}
 			case Identifier(String name, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Identifier");
-				// get the local variable name
-				//var name = ...
 				// find if there is a local variable in the environment with the name
 				//var slot = env.lookupOrDefault(...);
 				//if (slot == null) {
