@@ -8,7 +8,7 @@ import static org.objectweb.asm.Opcodes.ACC_SUPER;
 import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.V21;
+import static org.objectweb.asm.Opcodes.V25;
 
 import java.io.PrintWriter;
 import java.lang.invoke.CallSite;
@@ -54,7 +54,7 @@ public final class ByteCodeRewriter {
     var localVariableCount = env.length();
 
     var cv = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-    cv.visit(V21, ACC_PUBLIC | ACC_SUPER, "script", null, "java/lang/Object", null);
+    cv.visit(V25, ACC_PUBLIC | ACC_SUPER, "script", null, "java/lang/Object", null);
     cv.visitSource("script", null);
 
     var methodType = genericMethodType(1 + parameters.size());
