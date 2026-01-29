@@ -72,7 +72,6 @@ public final class StackInterpreter {
 
 	private static final int RECEIVER_BASE_ARG_OFFSET = -1;
 	private static final int QUALIFIER_BASE_ARG_OFFSET = -2;
-	private static final int FUNCALL_PREFIX = 2;
 
 	public static Object execute(JSObject function, Dictionary dict, JSObject globalEnv) {
 		var stack = new int[96 /* 4096 */];
