@@ -125,7 +125,7 @@ final class InstrRewriter {
 		switch (expression) {
 			case Block(List<Expr> exprs, int lineNumber) -> {
 				throw new UnsupportedOperationException("TODO Block");
-				// for each expression of the block
+				// for(var instr : exprs) {
 					// visit the expression
 					// if the expression is not a statement (the value still on stack)
 					//if (!(instr instanceof Statement)) {
