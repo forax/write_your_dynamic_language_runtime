@@ -223,9 +223,11 @@ public final class StackInterpreter {
 					//			+ (code.parameterCount() - 1) + " but was " + argumentCount);
 					//}
 
+					// remember to include the receiver in the slots when computing the activation
+					//var activation = ...;
+
 					// save bp/pc/code in activation zone
 					// stack[activation + offset] = ??
-					//var activation = ...;
 					//stack[activation + BP_OFFSET] = ...;
 					//stack[activation + PC_OFFSET] = ...;
 					//stack[activation + FUN_OFFSET] = ...;
