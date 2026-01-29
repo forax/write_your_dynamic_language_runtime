@@ -145,7 +145,7 @@ public final class ByteCodeRewriter {
       case Block(List<Expr> exprs, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO Block");
         // for each expression
-        // generate line numbers
+        // generate the line number
         // visit it
         // if not a statement, generate a POP
       }
