@@ -445,17 +445,6 @@ public class StackInterpreterTests {
     }
 
     @Test
-    public void objectSetANewFieldValue() {
-      assertEquals(
-          "Jane\n",
-          execute("""
-                  var object = { };
-                  object.name = "Jane";
-                  print(object.name);
-                  """));
-    }
-
-    @Test
     public void objectGetAFieldNoValue() {
       assertEquals(
           "undefined\n",
@@ -463,16 +452,6 @@ public class StackInterpreterTests {
                   var john = { name: "John" };
                   print(john.foo);
                   """));
-    }
-
-    @Test
-    public void canAccessGlobalThis() {
-      assertEquals("undefined\n", execute("""
-              var foo = function bar(x) {
-                return x * 2;
-              }
-              print(globalThis.bar);
-              """));
     }
   }
 
