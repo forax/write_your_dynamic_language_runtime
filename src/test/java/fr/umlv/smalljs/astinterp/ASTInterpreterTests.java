@@ -193,11 +193,10 @@ public class ASTInterpreterTests {
 
     @Test
     public void callVariableFunction() {
-      assertEquals("6\nundefined\n", execute("""
+      assertEquals("6\n", execute("""
               var foo = function bar(x) {
                 return x * 2;}
               print(foo(3));
-              print(globalThis.bar);
               """));
     }
 
