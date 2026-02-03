@@ -49,7 +49,7 @@ final class InstrRewriter {
 			instrs = new int[32];
 			super();
 		}
-		
+
 		InstrBuffer emit(int value) {
 			if (size == instrs.length) {
 				instrs = Arrays.copyOf(instrs, size << 1);
@@ -63,10 +63,8 @@ final class InstrRewriter {
 		}
 
 		int placeholder() {
-			if (size == instrs.length) {
-				instrs = Arrays.copyOf(instrs, size << 1);
-			}
-			return size++;
+			emit(0);
+			return size - 1;
 		}
 
 		void patch(int position, int label) {
