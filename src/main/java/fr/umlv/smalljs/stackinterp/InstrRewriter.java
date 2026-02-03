@@ -49,7 +49,7 @@ final class InstrRewriter {
 			instrs = new int[32];
 			super();
 		}
-
+		
 		InstrBuffer emit(int value) {
 			if (size == instrs.length) {
 				instrs = Arrays.copyOf(instrs, size << 1);
@@ -63,6 +63,9 @@ final class InstrRewriter {
 		}
 
 		int placeholder() {
+			if (size == instrs.length) {
+				instrs = Arrays.copyOf(instrs, size << 1);
+			}
 			return size++;
 		}
 
