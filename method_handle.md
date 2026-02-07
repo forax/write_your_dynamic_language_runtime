@@ -288,15 +288,15 @@ invokedynamic "+" (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; BSM:b
 
 using the constant dynamic constant, we can have:
 ```bytecode
-ldc constantdynamic BSM.constant(10)
-ldc constantdynamic BSM.constant(20)
+ldc constantdynamic BSM:constant(10)
+ldc constantdynamic BSM:constant(20)
 invokedynamic "+" (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; BSM:bootstrap
 ```
 
 With the bootstrap method:
 ```java
 // called once at runtime per constant (one for 10, one for 20)
-public static Object bootstrap(MethodHandles.Lookup lookup, String name, Class<?> type, int value) {
+public static Object constant(MethodHandles.Lookup lookup, String name, Class<?> type, int value) {
   var result = Integer.valueOf(value);
   return result;
 }
