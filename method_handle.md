@@ -275,7 +275,7 @@ the JVM will inline the method handle at callsite and generate the assembly code
 ### Constant Dynamic
 
 Constant Dynamic is a variant of invokedynamic that allows the JVM to generate a standard bytecode instruction
-for the constant of a dynamic language, like 10 and 20 in the example.
+for the constants of a dynamic language, like 10 and 20 in the example.
 
 So instead of:
 ```bytecode
@@ -286,7 +286,7 @@ invokestatic java/lang/Integer "valueOf" (I)Ljava/lang/Integer;
 invokedynamic "+" (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; BSM:bootstrap
 ```
 
-using the constant dynamic constant, we can have:
+using the constant dynamic constants, we can have:
 ```bytecode
 ldc constantdynamic BSM:constant(10)
 ldc constantdynamic BSM:constant(20)
