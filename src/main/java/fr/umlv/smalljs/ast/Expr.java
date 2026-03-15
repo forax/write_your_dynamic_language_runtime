@@ -9,7 +9,7 @@ public sealed interface Expr {
   int lineNumber();
 
   sealed interface Statement {
-    // maker interface for expressions that return void
+    // Marker interface for expressions that return void
   }
 
   record Block(List<Expr> exprs, int lineNumber) implements Expr, Statement {
@@ -90,7 +90,7 @@ public sealed interface Expr {
 
   record ObjectLiteral(Map<String, Expr> initMap, int lineNumber) implements Expr {
     public ObjectLiteral {
-      // don't use Map.copyOf here because the order is not guaranteed
+      // Don't use Map.copyOf here because the order is not guaranteed
       requireNonNull(initMap);
     }
   }
