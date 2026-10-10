@@ -11,7 +11,7 @@ of a dynamically typed language named [smalljs](smalljs.md) which is almost a su
 
 How to compile and create a jar
 ---
-run Maven with a Java 25
+run Maven with a Java 27
 ```
   mvn package
 ```
@@ -19,7 +19,7 @@ a jar named smalljs-2.0.jar in the folder `target` is generated
 
 How to run it
 ---
-Still with Java 25
+Still with Java 27
 ```
   java -jar target/smalljs-2.0.jar ast samples/hello.js
   java -jar target/smalljs-2.0.jar stack samples/hello.js
