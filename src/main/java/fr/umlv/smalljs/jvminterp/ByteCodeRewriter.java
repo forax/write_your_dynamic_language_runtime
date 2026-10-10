@@ -117,7 +117,7 @@ public final class ByteCodeRewriter {
            FieldAssignment _, MethodCall _ -> {
         // do nothing
       }
-    };
+    }
   }
 
   private static Handle bsm(String name, Class<?> returnType, Class<?>... parameterTypes) {

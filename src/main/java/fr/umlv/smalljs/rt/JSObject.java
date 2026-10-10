@@ -185,9 +185,7 @@ public final class JSObject {
     requireNonNull(valueMapper);
     var mirror = newObject(null);
     var array = this.array;
-    layout.slotMap.forEach((key, slot) -> {
-      mirror.register(key, valueMapper.apply(array[slot]));
-    });
+    layout.slotMap.forEach((key, slot) -> mirror.register(key, valueMapper.apply(array[slot])));
     return mirror;
   }
   

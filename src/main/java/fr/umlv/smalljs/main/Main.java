@@ -12,8 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
 
-// run with /path/to/jdk-22/bin/java --class-path lib/tatoo-runtime.jar:target/smalljs-1.0.jar fr.umlv.smalljs.main.Main ast samples/hello.js
-public class Main {
+// /path/to/jdk-27/bin/java --class-path target/smalljs-1.0.jar fr.umlv.smalljs.main.Main ast samples/hello.js
+final class Main {
   private static BiConsumer<Script, PrintStream> interpreter(String name) {
     return switch (name) {
       case "ast" -> ASTInterpreter::interpret;
@@ -32,7 +32,7 @@ public class Main {
     System.exit(1);
   }
 
-  public static void main(String[] args) throws IOException {
+  static void main(String[] args) throws IOException {
     if (args.length != 2) {
       printHelp();
       return;
