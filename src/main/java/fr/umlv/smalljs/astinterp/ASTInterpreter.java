@@ -61,7 +61,7 @@ public final class ASTInterpreter {
            FieldAssignment _, MethodCall _ -> {
         // do nothing
       }
-    };
+    }
   }
 
   static Object visit(Expr expression, JSObject env) {
@@ -86,8 +86,8 @@ public final class ASTInterpreter {
         throw new UnsupportedOperationException("TODO VarAssignment");
       }
       case Fun(String name, List<String> parameters, boolean toplevel, Block body, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO Fun");
-        //Object.Invoker invoker = new Object.Invoke() {
+        throw new UnsupportedOperationException("TODO Fun");
+        // Object.Invoker invoker = new Object.Invoke() {
         //  @Override
         //  public Object invoke(Object receiver, Object... args) {
         //    // check the arguments length
@@ -95,19 +95,19 @@ public final class ASTInterpreter {
         //    // add this and all the parameters
         //    // execute the body
         //  }
-        //};
+        // };
         // create the JS function with the invoker
         // register it into the global env if it's a toplevel
         // yield the function
       }
       case Return(Expr expr, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO Return");
+        throw new UnsupportedOperationException("TODO Return");
       }
       case If(Expr condition, Block trueBlock, Block falseBlock, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO If");
+        throw new UnsupportedOperationException("TODO If");
       }
       case ObjectLiteral(Map<String, Expr> initMap, int lineNumber) -> {
-				throw new UnsupportedOperationException("TODO ObjectLiteral");
+        throw new UnsupportedOperationException("TODO ObjectLiteral");
       }
       case FieldAccess(Expr receiver, String name, int lineNumber) -> {
         throw new UnsupportedOperationException("TODO FieldAccess");
@@ -150,4 +150,3 @@ public final class ASTInterpreter {
     execute(body, globalEnv);
   }
 }
-
