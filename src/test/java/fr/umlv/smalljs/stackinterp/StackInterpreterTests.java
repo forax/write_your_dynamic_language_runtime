@@ -1,16 +1,18 @@
 package fr.umlv.smalljs.stackinterp;
 
-import static fr.umlv.smalljs.ast.ASTBuilder.createScript;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import fr.umlv.smalljs.rt.Failure;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+
+import static fr.umlv.smalljs.ast.ASTBuilder.createScript;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StackInterpreterTests {
   private static String execute(String code) {
@@ -20,8 +22,8 @@ public class StackInterpreterTests {
     return outStream.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
   }
 
-  /*
   @Nested
+  @Disabled("Q2")
   public class Q2 {
     @Test
     public void helloDoubleQuotedString() {
@@ -36,9 +38,19 @@ public class StackInterpreterTests {
               'hello'
               """));
     }
+
+    @Test
+    public void severalLiterals() {
+      assertEquals("", execute("""
+              "a"
+              'b'
+              "c"
+              """));
+    }
   }
 
   @Nested
+  @Disabled("Q3")
   public class Q3 {
     @Test
     public void integer3() {
@@ -46,9 +58,19 @@ public class StackInterpreterTests {
               3
               """));
     }
+
+    @Test
+    public void severalIntegers() {
+      assertEquals("", execute("""
+              0
+              42
+              1000000
+              """));
+    }
   }
 
   @Nested
+  @Disabled("Q4")
   public class Q4 {
     @Test
     public void print() {
@@ -57,17 +79,38 @@ public class StackInterpreterTests {
       assertEquals("3\n", execute("print(3)\n"));
       assertEquals("undefined\n", execute("print(undefined)\n"));
     }
-  }
 
-  @Nested
-  public class Q5 {
     @Test
-    public void printPrint() {
-      assertFalse(execute("print(print)\n").isEmpty());
+    public void printNoArgument() {
+      assertEquals("\n", execute("print()\n"));
+    }
+
+    @Test
+    public void printSeveralArguments() {
+      assertEquals("hello Bob 3\n", execute("print('hello', 'Bob', 3)\n"));
+    }
+
+    @Test
+    public void printSeveralTimes() {
+      assertEquals("a\nb\n", execute("""
+              print('a')
+              print('b')
+              """));
     }
   }
 
   @Nested
+  @Disabled("Q5")
+  public class Q5 {
+    @Test
+    public void printPrint() {
+      var output = execute("print(print)\n");
+      assertTrue(output.startsWith("{ // function print\n"), output);
+    }
+  }
+
+  @Nested
+  @Disabled("Q6")
   public class Q6 {
     @Test
     public void printOperations() {
@@ -76,17 +119,54 @@ public class StackInterpreterTests {
       assertEquals("6\n", execute("print(3 * 2)\n"));
       assertEquals("1\n", execute("print(3 / 2)\n"));
     }
+
+    @Test
+    public void printModulo() {
+      assertEquals("1\n", execute("print(7 % 3)\n"));
+    }
+
+    @Test
+    public void printComparisons() {
+      assertEquals("1\n", execute("print(2 < 3)\n"));
+      assertEquals("0\n", execute("print(3 < 2)\n"));
+      assertEquals("1\n", execute("print(3 == 3)\n"));
+      assertEquals("0\n", execute("print(3 != 3)\n"));
+    }
+
+    @Test
+    public void printNestedOperations() {
+      assertEquals("7\n", execute("print(1 + 2 * 3)\n"));
+    }
+
+    @Test
+    public void callUnknownFunction() {
+      assertThrows(Failure.class, () -> execute("foo(1)\n"));
+    }
   }
 
+
   @Nested
+  @Disabled("Q7")
   public class Q7 {
     @Test
     public void printPrint3() {
       assertEquals("3\nundefined\n", execute("print(print(3))\n"));
     }
+
+    @Test
+    public void printPrintPrint() {
+      assertEquals("3\nundefined\nundefined\n", execute("print(print(print(3)))\n"));
+    }
+
+    @Test
+    public void argumentsAreEvaluatedLeftToRightBeforeTheCall() {
+      assertEquals("1\n2\nundefined undefined\n", execute("print(print(1), print(2))\n"));
+    }
   }
 
+
   @Nested
+  @Disabled("Q8")
   public class Q8 {
     @Test
     public void printAVariable() {
@@ -136,17 +216,58 @@ public class StackInterpreterTests {
               print('hello', me);
               """));
     }
+
+    @Test
+    public void reassignAVariable() {
+      assertEquals("1\n2\n", execute("""
+              var a = 1;
+              print(a);
+              a = 2;
+              print(a);
+              """));
+    }
+
+    @Test
+    public void declareFromAnExpression() {
+      assertEquals("5\n", execute("""
+              var a = 2;
+              var b = a + 3;
+              print(b);
+              """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q9")
   public class Q9 {
     @Test
     public void printAVariableDefinedAfter() {
       assertEquals("undefined\n", execute("print(a);\nvar a = 2;\n"));
     }
+
+    @Test
+    public void readBeforeAndAfterTheDeclaration() {
+      assertEquals("undefined\n2\n", execute("""
+              print(a);
+              var a = 2;
+              print(a);
+              """));
+    }
+
+    @Test
+    public void declareTwice() {
+      assertEquals("2\n", execute("""
+              var a = 1;
+              var a = 2;
+              print(a);
+              """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q10")
   public class Q10 {
     @Test
     public void callAUserDefinedFunctionAndPrint() {
@@ -174,6 +295,15 @@ public class StackInterpreterTests {
               function foo(a, b) {
               }
               print(foo(2));
+              """));
+    }
+
+    @Test
+    public void callAUserDefinedFunctionWithTooManyArguments() {
+      assertThrows(Failure.class, () -> execute("""
+              function foo(a) {
+              }
+              foo(1, 2);
               """));
     }
 
@@ -216,9 +346,41 @@ public class StackInterpreterTests {
               print(undef());
               """));
     }
+
+    @Test
+    public void parameterDoesNotOverwriteGlobal() {
+      assertEquals("1\n10\n", execute("""
+              var x = 10;
+              function f(x) { return x; }
+              print(f(1));
+              print(x);
+              """));
+    }
+
+    @Test
+    public void localVariableDoesNotLeak() {
+      assertThrows(Failure.class, () -> execute("""
+              function f() {
+                var x = 1;
+                return x;
+              }
+              print(f());
+              print(x);
+              """));
+    }
+
+    @Test
+    public void thisIsUndefinedInAFunction() {
+      assertEquals("undefined\n", execute("""
+              function f() { return this; }
+              print(f());
+              """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q11")
   public class Q11 {
     @Test
     public void printWithAnIf() {
@@ -241,20 +403,6 @@ public class StackInterpreterTests {
               } else {
                 print("false");
               }
-              """));
-    }
-
-    @Test
-    public void callAUserDefinedFunctionVarsInitialized() {
-      assertEquals("undefined\n", execute("""
-              function foo(x) {
-                if (x == 3) {
-                  var a = 42;
-                } else {
-                }
-                return a;
-              }
-              print(foo(2));
               """));
     }
 
@@ -300,7 +448,7 @@ public class StackInterpreterTests {
     }
 
     @Test
-    public void callAUserDefinedFunctionWithAnIfAndAVariabe() {
+    public void callAUserDefinedFunctionWithAnIfAndAVariable() {
       assertEquals("0\n7\n", execute("""
               function f(x) {
                   if (x < 3) {
@@ -314,9 +462,19 @@ public class StackInterpreterTests {
               print(f(7));
               """));
     }
+
+    @Test
+    public void ifOnAComparisonResult() {
+      assertEquals("yes\nno\n", execute("""
+              if (2 < 3) { print("yes"); } else { print("no"); }
+              if (3 < 2) { print("yes"); } else { print("no"); }
+              """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q12")
   public class Q12 {
     @Test
     public void callFibo() {
@@ -375,9 +533,25 @@ public class StackInterpreterTests {
               print(f());
               """));
     }
+
+    @Test
+    public void mutualRecursion() {
+      assertEquals("1\n0\n", execute("""
+              function even(n) {
+                if (n == 0) { return 1; } else { return odd(n - 1); }
+              }
+              function odd(n) {
+                if (n == 0) { return 0; } else { return even(n - 1); }
+              }
+              print(even(10));
+              print(even(7));
+              """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q13")
   public class Q13 {
     @Test
     public void createAnObject() {
@@ -396,9 +570,54 @@ public class StackInterpreterTests {
                   print(o);
                   """));
     }
+
+    @Test
+    public void createAnEmptyObject() {
+      assertEquals("""
+              { // object
+                proto: null
+              }
+              """,
+          execute("""
+                  var o = { };
+                  print(o);
+                  """));
+    }
+
+    @Test
+    public void createAnObjectWithAString() {
+      assertEquals("""
+              { // object
+                name: Bob
+                proto: null
+              }
+              """,
+          execute("""
+                  var o = { name: "Bob" };
+                  print(o);
+                  """));
+    }
+
+    @Test
+    public void createAnObjectKeepsTheFieldOrder() {
+      assertEquals("""
+              { // object
+                z: 3
+                y: 2
+                x: 1
+                proto: null
+              }
+              """,
+          execute("""
+                  var o = { z: 3, y: 2, x: 1 };
+                  print(o);
+                  """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q14")
   public class Q14 {
     @Test
     public void createAnObjectFromAVariableValue() {
@@ -429,19 +648,53 @@ public class StackInterpreterTests {
                     b: print('b')
                   };"""));
     }
+
+    @Test
+    public void createAnObjectFromFunctionCalls() {
+      assertEquals("""
+              { // object
+                x: 1
+                y: 2
+                proto: null
+              }
+              """,
+          execute("""
+                  function one() { return 1; }
+                  var o = {
+                    x: one(),
+                    y: one() + 1
+                  };
+                  print(o);
+                  """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q15")
   public class Q15 {
     @Test
-    public void objectUpdateAFieldValue() {
-      assertEquals(
-          "Jane\n",
-          execute("""
-                  var john = { name: "John" };
-                  john.name = "Jane";
-                  print(john.name);
-                  """));
+    public void readAField() {
+      assertEquals("John\n", execute("""
+              var john = { name: "John" };
+              print(john.name);
+              """));
+    }
+
+    @Test
+    public void readSeveralFields() {
+      assertEquals("1 2\n", execute("""
+              var p = { x: 1, y: 2 };
+              print(p.x, p.y);
+              """));
+    }
+
+    @Test
+    public void readANestedField() {
+      assertEquals("5\n", execute("""
+              var o = { p: { x: 5 } };
+              print(o.p.x);
+              """));
     }
 
     @Test
@@ -453,12 +706,34 @@ public class StackInterpreterTests {
                   print(john.foo);
                   """));
     }
+
+    @Test
+    public void readSameFieldOnSeveralObjects() {
+      assertEquals(
+          "3\n7\n",
+          execute("""
+                  function fun(o) {
+                    return o.field;
+                  }
+                  var object = {
+                    field: 3,
+                    toto: 0
+                  };
+                  var object2 = {
+                    field: 7,
+                    toto: 4
+                  };
+                  print(fun(object));
+                  print(fun(object2));
+                  """));
+    }
   }
 
   @Nested
+  @Disabled("Q16")
   public class Q16 {
     @Test
-    public void objectSetAFieldValue() {  // patch visit variable
+    public void objectUpdateAFieldValue() {
       assertEquals(
           "Jane\n",
           execute("""
@@ -480,9 +755,29 @@ public class StackInterpreterTests {
                   print(f(obj));
                   """));
     }
+
+    @Test
+    public void writeDoesNotAffectOtherObjects() {
+      assertEquals("2 1\n", execute("""
+              var a = { x: 1 };
+              var b = { x: 1 };
+              a.x = 2;
+              print(a.x, b.x);
+              """));
+    }
+
+    @Test
+    public void writeAFieldOfUndefined() {
+      assertThrows(Failure.class, () -> execute("""
+              var o = { };
+              o.a.b = 2;
+              """));
+    }
   }
 
+
   @Nested
+  @Disabled("Q17")
   public class Q17 {
     @Test
     public void objectCallAMethod() {
@@ -501,25 +796,56 @@ public class StackInterpreterTests {
     }
 
     @Test
-    public void objectCallAMethodTwice() {
-      assertEquals(
-          "3\n7\n",
-          execute("""
-                  function fun(o) {
-                    return o.field;
-                  }
-                  var object = {
-                    field: 3,
-                    toto: 0
-                  };
-                  var object2 = {
-                    field: 7,
-                    toto: 4
-                  };
-                  print(fun(object));
-                  print(fun(object2));
-                  """));
+    public void callAMethodWithAResult() {
+      assertEquals("15\n", execute("""
+              var calc = {
+                base: 10,
+                add: function(x) { return this.base + x; }
+              };
+              print(calc.add(5));
+              """));
+    }
+
+    @Test
+    public void callAMethodThatUpdatesThis() {
+      assertEquals("2\n", execute("""
+              var counter = {
+                value: 0,
+                inc: function() { this.value = this.value + 1; }
+              };
+              counter.inc();
+              counter.inc();
+              print(counter.value);
+              """));
+    }
+
+    @Test
+    public void thisIsTheReceiver() {
+      assertEquals("a b\n", execute("""
+              function who() { return this.name; }
+              var a = { name: "a", who: who };
+              var b = { name: "b", who: who };
+              print(a.who(), b.who());
+              """));
+    }
+
+    @Test
+    public void receiverIsEvaluatedOnce() {
+      assertEquals("make\n1\n", execute("""
+              function make() {
+                print("make");
+                return { f: function() { return 1; } };
+              }
+              print(make().f());
+              """));
+    }
+
+    @Test
+    public void callAFieldThatIsNotAFunction() {
+      assertThrows(Failure.class, () -> execute("""
+              var o = { x: 1 };
+              o.x();
+              """));
     }
   }
-  */
 }
